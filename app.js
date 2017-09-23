@@ -1,21 +1,23 @@
-<script type="text/javascript" src="//cdn.jsdelivr.net/particle-api-js/5/particle.min.js">
+
+function loadScript() {
 
 var Particle = require('particle-api-js');
 var particle = new Particle();
 var token;
 
-res.send('Hello World!')
+console.log('Logged in');
 
 particle.login({username: 'cornellresistance@email.com', password: 'clifford'}).then(
   console.log('Logged in');
   function(data) {
     console.log('API call completed on promise resolve: ', data.body.access_token);
   },
-    token = data.body.access_token;
-  },
-  function (err) {
-    console.log('Could not log in.', err);
-  }
+  token = data.body.access_token;
+},
+
+function (err) {
+  console.log('Could not log in.', err);
+}
 );
 
-</script>
+}
