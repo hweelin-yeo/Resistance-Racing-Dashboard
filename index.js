@@ -1,4 +1,11 @@
+var express = require('express');
+var app = express();
 
+app.set('port', (process.env.PORT || 5000));
+
+app.get('/webhook', function(req, res) {
+  res.write("test");
+})
 var Particle = require('particle-api-js');
 var particle = new Particle();
 var token;
