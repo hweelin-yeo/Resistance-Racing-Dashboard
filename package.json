@@ -1,5 +1,5 @@
 {
-  "name": "Heroku Server",
+  "name": "HerokuServer",
   "version": "0.0.1",
   "description": "Cornell Resistance Heroku",
   "engines": {
