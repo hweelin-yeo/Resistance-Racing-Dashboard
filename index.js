@@ -1,18 +1,32 @@
-var express = require('express');
-var app = express();
 
-app.set('port', (process.env.PORT || 5000));
+var Particle = require('particle-api-js');
+var particle = new Particle();
+var token;
 
-app.use(express.static(__dirname + '/public'));
+// Login
+particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+  function(data) {
+    console.log('LOGGED IN.');
+    token = data.body.access_token;
+    console.log(token);
+		getEventStream();
+  },
+  function (err) {
+    console.log('Could not log in.', err);
+  }
+);
 
-// views is directory for all template files
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
+// Get event stream
+function getEventStream() {
+	//Successful login: get devices events
+  console.log('Begin event stream.');
+  console.log(token);
+	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+  stream.on('event', function(data) {
 
-app.get('/', function(request, response) {
-  response.render('pages/index');
+    console.log("Event: " + data);
+    console.log(JSON.stringify(data, null, 4));
+  });
 });
 
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
+}
