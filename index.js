@@ -64,7 +64,7 @@ app.post('/add', function (req, res) {
        { console.error(err); res.send("Error " + err); }
       else
        {}
-     });
+     };
       // response.render('pages/db', {results: result.rows} ); }
     });
   });
