@@ -5,10 +5,6 @@ var pg = require('pg'); // database
 
 app.listen(process.env.PORT || 5000);
 
-app.get('/webhook', function(req, res) {
-  res.send("test");
-})
-
 var Particle = require('particle-api-js');
 var particle = new Particle();
 var token;
@@ -41,8 +37,8 @@ function getEventStream() {
 });
 }
 
-// Database
-app.get('/db', function (request, response) {
+// Database: Get all results
+app.get('/db', function (req, res) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     client.query('SELECT * FROM data', function(err, result) {
       done();
@@ -55,3 +51,38 @@ app.get('/db', function (request, response) {
     });
   });
 });
+
+// Database: Post data
+app.post('/add', function (req, res) {
+  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+    client.query('INSERT INTO data (timestamp, property, value)' +
+    'VALUES (NOW(), ${property}, $ {value})' [req.body.timestamp,
+      req.body.property, req.body.value]); {
+      done();
+      if (err)
+       { console.error(err); res.send("Error " + err); }
+      else
+       {
+         res.redirect('/db');}
+         // response.render('pages/db', {results: result.rows} ); }
+    });
+  });
+});
+
+
+function createPuppy(req, res, next) {
+  req.body.age = parseInt(req.body.age);
+  db.none('insert into pups(name, breed, age, sex)' +
+      'values(${name}, ${breed}, ${age}, ${sex})',
+    req.body)
+    .then(function () {
+      res.status(200)
+        .json({
+          status: 'success',
+          message: 'Inserted one puppy'
+        });
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+}
