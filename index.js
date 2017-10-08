@@ -59,11 +59,12 @@ app.post('/add', function (req, res) {
     'VALUES (NOW(), ${property}, $ {value})' [req.body.timestamp,
       req.body.property, req.body.value]); {
       done();
+      res.redirect('/db');
       if (err)
        { console.error(err); res.send("Error " + err); }
       else
-       {
-         res.redirect('/db');}
-         // response.render('pages/db', {results: result.rows} ); }
+       {}
+     });
+      // response.render('pages/db', {results: result.rows} ); }
     });
   });
