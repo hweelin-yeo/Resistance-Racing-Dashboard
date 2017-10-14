@@ -65,11 +65,14 @@ app.post('/add', function (req, res) {
       done();
       console.log([
         req.body.property, req.body.value]);
-      // res.redirect('/db');
+      //res.redirect('/db');
+
       if (err)
        { console.error(err); res.send("Error " + err); }
       else
-       {}
+       {
+         res.send("sent response back")
+       }
      };
     });
   });
