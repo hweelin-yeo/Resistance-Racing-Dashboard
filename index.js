@@ -65,6 +65,5 @@ app.post('/add', function (req, res) {
       else
        {}
      };
-      // response.render('pages/db', {results: result.rows} ); }
     });
   });
