@@ -77,3 +77,16 @@ app.post('/add', function (req, res) {
      };
     });
   });
+
+// Parse Particle data
+/** This is the event data sent from Particle:
+
+Event: [object Object] {
+  "data": "{property: \"lap\", value: 2}",
+  "ttl": 60,
+  "published_at": "2017-10-14T17:58:23.085Z",
+  "coreid": "api",
+  "name": "general"
+}
+
+Use json parser to get req.body.data.property, req.body.data.value **/
