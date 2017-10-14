@@ -38,8 +38,8 @@ function getEventStream() {
 });
 }
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
 
 // Database: Get all results
 app.get('/db', function (req, res) {
