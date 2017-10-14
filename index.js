@@ -38,6 +38,9 @@ function getEventStream() {
 });
 }
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // Database: Get all results
 app.get('/db', function (req, res) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
@@ -55,10 +58,6 @@ app.get('/db', function (req, res) {
 
 // Database: Post data
 app.post('/add', function (req, res) {
-  app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({
-        extended: true
-    }));
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     client.query('INSERT INTO data (timestamp, property, value)' +
     'VALUES (NOW(), ${property}, $ {value})' [
