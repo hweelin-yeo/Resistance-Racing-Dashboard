@@ -63,7 +63,9 @@ app.post('/add', function (req, res) {
     'VALUES (NOW(), ${property}, $ {value})' [
       req.body.property, req.body.value]); {
       done();
-      res.redirect('/db');
+      console.log([
+        req.body.property, req.body.value]);
+      // res.redirect('/db');
       if (err)
        { console.error(err); res.send("Error " + err); }
       else
