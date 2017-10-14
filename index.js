@@ -71,7 +71,7 @@ app.post('/add', function (req, res) {
        { console.error(err); res.send("Error " + err); }
       else
        {
-         console.log("sent response back")
+         console.log("RES.SEND sent response back")
          res.send("sent response back")
        }
      };
