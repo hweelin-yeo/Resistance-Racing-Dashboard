@@ -35,31 +35,6 @@ function getEventStream() {
     console.log("Event: " + data);
     console.log(JSON.stringify(data, null, 4));
     console.log("trying to retrieve data");
-    //var dataJSON = JSON.stringify(data.data, null, 4);
-    //console.log(dataJSON);
-
-    //var request = require('request');
-
-    // Set the headers
-    //var headers = {
-    //  'User-Agent':       'Super Agent/0.0.1',
-    //  'Content-Type':     'application/x-www-form-urlencoded'
-    //}
- /**
-  var options = {
-      url: process.env.DATABASE_URL + "/add",
-      method: 'POST',
-      headers: {},
-      form: dataJSON
-    }
-
-// Start the request
-request(options, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-        // Print out the response body
-        console.log(body)
-    }
-}) */
   });
 });
 }
@@ -85,6 +60,8 @@ app.get('/db', function (req, res) {
 
 // Database: Post data
 app.post('/add', function (req, res) {
+  console.log("firstly");
+  console.log((JSON.parse(req.body.data)));
   console.log([
     (JSON.parse(req.body.data)).property, (JSON.parse(req.body.data)).value]);
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
