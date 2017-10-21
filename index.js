@@ -35,7 +35,7 @@ function getEventStream() {
     console.log("Event: " + data);
     console.log(JSON.stringify(data, null, 4));
     console.log("trying to retrieve data");
-    console.log(JSON.parse(data.data));
+    console.log(JSON.stringify(data.data, null, 4));
   });
 });
 }
