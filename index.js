@@ -69,8 +69,6 @@ app.post('/add', function (req, res) {
     'VALUES (NOW(), $1, $2)', [
       (JSON.parse(req.body.data))[property], (JSON.parse(req.body.data))[value]]); {
       done();
-      console.log([
-        (JSON.parse(req.body.data))[property], (JSON.parse(req.body.data))[value]);
       //res.redirect('/db');
 
       if (err)
