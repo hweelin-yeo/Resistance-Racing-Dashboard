@@ -35,17 +35,17 @@ function getEventStream() {
     console.log("Event: " + data);
     console.log(JSON.stringify(data, null, 4));
     console.log("trying to retrieve data");
-    var dataJSON = JSON.stringify(data.data, null, 4);
-    console.log(dataJSON);
+    //var dataJSON = JSON.stringify(data.data, null, 4);
+    //console.log(dataJSON);
 
-    var request = require('request');
+    //var request = require('request');
 
     // Set the headers
     //var headers = {
     //  'User-Agent':       'Super Agent/0.0.1',
     //  'Content-Type':     'application/x-www-form-urlencoded'
     //}
-
+ /**
   var options = {
       url: process.env.DATABASE_URL + "/add",
       method: 'POST',
@@ -59,7 +59,7 @@ request(options, function (error, response, body) {
         // Print out the response body
         console.log(body)
     }
-})
+}) */
   });
 });
 }
@@ -82,12 +82,13 @@ app.get('/db', function (req, res) {
   });
 });
 
+
 // Database: Post data
 app.post('/add', function (req, res) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     client.query('INSERT INTO data (timestamp, property, value)' +
     'VALUES (NOW(), $1, $2)', [
-      req.body.property, req.body.value]); {
+      (JSON.parse(req.body.data)).property, (JSON.parse(req.body.data)).value]); {
       done();
       console.log([
         req.body.property, req.body.value]);
@@ -104,7 +105,27 @@ app.post('/add', function (req, res) {
     });
   });
 
-// Parse Particle data
+  // Database: Post data
+  app.post('/add', function (req, res) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+      client.query('INSERT INTO data (timestamp, property, value)' +
+      'VALUES (NOW(), $1, $2)', [
+        req.body.property, req.body.value]); {
+        done();
+        console.log([
+          req.body.property, req.body.value]);
+        //res.redirect('/db');
+
+        if (err)
+         { console.error(err); res.send("Error " + err); }
+        else
+         {
+           console.log("RES.SEND sent response back")
+           res.send("sent response back")
+         }
+       };
+      });
+    });
 /** This is the event data sent from Particle:
 
 Event: [object Object] {
