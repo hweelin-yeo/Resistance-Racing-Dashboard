@@ -37,18 +37,29 @@ function getEventStream() {
     console.log("trying to retrieve data");
     var dataJSON = JSON.stringify(data.data, null, 4);
     console.log(dataJSON);
-    var options = {
-                uri: process.env.DATABASE_URL + "/add"
-                body: dataJSON,
-                method: 'POST'
-                //headers: {
-                //    'Content-Type': 'application/json'
-                //}
-            }
-            request(options, function (error, response) {
-                console.log(error,response.body);
-                return;
-            });
+
+    var request = require('request');
+
+    // Set the headers
+    //var headers = {
+    //  'User-Agent':       'Super Agent/0.0.1',
+    //  'Content-Type':     'application/x-www-form-urlencoded'
+    //}
+
+  var options = {
+      url: process.env.DATABASE_URL + "/add",
+      method: 'POST',
+      headers: {},
+      form: dataJSON
+    }
+
+// Start the request
+request(options, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+        // Print out the response body
+        console.log(body)
+    }
+})
   });
 });
 }
