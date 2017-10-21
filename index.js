@@ -92,7 +92,6 @@ app.post('/add', function (req, res) {
     var options = {
       url: process.env.DATABASE_URL + "/add",
       method: 'POST',
-      headers: {}
       form: {"data": "{property: \"lap\", value: 2}",
         "ttl": 60,
         "published_at": "2017-10-14T17:58:23.085Z",
