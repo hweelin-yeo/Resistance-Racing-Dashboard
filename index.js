@@ -34,6 +34,7 @@ function getEventStream() {
 
     console.log("Event: " + data);
     console.log(JSON.stringify(data, null, 4));
+    console.log(JSON.parse(data.data));
   });
 });
 }
