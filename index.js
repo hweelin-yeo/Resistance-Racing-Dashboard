@@ -35,7 +35,20 @@ function getEventStream() {
     console.log("Event: " + data);
     console.log(JSON.stringify(data, null, 4));
     console.log("trying to retrieve data");
-    console.log(JSON.stringify(data.data, null, 4));
+    var dataJSON = JSON.stringify(data.data, null, 4);
+    console.log(dataJSON);
+    var options = {
+                uri: process.env.DATABASE_URL + "/add"
+                body: dataJSON,
+                method: 'POST'
+                //headers: {
+                //    'Content-Type': 'application/json'
+                //}
+            }
+            request(options, function (error, response) {
+                console.log(error,response.body);
+                return;
+            });
   });
 });
 }
