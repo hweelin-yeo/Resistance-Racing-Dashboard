@@ -60,7 +60,7 @@ app.get('/db', function (req, res) {
 
 // Database: Post data
 app.post('/add', function (req, res) {
-  console.log((JSON.parse(req.body)));
+  console.log(req.body);
   console.log(req.body.data.property);
   console.log((JSON.parse(req.body.data)));
   console.log([
