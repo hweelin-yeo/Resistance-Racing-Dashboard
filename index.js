@@ -60,8 +60,9 @@ app.get('/db', function (req, res) {
 
 // Database: Post data
 app.post('/add', function (req, res) {
-  console.log((JSON.parse(req.body.data)));
+  console.log((JSON.parse(req.body)));
   console.log(req.body.data.property);
+  console.log((JSON.parse(req.body.data)));
   console.log([
     (JSON.parse(req.body.data)).property, (JSON.parse(req.body.data)).value]);
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
@@ -85,22 +86,29 @@ app.post('/add', function (req, res) {
   function makeMockRequest() {
     var request = require('request');
 
+    var request = require('request');
 
     // Configure the request
     var options = {
       url: process.env.DATABASE_URL + "/add",
-      method: 'GET',
-      headers: headers,
-      qs: {'key1': 'xxx', 'key2': 'yyy'}
+      method: 'POST',
+      headers: {}
+      qs: {"data": "{property: \"lap\", value: 2}",
+        "ttl": 60,
+        "published_at": "2017-10-14T17:58:23.085Z",
+        "coreid": "api",
+        "name": "general"
+      }
+
     }
 
     // Start the request
     request(options, function (error, response, body) {
       if (!error && response.statusCode == 200) {
           // Print out the response body
-          console.log(body)
-        }
-      })
+        console.log(body);
+      }
+    })
   }
 /**
   // Database: Post data
