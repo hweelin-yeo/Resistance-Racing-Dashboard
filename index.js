@@ -93,7 +93,7 @@ app.post('/add', function (req, res) {
       url: process.env.DATABASE_URL + "/add",
       method: 'POST',
       headers: {}
-      qs: {"data": "{property: \"lap\", value: 2}",
+      form: {"data": "{property: \"lap\", value: 2}",
         "ttl": 60,
         "published_at": "2017-10-14T17:58:23.085Z",
         "coreid": "api",
