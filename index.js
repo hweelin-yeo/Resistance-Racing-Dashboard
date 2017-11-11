@@ -1,15 +1,20 @@
+/** Frameworks/Modules setup */
 var express = require('express');
 var app = express();
 var pg = require('pg'); // database
 var bodyparser = require('body-parser');
 
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
 
+/** Servers */
 app.listen(process.env.PORT || 5000);
 
 var Particle = require('particle-api-js');
 var particle = new Particle();
 var token;
 
+/** Particle */
 
 // Login
 particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
@@ -39,9 +44,6 @@ function getEventStream() {
 });
 }
 
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
-
 // Database: Get all results
 app.get('/db', function (req, res) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
@@ -60,7 +62,7 @@ app.get('/db', function (req, res) {
 
 // Database: Post data
 app.post('/add', function (req, res) {
-  console.log(req.body);
+  console.log("reached add request function");
   console.log(req.body.data.property);
   console.log((JSON.parse(req.body.data)));
   console.log([
