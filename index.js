@@ -63,14 +63,16 @@ app.get('/db', function (req, res) {
 // Database: Post data
 app.post('/add', function (req, res) {
   console.log("reached add request function");
-  console.log(req.body.data["property"]);
+  console.log(JSON.parse(JSON.parse(req.body).data).property);
   console.log((JSON.parse(req.body.data)));
   console.log([
-    (JSON.parse(req.body.data["property"])), (JSON.parse(req.body.data["value"]))]);
+    (JSON.parse(req.body.data).property), (JSON.parse(req.body.data).property)]);
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     client.query('INSERT INTO data (timestamp, property, value)' +
     'VALUES (NOW(), $1, $2)', [
-      (JSON.parse(req.body.data["property"])), (JSON.parse(req.body.data["value"]))]); {
+      JSON.parse(JSON.parse(req.body).data).property), JSON.parse(JSON.parse(req.body).data).value)
+      // (JSON.parse(req.body.data["property"])), (JSON.parse(req.body.data["value"]))
+    ]); {
       done();
       //res.redirect('/db');
 
