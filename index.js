@@ -3,7 +3,6 @@ var express = require('express');
 var app = express();
 var pg = require('pg'); // database
 var bodyparser = require('body-parser');
-var bootstrap = require('bootstrap')
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
