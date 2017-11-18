@@ -64,12 +64,14 @@ app.get('/db', function (req, res) {
 app.post('/add', function (req, res) {
   console.log("reached add request function");
   console.log("edit 2");
-  data = req.body.data;
+  var data = req.body.data;
   console.log(req.body.data);
 
   /** get property */
-  property = parsed.property;
-  console.log(property);
+  var data_array = data.split("_");
+  for (var i in a) {
+   console.log(i);
+     }
 
   // parsed = JSON.parse(data);
   // console.log(parsed);
