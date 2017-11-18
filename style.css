@@ -1,5 +1,6 @@
+/** Heading */
 
-.title {
+#title {
   position: absolute;
   left: 30px;
   color: #4A4A4A;
@@ -7,7 +8,7 @@
   text-size: 1em;
 }
 
-.RRLogo {
+#RRLogo {
   position: absolute;
   top: 10px;
   left: 380px;
@@ -15,10 +16,21 @@
   height:60px;
 }
 
+/** Summary Tab */
+
+#Summary-Tab {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  width:200px;
+  height:60px;
+}
+
 #triangle-left {
 	width: 0;
 	height: 0;
+  right: 1000px;
 	border-top: 50px solid transparent;
-	border-right: 100px solid red;
+	border-right: 100px solid #FFAE49;
 	border-bottom: 50px solid transparent;
 }

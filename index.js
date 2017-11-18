@@ -63,6 +63,10 @@ app.get('/db', function (req, res) {
 // Database: Post data
 app.post('/add', function (req, res) {
   console.log("reached add request function");
+  console.log((JSON.parse(req.body.data)));
+  console.log(JSON.parse(req.body['data']));
+  console.log(req.body['data']);
+  console.log((req.body['data']))['property'];
   console.log(JSON.parse(JSON.parse(req.body).data).property);
   console.log((JSON.parse(req.body.data)));
   console.log([
