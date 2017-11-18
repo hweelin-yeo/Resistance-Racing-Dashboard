@@ -66,9 +66,7 @@ app.post('/add', function (req, res) {
   console.log("edit 2");
   console.log(req.body.data);
   data = req.body.data;
-  console.log(JSON.stringify(data, null, 4));
-  stringdata = JSON.stringify(data, null, 4);
-  console.log(stringdata.property);
+  console.log(data.property);
 
 
 
