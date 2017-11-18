@@ -66,20 +66,9 @@ app.post('/add', function (req, res) {
   console.log("edit 2");
   console.log(req.body.data);
   data = req.body.data;
-  console.log(data.property);
+  parse = JSON.parse(req.body.data);
+  console.log(parse.property);
 
-
-
-  console.log(JSON.parse(req.body.data).property);
-  console.log(JSON.parse(JSON.parse(req.body)).data);
-  console.log((JSON.parse(req.body.data)));
-  console.log(JSON.parse(req.body['data']));
-  console.log(req.body['data']);
-  console.log((req.body['data']))['property'];
-  console.log(JSON.parse(JSON.parse(req.body).data).property);
-  console.log((JSON.parse(req.body.data)));
-  console.log([
-    (JSON.parse(req.body.data).property), (JSON.parse(req.body.data).property)]);
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     client.query('INSERT INTO data (timestamp, property, value)' +
     'VALUES (NOW(), $1, $2)', [
