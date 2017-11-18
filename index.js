@@ -74,7 +74,7 @@ app.post('/add', function (req, res) {
         else
          {
            console.log("RES.SEND sent response back")
-           res.send("sent response back")
+          //  res.send("sent response back")
          }
        };
       });
