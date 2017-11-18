@@ -64,13 +64,12 @@ app.get('/db', function (req, res) {
 app.post('/add', function (req, res) {
   console.log("reached add request function");
   console.log("edit 2");
-  console.log(req.body.data);
-  parsed = JSON.parse(req.body.data);
-  console.log(parsed);
   data = req.body.data;
-  string = JSON.stringify(data, null, 4)
-  parsed = JSON.parse(string);
-  console.log(parsed.property);
+  console.log(req.body.data);
+  parsed = JSON.parse(data);
+  console.log(parsed);
+  property = parsed.property;
+  console.log(parsed);
   console.log("before pg connect");
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     client.query('INSERT INTO data (timestamp, property, value)' +
