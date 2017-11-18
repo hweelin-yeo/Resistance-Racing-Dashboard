@@ -66,10 +66,16 @@ app.post('/add', function (req, res) {
   console.log("edit 2");
   data = req.body.data;
   console.log(req.body.data);
-  parsed = JSON.parse(data);
-  console.log(parsed);
+
+  /** get property */
   property = parsed.property;
-  console.log(parsed);
+  console.log(property);
+
+  // parsed = JSON.parse(data);
+  // console.log(parsed);
+  // property = parsed.property;
+  // console.log(property);
+
   console.log("before pg connect");
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     client.query('INSERT INTO data (timestamp, property, value)' +
