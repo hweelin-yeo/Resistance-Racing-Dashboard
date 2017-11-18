@@ -22,7 +22,7 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
     console.log('LOGGED IN.');
     token = data.body.access_token;
     console.log(token);
-		getEventStream();
+		// getEventStream();
   },
   function (err) {
     console.log('Could not log in.', err);
