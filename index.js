@@ -30,19 +30,19 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
 );
 
 // Get event stream
-function getEventStream() {
-	//Successful login: get devices events
-  console.log('Begin event stream.');
-  console.log(token);
-	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-  stream.on('event', function(data) {
-
-    console.log("Event: " + data);
-    console.log(JSON.stringify(data, null, 4));
-    console.log("trying to retrieve data");
-  });
-});
-}
+// function getEventStream() {
+// 	//Successful login: get devices events
+//   console.log('Begin event stream.');
+//   console.log(token);
+// 	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+//   stream.on('event', function(data) {
+//
+//     console.log("Event: " + data);
+//     console.log(JSON.stringify(data, null, 4));
+//     console.log("trying to retrieve data");
+//   });
+// });
+// }
 
 
 // Database: Post data
