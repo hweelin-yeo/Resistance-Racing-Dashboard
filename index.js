@@ -65,6 +65,7 @@ app.post('/add', function (req, res) {
   console.log("reached add request function");
   console.log("edit 2");
   console.log(req.body.data);
+  console.log(req.body.data.property);
   console.log(req.body.data['property']);
   console.log(JSON.parse(req.body.data).property);
   console.log(JSON.parse(JSON.parse(req.body)).data);
