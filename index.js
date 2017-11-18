@@ -44,88 +44,63 @@ function getEventStream() {
 });
 }
 
-// Database: Get all results
-app.get('/db', function (req, res) {
-  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-    client.query('SELECT * FROM data', function(err, result) {
-      done();
-      if (err)
-       { console.error(err); res.send("Error " + err); }
-      else
-       {
-         res.send({results: result.rows});}
-         // response.render('pages/db', {results: result.rows} ); }
-    });
-  });
-});
-
 
 // Database: Post data
 app.post('/add', function (req, res) {
   console.log("reached add request function");
-  console.log("edit 2");
   var data = req.body.data;
   console.log(req.body.data);
-  console.log("trying to get array");
 
-  /** get property */
-  var data_array = data.split("_");
-  for (var i in data_array) {
-   console.log(data_array[i]);
+  var data_arr = data.split("_");
+  for (var i in data_arr) {
+
+    var data_i = data_arr[i];
+    var data_i_arr = data_i.split(";");
+
+    var property = data_i_arr[0];
+    var value = data_i_arr[1];
+    var time = data_i_arr[2];
+
+
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+      client.query('INSERT INTO data (timestamp, property, value)' +
+      'VALUES (NOW(), $1, $2)',
+      [(property), (value)]); {
+        done();
+        //res.redirect('/db');
+
+        if (err)
+         { console.error(err); res.send("Error " + err); }
+        else
+         {
+           console.log("RES.SEND sent response back")
+           res.send("sent response back")
+         }
+       };
+      });
   }
 
   // parsed = JSON.parse(data);
   // console.log(parsed);
   // property = parsed.property;
   // console.log(property);
+  });
 
-  console.log("before pg connect");
-  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-    client.query('INSERT INTO data (timestamp, property, value)' +
-    'VALUES (NOW(), $1, $2)', [
-      (JSON.parse(JSON.parse(req.body).data).property), (JSON.parse(JSON.parse(req.body).data).value)
-      // (JSON.parse(req.body.data["property"])), (JSON.parse(req.body.data["value"]))
-    ]); {
-      done();
-      //res.redirect('/db');
-
-      if (err)
-       { console.error(err); res.send("Error " + err); }
-      else
-       {
-         console.log("RES.SEND sent response back")
-         res.send("sent response back")
-       }
-     };
+  // Database: Get all results
+  app.get('/db', function (req, res) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+      client.query('SELECT * FROM data', function(err, result) {
+        done();
+        if (err)
+         { console.error(err); res.send("Error " + err); }
+        else
+         {
+           res.send({results: result.rows});}
+           // response.render('pages/db', {results: result.rows} ); }
+      });
     });
   });
 
-  function makeMockRequest() {
-    var request = require('request');
-
-    var request = require('request');
-
-    // Configure the request
-    var options = {
-      url: process.env.DATABASE_URL + "/add",
-      method: 'POST',
-      form: {"data": "{property: \"lap\", value: 2}",
-        "ttl": 60,
-        "published_at": "2017-10-14T17:58:23.085Z",
-        "coreid": "api",
-        "name": "general"
-      }
-
-    }
-
-    // Start the request
-    request(options, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-          // Print out the response body
-        console.log(body);
-      }
-    })
-  }
 /**
   // Database: Post data
   app.post('/add', function (req, res) {
