@@ -66,12 +66,13 @@ app.post('/add', function (req, res) {
   console.log("edit 2");
   var data = req.body.data;
   console.log(req.body.data);
+  console.log("trying to get array");
 
   /** get property */
   var data_array = data.split("_");
   for (var i in a) {
    console.log(i);
-     }
+  }
 
   // parsed = JSON.parse(data);
   // console.log(parsed);
