@@ -70,7 +70,7 @@ app.post('/add', function (req, res) {
 
   /** get property */
   var data_array = data.split("_");
-  for (var i in a) {
+  for (var i in data_array) {
    console.log(i);
   }
 
