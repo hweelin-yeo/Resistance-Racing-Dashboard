@@ -1,4 +1,4 @@
-/** Frameworks/Modules setup */
+/** Framework Setup */
 var express = require('express');
 var app = express();
 var pg = require('pg'); // database
@@ -7,14 +7,17 @@ var bodyparser = require('body-parser');
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
-/** Servers */
+/** Server Information */
 app.listen(process.env.PORT || 5000);
 
+/** Particle Information */
 var Particle = require('particle-api-js');
 var particle = new Particle();
 var token;
+var device_ID = 34004a000251363131363432;
 
-/** Particle */
+/** Race Information */
+var lap = 1;
 
 // Login
 particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
@@ -28,6 +31,17 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
     console.log('Could not log in.', err);
   }
 );
+
+/** Lap Functions */
+
+var ifLastLap = particle.callFunction({ deviceId: 'device_ID', name: 'brew', argument: 'lap', auth: token });
+
+fnPr.then(
+  function(data) {
+    console.log('Function called succesfully:', data);
+  }, function(err) {
+    console.log('An error occurred:', err);
+  });
 
 // Get event stream
 // function getEventStream() {
@@ -60,7 +74,7 @@ app.post('/add', function (req, res) {
     var property = data_i_arr[0];
     var value = data_i_arr[1];
     var time = data_i_arr[2];
-
+    console.log(property + " " + value + " " + time);
 
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
       client.query('INSERT INTO data (timestamp, property, value)' +
@@ -73,9 +87,8 @@ app.post('/add', function (req, res) {
          { console.error(err); res.send("Error " + err); }
         else
          {
-           console.log("RES.SEND sent response back")
-          //  res.send("sent response back")
-         }
+          console.log("success");
+         } 
        };
       });
   }
