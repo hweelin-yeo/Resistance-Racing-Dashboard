@@ -2,6 +2,12 @@
 var express = require('express');
 var app = express();
 var pg = require('pg'); // database
+// var client = new Client({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: true,
+// });
+
+// client.connect();
 var bodyparser = require('body-parser');
 
 app.use(bodyparser.json());
