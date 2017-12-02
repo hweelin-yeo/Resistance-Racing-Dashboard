@@ -71,11 +71,11 @@ app.post('/add', function (req, res) {
   var data = req.body.data;
   console.log(req.body.data);
 
-  var data_arr = data.split("_");
+  var data_arr = data.split(";");
   for (var i in data_arr) {
 
     var data_i = data_arr[i];
-    var data_i_arr = data_i.split(";");
+    var data_i_arr = data_i.split("_");
 
     var property = data_i_arr[0];
     var value = data_i_arr[1];
