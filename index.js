@@ -36,7 +36,7 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
 
 var ifLastLap = particle.callFunction({ deviceId: 'device_ID', name: 'brew', argument: 'lap', auth: token });
 
-fnPr.then(
+ifLastLap.then(
   function(data) {
     console.log('Function called succesfully:', data);
   }, function(err) {
