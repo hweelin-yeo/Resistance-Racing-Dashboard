@@ -40,14 +40,14 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
 
 /** Lap Functions */
 
-var ifLastLap = particle.callFunction({ deviceId: 'device_ID', name: 'brew', argument: 'lap', auth: token });
+// var ifLastLap = particle.callFunction({ deviceId: 'device_ID', name: 'brew', argument: 'lap', auth: token });
 
-ifLastLap.then(
-  function(data) {
-    console.log('Function called succesfully:', data);
-  }, function(err) {
-    console.log('An error occurred:', err);
-  });
+// ifLastLap.then(
+//   function(data) {
+//     console.log('Function called succesfully:', data);
+//   }, function(err) {
+//     console.log('An error occurred:', err);
+//   });
 
 // Get event stream
 // function getEventStream() {
@@ -83,7 +83,7 @@ app.post('/add', function (req, res) {
     console.log(property + " " + value + " " + time);
 
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query('INSERT INTO data (timestamp, property, value)' +
+      client.query('INSERT INTO public.data (timestamp, property, value)' +
       'VALUES ($0, $1, $2)',
       [time, property, value]); {
         done();
