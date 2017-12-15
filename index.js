@@ -84,7 +84,7 @@ app.post('/add', function (req, res) {
 
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
       client.query('INSERT INTO public.data (timestamp, property, value)' +
-      'VALUES ($0, $1, $2)',
+      'VALUES (NOW(), $1, $2)',
       [time, property, value]); {
         done();
         //res.redirect('/db');
