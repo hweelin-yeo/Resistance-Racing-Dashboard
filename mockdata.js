@@ -12,7 +12,7 @@ var json_object =
   };
 
 request({
-    url: "http://localhost:5000/add",
+    url: "http://intense-dawn-73114.herokuapp.com/add",
     method: "POST",
     headers: {
     },
