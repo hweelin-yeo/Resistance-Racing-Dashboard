@@ -89,13 +89,14 @@ app.post('/add', function (req, res) {
     console.log(property + " " + value + " " + time);
 
     client.query('INSERT INTO data (timestamp, property, value)' +
-       'VALUES (NOW(), "speed", 10.0)', (err, res) => {
+       'VALUES (NOW(), \'speed\', 10.0)', (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
-        console.log(res.rows[0]);
+        console.log(rows.rows[0]);
       }
       res.send("sent");
+      
     });
     // pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     //   client.query('INSERT INTO data (timestamp, property, value)' +
