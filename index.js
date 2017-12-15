@@ -83,8 +83,8 @@ app.post('/add', function (req, res) {
     console.log(property + " " + value + " " + time);
 
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query('INSERT INTO public.data (timestamp, property, value)' +
-      'VALUES (NOW(), $1, $2)',
+      client.query('INSERT INTO data (timestamp, property, value)' +
+      'VALUES (NOW(), $1, $2);',
       [time, property, value]); {
         done();
         //res.redirect('/db');
@@ -108,7 +108,7 @@ app.post('/add', function (req, res) {
   // Database: Get all results
   app.get('/db', function (req, res) {
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query('SELECT * FROM data', function(err, result) {
+      client.query('SELECT * FROM data;', function(err, result) {
         done();
         if (err)
          { console.error(err); res.send("Error " + err); }
