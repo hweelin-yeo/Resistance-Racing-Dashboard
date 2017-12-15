@@ -95,7 +95,7 @@ app.post('/add', function (req, res) {
       } else {
         console.log(rows.rows[0]);
       }
-      res.send("sent");
+      res.end("sent");
       
     });
     // pg.connect(process.env.DATABASE_URL, function(err, client, done) {
