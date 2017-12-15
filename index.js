@@ -1,7 +1,13 @@
 /** Framework Setup */
 var express = require('express');
 var app = express();
-var pg = require('pg'); // database
+const { Client } = require('pg'); // database
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true, 
+});
+
+client.connect();
 // var client = new Client({
 //   connectionString: process.env.DATABASE_URL,
 //   ssl: true,
@@ -82,21 +88,28 @@ app.post('/add', function (req, res) {
     var time = data_i_arr[2];
     console.log(property + " " + value + " " + time);
 
-    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query('INSERT INTO data (timestamp, property, value)' +
-      'VALUES (NOW(), $1, $2);',
-      [time, property, value]); {
-        done();
-        //res.redirect('/db');
+    client.query('SELECT * FROM data', (err, res) => {
+      if (err){
+        console.log(err.stack)
+      } else {
+        console.log(res.rows[0])
+      }
+    })
+    // pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+    //   client.query('INSERT INTO data (timestamp, property, value)' +
+    //   'VALUES (NOW(), $1, $2);',
+    //   [time, property, value]); {
+    //     done();
+    //     //res.redirect('/db');
 
-        if (err)
-         { console.error(err); res.send("Error " + err); }
-        else
-         {
-          console.log("success");
-         } 
-       };
-      });
+    //     if (err)
+    //      { console.error(err); res.send("Error " + err); }
+    //     else
+    //      {
+    //       console.log("success");
+    //      } 
+    //    };
+    //   });
   }
 
   // parsed = JSON.parse(data);
