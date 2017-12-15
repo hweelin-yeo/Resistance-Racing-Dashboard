@@ -89,7 +89,7 @@ app.post('/add', function (req, res) {
     console.log(property + " " + value + " " + time);
 
     client.query('INSERT INTO data (timestamp, property, value)' +
-       'VALUES (NOW(), $1, $2)', [property, value], (err, res) => {
+       'VALUES (NOW(), "speed", 10.0)', (err, res) => {
       if (err){
         console.log(err.stack);
       } else {
