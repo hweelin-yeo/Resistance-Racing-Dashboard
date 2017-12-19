@@ -26,6 +26,18 @@ request({
     }
 });
 
+request({
+    url: "http://intense-dawn-73114.herokuapp.com/db",
+    method: "GET",
+    function(err, res, body){
+        if(!err){
+            console.log("Received response: " + res);
+        } else{
+            console.log("Received error: " + err);
+        }
+    }
+});
+
 /*
   Current data format:
   [object Object] {

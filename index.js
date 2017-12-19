@@ -97,7 +97,8 @@ app.post('/add', function (req, res) {
     var time = data_i_arr[2];
     console.log(value);
     insertQuery(property, value, res);
-  });
+  }
+});
 
   
 
