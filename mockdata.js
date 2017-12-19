@@ -4,7 +4,7 @@ var request = require('request');
 
 var json_object =
 	{
-    	"data": "speed;415.22;100_speed;415.22;102",
+    	"data": "speed;415.22;100_throttle;415.22;102",
     	"ttl": 60,
     	"published_at": "2017-10-14T17:58:23.085Z",
 		  "coreid": "api",
