@@ -8,10 +8,6 @@ const client = new Client({
 });
 
 client.connect();
-// var client = new Client({
-//   connectionString: process.env.DATABASE_URL,
-//   ssl: true,
-// });
 
 // client.connect();
 var bodyparser = require('body-parser');
@@ -89,7 +85,7 @@ app.post('/add', function (req, res) {
     console.log(property + " " + value + " " + time);
 
     client.query('INSERT INTO data (timestamp, property, value)' +
-       'VALUES (NOW(), \'speed\', 10.0)', (err, rows) => {
+       'VALUES (NOW(), $1, $2)', [property, value], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
