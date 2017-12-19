@@ -66,7 +66,7 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
 // });
 // }
 
-function insertQuery(property, value) {
+function insertQuery(property, value, res) {
   client.query('INSERT INTO data (timestamp, property, value)' +
        'VALUES (NOW(), $1, $2)', [property, value], (err, rows) => {
       if (err){
