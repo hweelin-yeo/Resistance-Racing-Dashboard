@@ -97,44 +97,19 @@ app.post('/add', function (req, res) {
     var time = data_i_arr[2];
     console.log(value);
     insertQuery(property, value, res);
-
-    // pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-    //   client.query('INSERT INTO data (timestamp, property, value)' +
-    //   'VALUES (NOW(), $1, $2);',
-    //   [time, property, value]); {
-    //     done();
-    //     //res.redirect('/db');
-
-    //     if (err)
-    //      { console.error(err); res.send("Error " + err); }
-    //     else
-    //      {
-    //       console.log("success");
-    //      } 
-    //    };
-    //   });
-  }
-
-  // parsed = JSON.parse(data);
-  // console.log(parsed);
-  // property = parsed.property;
-  // console.log(property);
   });
 
   
 
   // Database: Get all results
   app.get('/db', function (req, res) {
-    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query('SELECT * FROM data;', function(err, result) {
-        done();
-        if (err)
-         { console.error(err); res.send("Error " + err); }
-        else
-         {
-           res.send({results: result.rows});}
-           // response.render('pages/db', {results: result.rows} ); }
-      });
+    client.query('SELECT * FROM data', (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      res.end("sent");
     });
   });
 
