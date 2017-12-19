@@ -95,8 +95,8 @@ app.post('/add', function (req, res) {
     var property = data_i_arr[0];
     var value = data_i_arr[1];
     var time = data_i_arr[2];
-    console.log(property + " " + value + " " + time);
-    insertQuery(property, value);
+    console.log(value);
+    insertQuery(property, value, res);
 
     // pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     //   client.query('INSERT INTO data (timestamp, property, value)' +
