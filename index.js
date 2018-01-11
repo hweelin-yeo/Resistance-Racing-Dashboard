@@ -9,9 +9,7 @@ const client = new Client({
 
 client.connect();
 
-// client.connect();
 var bodyparser = require('body-parser');
-
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
@@ -27,9 +25,14 @@ var device_ID = "34004a000251363131363432";
 /** Race Information */
 var lap = 1;
 
+// Change stats
+function changeThrottleStats(num) {
+  document.getElementById("throttleStats").innerHTML = "" + num;
+}
 // Login
 particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
   function(data) {
+    changeThrottleStats(2);
     console.log('LOGGED IN.');
     token = data.body.access_token;
     console.log(token);
