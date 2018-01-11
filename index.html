@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="index.js" > </script>
+  <script type="text/javascript" src="node_modules/particle-api-js/dist/particle.min.js"> </script>
+
 
   <style>    
     footer {
@@ -20,9 +21,10 @@
 <body>
 
   
-  <div class="container text-center">    
+  <div class="container text-center">
+    <div class="col-sm-12">    
      <div class="row">
-       <div class="col-sm-8">
+       <div class="col-sm-12">
          <div class="panel panel-default text-left">
            <div class="panel-body">
              <p contenteditable="false"> <strong> Resistance Racing </strong> </p>
@@ -66,10 +68,8 @@
             <div class="panel-body">
               <p> Stats (Prelim Display) </p>
               <p> <strong> Throttle</strong> </p>
-              <br>
               <p id = "throttleStats">  </p>
               <p> <strong> Speed</strong> </p>
-              <br>
               <p id = "speedStats">  </p>
             </div>
           </div>
@@ -80,7 +80,7 @@
         <div class="col-sm-6">
           <div class="well">
            <p>Map</p>
-           <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar">
+           <!-- <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar"> -->
           </div>
         </div>
         <div class="col-sm-6">
@@ -108,6 +108,21 @@
 <footer class="container-fluid text-center">
   <p>Footer Text</p>
 </footer>
+
+<script>
+
+// Change stats
+function changeThrottleStats(num) {
+  document.getElementById("throttleStats").innerHTML = "" + num;
+}
+
+function changeSpeedStats(num) {
+  document.getElementById("speedStats").innerHTML = "" + num;
+}
+
+changeThrottleStats(2);
+
+</script>
 
 </body>
 </html>

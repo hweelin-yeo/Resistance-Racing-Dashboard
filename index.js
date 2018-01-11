@@ -4,7 +4,7 @@ var app = express();
 const { Client } = require('pg'); // database
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
-  ssl: true, 
+  ssl: false, 
 });
 
 client.connect();
@@ -25,21 +25,11 @@ var device_ID = "34004a000251363131363432";
 /** Race Information */
 var lap = 1;
 
-// Change stats
-function changeThrottleStats(num) {
-  document.getElementById("throttleStats").innerHTML = "" + num;
-}
-
-function changeSpeedStats(num) {
-  document.getElementById("speedStats").innerHTML = "" + num;
-}
-
 
 // Login
 particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
   function(data) {
-    changeThrottleStats(2);
-    console.log(document.getElementById("throttleStats").value);
+    
     console.log('LOGGED IN.');
     token = data.body.access_token;
     console.log(token);
@@ -89,17 +79,14 @@ function processLiveData (data) {
 
     switch (property) {
       case "throttle": 
-        changeThrottleStats(value);
+         changeThrottleStats(value);
         break;
       case "speed": 
-        changeSpeedStats(value);
+         changeSpeedStats(value);
         break;
     }
-    }
+  }
 }
-
-
-
 
 function insertQuery(property, value, res) {
   client.query('INSERT INTO data (timestamp, property, value)' +
