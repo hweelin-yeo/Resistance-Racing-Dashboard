@@ -29,14 +29,21 @@ var lap = 1;
 function changeThrottleStats(num) {
   document.getElementById("throttleStats").innerHTML = "" + num;
 }
+
+function changeSpeedStats(num) {
+  document.getElementById("speedStats").innerHTML = "" + num;
+}
+
+
 // Login
 particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
   function(data) {
     changeThrottleStats(2);
+    console.log(document.getElementById("throttleStats").value);
     console.log('LOGGED IN.');
     token = data.body.access_token;
     console.log(token);
-		// getEventStream();
+		getEventStream();
   },
   function (err) {
     console.log('Could not log in.', err);
@@ -55,19 +62,44 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
 //   });
 
 // Get event stream
-// function getEventStream() {
-// 	//Successful login: get devices events
-//   console.log('Begin event stream.');
-//   console.log(token);
-// 	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-//   stream.on('event', function(data) {
-//
-//     console.log("Event: " + data);
-//     console.log(JSON.stringify(data, null, 4));
-//     console.log("trying to retrieve data");
-//   });
-// });
-// }
+function getEventStream() {
+	//Successful login: get devices events
+  console.log('Begin event stream.');
+  console.log(token);
+	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+    stream.on('event', function(json) {
+    console.log("Event: " + json);
+    console.log(JSON.stringify(json, null, 4));
+    processLiveData (json.data);
+    });
+  });
+}
+
+function processLiveData (data) {
+  // Parse live data 
+  var data_arr = data.split("_");
+
+  for (var i in data_arr) {
+
+    var data_i = data_arr[i];
+    var data_i_arr = data_i.split(";");
+    var property = data_i_arr[0];
+    var value = data_i_arr[1];
+    var time = data_i_arr[2];
+
+    switch (property) {
+      case "throttle": 
+        changeThrottleStats(value);
+        break;
+      case "speed": 
+        changeSpeedStats(value);
+        break;
+    }
+    }
+}
+
+
+
 
 function insertQuery(property, value, res) {
   client.query('INSERT INTO data (timestamp, property, value)' +
