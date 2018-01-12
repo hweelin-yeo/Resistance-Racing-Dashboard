@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title> Live Timing Dashboard</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -15,23 +15,28 @@
       color: white;
       padding: 15px;
     }
+
+    .custom-panel {
+      .background-color: #000000;
+    }
   </style>
 </head>
 <body>
 
   
   <div class="container text-center">
-    <div class="col-sm-12">    
+    <!-- <div class="col-sm-12">  -->   
      <div class="row">
-       <div class="col-sm-12">
-         <div class="panel panel-default text-left">
+       <!-- <div class="col-sm-12"> -->
+         <div class="panel panel-default text-left custom-panel">
            <div class="panel-body">
-             <p contenteditable="false"> <strong> Resistance Racing </strong> </p>
+             <h1 style = "color: #4A4A4A"> <strong> Resistance Racing </strong> </h1>
            </div>
          </div>
-       </div>
+       <!-- </div> -->
      </div>
-   </div>
+   <!-- </div> -->
+  </div>
 
   
 <div class="container text-center">    
@@ -70,6 +75,8 @@
               <p id = "throttleStats">  </p>
               <p> <strong> Speed</strong> </p>
               <p id = "speedStats">  </p>
+              <p> <strong> Last Updated</strong> </p>
+              <p id = "lastUpdatedStats">  </p>
             </div>
           </div>
         </div>
@@ -111,15 +118,27 @@
 <script>
 
 // Change stats
-function changeThrottleStats(num) {
+function changeThrottleStats(num, lastUpdated) {
   document.getElementById("throttleStats").innerHTML = "" + num;
+  changeLastUpdatedStats(lastUpdated);
 }
 
-function changeSpeedStats(num) {
+function changeSpeedStats(num, lastUpdated) {
   document.getElementById("speedStats").innerHTML = "" + num;
+  changeLastUpdatedStats(lastUpdated);
 }
 
-changeThrottleStats(2);
+function changeLastUpdatedStats(num) {
+  document.getElementById("lastUpdatedStats").innerHTML = "" + lastUpdated;
+}
+
+function faultBMS(bool) {
+
+}
+
+function faultMC(bool) {
+
+}
 
 </script>
 
@@ -146,12 +165,59 @@ function getEventStream() {
   console.log(token);
   particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
     stream.on('event', function(json) {
-    console.log("Event: " + json);
     console.log(JSON.stringify(json, null, 4));
-    // processLiveData (json.data);
+    parseData (json.data);
     });
   });
 }
+
+// Parse live data
+function parseData (data) {
+  // Parse live data 
+  var data_arr = data.split("_");
+
+  for (var i in data_arr) {
+
+    var data_i = data_arr[i];
+    var data_i_arr = data_i.split(";");
+    var property = data_i_arr[0];
+    var value = data_i_arr[1];
+    var time = data_i_arr[2];
+
+    switch (property) {
+      case "throttle": 
+         changeThrottleStats(value, time);
+        break;
+      case "speed": 
+         changeSpeedStats(value, time);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+function parseFaultData(data) {
+  switch (data) {
+    case 00:
+      faultBMS(false);
+      faultMC(false);
+      break;
+    case 01:
+      faultBMS(false);
+      faultMC(true);
+      break;
+    case 10:
+      faultBMS(true);
+      faultMC(false);
+      break;
+    case 11:
+      faultBMS(true);
+      faultMC(true);
+      break;
+  }
+}
+
 </script>
 
 </body>

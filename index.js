@@ -26,19 +26,19 @@ var device_ID = "34004a000251363131363432";
 var lap = 1;
 
 
-// Login
-particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
-  function(data) {
+// // Login
+// particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+//   function(data) {
     
-    console.log('LOGGED IN.');
-    token = data.body.access_token;
-    console.log(token);
-		getEventStream();
-  },
-  function (err) {
-    console.log('Could not log in.', err);
-  }
-);
+//     console.log('LOGGED IN.');
+//     token = data.body.access_token;
+//     console.log(token);
+// 		getEventStream();
+//   },
+//   function (err) {
+//     console.log('Could not log in.', err);
+//   }
+// );
 
 /** Lap Functions */
 
@@ -51,42 +51,44 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
 //     console.log('An error occurred:', err);
 //   });
 
-// Get event stream
-function getEventStream() {
-	//Successful login: get devices events
-  console.log('Begin event stream.');
-  console.log(token);
-	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-    stream.on('event', function(json) {
-    console.log("Event: " + json);
-    console.log(JSON.stringify(json, null, 4));
-    processLiveData (json.data);
-    });
-  });
-}
+// // Get event stream
+// function getEventStream() {
+// 	//Successful login: get devices events
+//   console.log('Begin event stream.');
+//   console.log(token);
+// 	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+//     stream.on('event', function(json) {
+//     console.log("Event: " + json);
+//     console.log(JSON.stringify(json, null, 4));
+//     processLiveData (json.data);
+//     });
+//   });
+// }
 
-function processLiveData (data) {
-  // Parse live data 
-  var data_arr = data.split("_");
+// function processLiveData (data) {
+//   // Parse live data 
+//   var data_arr = data.split("_");
 
-  for (var i in data_arr) {
+//   for (var i in data_arr) {
 
-    var data_i = data_arr[i];
-    var data_i_arr = data_i.split(";");
-    var property = data_i_arr[0];
-    var value = data_i_arr[1];
-    var time = data_i_arr[2];
+//     var data_i = data_arr[i];
+//     var data_i_arr = data_i.split(";");
+//     var property = data_i_arr[0];
+//     var value = data_i_arr[1];
+//     var time = data_i_arr[2];
 
-    switch (property) {
-      case "throttle": 
-         changeThrottleStats(value);
-        break;
-      case "speed": 
-         changeSpeedStats(value);
-        break;
-    }
-  }
-}
+//     switch (property) {
+//       case "throttle": 
+//          changeThrottleStats(value);
+//         break;
+//       case "speed": 
+//          changeSpeedStats(value);
+//         break;
+//       default:
+//         break;
+//     }
+//   }
+// }
 
 function insertQuery(property, value, res) {
   client.query('INSERT INTO data (timestamp, property, value)' +
