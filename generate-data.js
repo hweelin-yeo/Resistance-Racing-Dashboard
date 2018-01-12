@@ -25,7 +25,10 @@ const SpeedSensor = new MockSensor("speed", 500, function(epoch){
 const ThrottleSensor = new MockSensor("throttle", 250, function(epoch) {
 	return epoch % 2;
 });
-const ConnectedSensors = [SpeedSensor, ThrottleSensor];
+const FaultSensor = new MockSensor("fault", 5000, function(epoch) {
+	return epoch % 4;
+});
+const ConnectedSensors = [SpeedSensor, ThrottleSensor, FaultSensor];
 ConnectedSensors.forEach(function(sensor) {
 	sensor.connectSensor();
 });
