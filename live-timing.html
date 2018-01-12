@@ -7,8 +7,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="node_modules/particle-api-js/dist/particle.min.js"> </script>
-
+  <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
 
   <style>    
     footer {
@@ -122,6 +121,37 @@ function changeSpeedStats(num) {
 
 changeThrottleStats(2);
 
+</script>
+
+<script>
+var particle = new Particle();
+var token;
+// Login
+particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+  function(data) {
+    console.log('LOGGED IN.');
+    token = data.body.access_token;
+    console.log(token);
+    getEventStream();
+  },
+  function (err) {
+    console.log('Could not log in.', err);
+  }
+);
+
+// Get event stream
+function getEventStream() {
+  //Successful login: get devices events
+  console.log('Begin event stream.');
+  console.log(token);
+  particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+    stream.on('event', function(json) {
+    console.log("Event: " + json);
+    console.log(JSON.stringify(json, null, 4));
+    // processLiveData (json.data);
+    });
+  });
+}
 </script>
 
 </body>
