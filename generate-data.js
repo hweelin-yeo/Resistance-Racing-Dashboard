@@ -20,7 +20,7 @@ const MockSensor = function(name, frequency, generator) {
 
 /* Configure mock sensors */
 const SpeedSensor = new MockSensor("speed", 500, function(epoch){
-	return epoch % 100;
+	return 50 + 50*Math.sin(epoch/1000);
 });
 const ThrottleSensor = new MockSensor("throttle", 250, function(epoch) {
 	return epoch % 2;

@@ -8,6 +8,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="node_modules/epoch-charting/dist/js/epoch.min.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="node_modules/epoch-charting/dist/css/epoch.min.css">
 
   <style>    
     footer {
@@ -162,6 +166,12 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div id="speedChart" class="epoch" style="height: 200px;"></div>
+    </div>
+  </div>
 </div>
 
 <footer class="container-fluid text-center">
@@ -247,11 +257,12 @@ function parseData (data) {
     var time = data_i_arr[2];
     switch (property) {
       case "throttle": 
-         changeThrottleStats(value, time);
-         break;
+        changeThrottleStats(value, time);
+        break;
       case "speed": 
-         changeSpeedStats(value, time);
-         break;
+        changeSpeedStats(value, time);
+        speedChartInstance.push([{time: time, y: value}]);
+        break;
       case "fault":
         parseFaultData(value);
         break;
@@ -286,6 +297,19 @@ function parseFaultData(value) {
   }
 }
 
+</script>
+
+<script>
+/* Charting JS */
+var speedData = [
+  { label: 'Speed', values: [] }
+];
+var speedChartInstance = $('#speedChart').epoch({
+    type: 'time.line',
+    data: speedData,
+    axes: ['left', 'right', 'bottom'],
+    ticks: {time: 60}
+});
 </script>
 
 </body>
