@@ -9,7 +9,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
   <script src="https://d3js.org/d3.v3.min.js"></script>
-  <script src="node_modules/epoch-charting/dist/js/epoch.min.js"></script>
+  
 
   <link rel="stylesheet" type="text/css" href="node_modules/epoch-charting/dist/css/epoch.min.css">
 
@@ -54,7 +54,12 @@
        <!-- <div class="col-sm-12"> -->
          <div class="panel panel-default text-left borderless-panel">
            <div class="panel-body">
-             <h1 style = "color: #4A4A4A"> <strong> Resistance Racing </strong> </h1>
+            <div class = "col-sm-6">
+             <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+            </div>
+            <div class = "col-sm-3">
+             <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
+            </div>
            </div>
          </div>
        <!-- </div> -->
@@ -68,10 +73,11 @@
          <!-- <div class="panel panel-default text-left borderless-panel"> -->
            <!-- <div class="panel-body"> -->
            <div class = "col-sm-1">
-             <p style = "color: #4A4A4A" id = "lapNumber"> <strong> Lap #0 </strong> </p>
+             <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap #0 </p>
           </div>
           <!-- <div class = "col-sm-5"> -->
-             <button type="button" class="btn btn-danger btn-higher">Next Lap</button>
+             <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
+             <div> <br> </div>
            <!-- </div> -->
          <!-- </div> -->
       <!--  </div> -->
@@ -183,35 +189,45 @@
 
 <script>
 
-// Change stats
+// Race Information 
+var lap = 0;
 
 function changeLastUpdatedStats(num) {
-  document.getElementById("lastUpdatedStats").innerHTML = "" + num;
+  $('#lastUpdatedStats')[0].innerHTML = "" + num;
 }
 
 function changeThrottleStats(num, lastUpdated) {
-  document.getElementById("throttleStats").innerHTML = "" + num;
+  $('#throttleStats')[0].innerHTML = "" + num;
   changeLastUpdatedStats(lastUpdated);
 }
 
 function changeSpeedStats(num, lastUpdated) {
-  document.getElementById("speedStats").innerHTML = "" + num;
+  $('#speedStats')[0].innerHTML = "" + num;
   changeLastUpdatedStats(lastUpdated);
 }
 
 function faultBMS(bool) {
   if (bool) {
-    document.getElementById("BMSFault").style.background = "#E53838";
+    $('#BMSFault')[0].style.background = "#E53838";
   } else {
-    document.getElementById("BMSFault").style.background = "#56BF56";
+    $('#BMSFault')[0].style.background = "#56BF56";
   }
 }
 
 function faultMC(bool) {
   if (bool) {
-    document.getElementById("MCFault").style.background = "#E53838";
+    $('#MCFault')[0].style.background = "#E53838";
   } else {
-    document.getElementById("MCFault").style.background = "#56BF56";
+    $('#MCFault')[0].style.background = "#56BF56";
+  }
+}
+
+function updateLap() {
+  if (lap == 8) {
+    // TODO: send data back to Electron
+  } else {
+    lap ++;
+    $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   }
 }
 
@@ -261,11 +277,11 @@ function parseData (data) {
     switch (property) {
       case "throttle": 
         changeThrottleStats(value, time);
-        throttleChartInstance.push([{time: time, y: value}]);
+        // throttleChartInstance.push([{time: time, y: value}]);
         break;
       case "speed": 
         changeSpeedStats(value, time);
-        speedChartInstance.push([{time: time, y: value}]);
+        // speedChartInstance.push([{time: time, y: value}]);
         break;
       case "fault":
         parseFaultData(value);
@@ -311,16 +327,16 @@ var speedData = [
 var throttleData = [
   { label: 'Throttle', values: [] }
 ];
-var speedChartInstance = $('#speedChart').epoch({
-    type: 'time.line',
-    data: speedData,
-    axes: ['left', 'right', 'bottom']
-});
-var throttleChartInstance = $('#throttleChart').epoch({
-    type: 'time.line',
-    data: throttleData,
-    axes: ['left', 'right', 'bottom']
-});
+// var speedChartInstance = $('#speedChart').epoch({
+//     type: 'time.line',
+//     data: speedData,
+//     axes: ['left', 'right', 'bottom']
+// });
+// var throttleChartInstance = $('#throttleChart').epoch({
+//     type: 'time.line',
+//     data: throttleData,
+//     axes: ['left', 'right', 'bottom']
+// });
 </script>
 
 </body>
