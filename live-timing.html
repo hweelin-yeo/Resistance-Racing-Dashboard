@@ -278,11 +278,11 @@ function parseData (data) {
     switch (property) {
       case "throttle": 
         changeThrottleStats(value, time);
-        throttleChartInstance.push([{time: time, y: value}]);
+        throttleChartInstance.push([{time: time/1000.0, y: value}]);
         break;
       case "speed": 
         changeSpeedStats(value, time);
-        speedChartInstance.push([{time: time, y: value}]);
+        speedChartInstance.push([{time: time/1000.0, y: value}]);
         break;
       case "fault":
         parseFaultData(value);
@@ -337,7 +337,7 @@ var throttleChartInstance = $('#throttleChart').epoch({
     type: 'time.line',
     data: throttleData,
     axes: ['left', 'right', 'bottom']
-// });
+});
 </script>
 
 </body>

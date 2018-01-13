@@ -15,6 +15,8 @@
     "ejs": "2.5.6",
     "epoch-charting": "^0.8.4",
     "express": "4.15.2",
+    "gpx-parse": "^0.10.4",
+    "gpxreplay": "^1.0.0",
     "particle-api-js": "^7.0.1",
     "pg": "6.4.2"
   },

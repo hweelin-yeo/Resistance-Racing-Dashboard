@@ -4,6 +4,8 @@ var sensorReadingsQueue = [];
 const initDatetime = new Date();
 const initEpoch = initDatetime.getTime();
 
+
+
 // MockSensor class declaration
 const MockSensor = function(name, frequency, generator) {
 	this.name = name;
@@ -19,8 +21,8 @@ const MockSensor = function(name, frequency, generator) {
 };
 
 /* Configure mock sensors */
-const SpeedSensor = new MockSensor("speed", 500, function(epoch){
-	return 50 + 50*Math.sin(epoch/1000);
+const SpeedSensor = new MockSensor("speed", 500, function(epoch) {
+	return 50 + 50*Math.sin(epoch/2000);
 });
 const ThrottleSensor = new MockSensor("throttle", 250, function(epoch) {
 	return epoch % 2;
@@ -28,7 +30,14 @@ const ThrottleSensor = new MockSensor("throttle", 250, function(epoch) {
 const FaultSensor = new MockSensor("fault", 5000, function(epoch) {
 	return epoch % 4;
 });
-const ConnectedSensors = [SpeedSensor, ThrottleSensor, FaultSensor];
+const GPSSensor = new MockSensor("gps", 1000, function(epoch) {
+	if (!gpsLoaded) return;
+	var latlon = waypoints[waypointIndex].lat + "," + waypoints[waypointIndex].lon;
+	waypointIndex++;
+	console.log(latlon);
+	return latlon;
+})
+const ConnectedSensors = [SpeedSensor, ThrottleSensor, FaultSensor, GPSSensor];
 ConnectedSensors.forEach(function(sensor) {
 	sensor.connectSensor();
 });
@@ -72,3 +81,13 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
     console.log('Could not log in.', err);
   }
 );
+
+/* GPX Things */
+var gpxParse = require("gpx-parse");
+var gpsLoaded = false;
+var waypoints;
+var waypointIndex = 0;
+gpxParse.parseGpxFromFile("./sonoma-test.gpx.xml", function(error, data) {
+	waypoints = data.tracks[0].segments[0];
+	gpsLoaded = true;
+});
