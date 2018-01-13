@@ -9,6 +9,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
   <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="node_modules/epoch-charting/dist/js/epoch.min.js"></script>
   
 
   <link rel="stylesheet" type="text/css" href="node_modules/epoch-charting/dist/css/epoch.min.css">
@@ -277,11 +278,11 @@ function parseData (data) {
     switch (property) {
       case "throttle": 
         changeThrottleStats(value, time);
-        // throttleChartInstance.push([{time: time, y: value}]);
+        throttleChartInstance.push([{time: time, y: value}]);
         break;
       case "speed": 
         changeSpeedStats(value, time);
-        // speedChartInstance.push([{time: time, y: value}]);
+        speedChartInstance.push([{time: time, y: value}]);
         break;
       case "fault":
         parseFaultData(value);
@@ -327,15 +328,15 @@ var speedData = [
 var throttleData = [
   { label: 'Throttle', values: [] }
 ];
-// var speedChartInstance = $('#speedChart').epoch({
-//     type: 'time.line',
-//     data: speedData,
-//     axes: ['left', 'right', 'bottom']
-// });
-// var throttleChartInstance = $('#throttleChart').epoch({
-//     type: 'time.line',
-//     data: throttleData,
-//     axes: ['left', 'right', 'bottom']
+var speedChartInstance = $('#speedChart').epoch({
+    type: 'time.line',
+    data: speedData,
+    axes: ['left', 'right', 'bottom']
+});
+var throttleChartInstance = $('#throttleChart').epoch({
+    type: 'time.line',
+    data: throttleData,
+    axes: ['left', 'right', 'bottom']
 // });
 </script>
 
