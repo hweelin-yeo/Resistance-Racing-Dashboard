@@ -169,7 +169,10 @@
 
   <div class="row">
     <div class="col-sm-12">
+      <h3>Speed</h3>
       <div id="speedChart" class="epoch" style="height: 200px;"></div>
+      <h3>Throttle</h3>
+      <div id="throttleChart" class="epoch" style="height: 200px;"></div>
     </div>
   </div>
 </div>
@@ -258,6 +261,7 @@ function parseData (data) {
     switch (property) {
       case "throttle": 
         changeThrottleStats(value, time);
+        throttleChartInstance.push([{time: time, y: value}]);
         break;
       case "speed": 
         changeSpeedStats(value, time);
@@ -304,11 +308,18 @@ function parseFaultData(value) {
 var speedData = [
   { label: 'Speed', values: [] }
 ];
+var throttleData = [
+  { label: 'Throttle', values: [] }
+];
 var speedChartInstance = $('#speedChart').epoch({
     type: 'time.line',
     data: speedData,
-    axes: ['left', 'right', 'bottom'],
-    ticks: {time: 60}
+    axes: ['left', 'right', 'bottom']
+});
+var throttleChartInstance = $('#throttleChart').epoch({
+    type: 'time.line',
+    data: throttleData,
+    axes: ['left', 'right', 'bottom']
 });
 </script>
 
