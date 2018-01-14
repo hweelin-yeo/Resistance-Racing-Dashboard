@@ -337,28 +337,27 @@ function initialize(position) {
   position.coords.longitude);
   
   var mapOptions = {
-          zoom: 17,
-          center: myLatLng,
-          mapTypeId: google.maps.MapTypeId.TERRAIN
-   }
-   
-   var map_curr = new google.maps.Map(document.getElementById('map_canvas_current'),
-                                      mapOptions);
-
-   var userMarker = new google.maps.Marker({
-            position: myLatLng,
-            map: map_curr,
-            icon: blueDot
-        });
-
-   var map_prev = new google.maps.Map(document.getElementById('map_canvas_prev'),
-                                      mapOptions);
-
-   }
-
-  function fail(){
-    alert('navigator.geolocation failed, may not be supported');
+    zoom: 17,
+    center: myLatLng,
+    mapTypeId: google.maps.MapTypeId.TERRAIN
   }
+   
+  var map_curr = new google.maps.Map(document.getElementById('map_canvas_current'),
+                                      mapOptions);
+
+  var userMarker = new google.maps.Marker({
+    position: myLatLng,
+    map: map_curr,
+    icon: blueDot
+  });
+
+  var map_prev = new google.maps.Map(document.getElementById('map_canvas_prev'),
+                                      mapOptions);
+}
+
+function fail(){
+  alert('navigator.geolocation failed, may not be supported');
+}
      
 
 </script>

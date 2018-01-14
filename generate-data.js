@@ -34,7 +34,7 @@ const GPSSensor = new MockSensor("gps", 1000, function(epoch) {
 	if (!gpsLoaded) return;
 	var latlon = waypoints[waypointIndex].lat + "," + waypoints[waypointIndex].lon;
 	waypointIndex++;
-	console.log(latlon);
+	if (waypointIndex == waypoints.length) waypointIndex = 0;
 	return latlon;
 })
 const ConnectedSensors = [SpeedSensor, ThrottleSensor, FaultSensor, GPSSensor];
