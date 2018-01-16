@@ -364,6 +364,7 @@ function updateMap(value) {
   var latLng_arr = value.split(",");
   var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
   mapCur.setCenter(latLng);
+  mapPrev.setCenter(latLng);
   curPos.setPosition(latLng);
 
 }
