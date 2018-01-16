@@ -332,7 +332,10 @@ var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
 var curPos;
 var mapCur;
 var mapPrev;
-var poly;
+var polyRed;
+// var polyGreen;
+// var polyRGBool; // testing
+var drawMap;
 
 function init() {
   var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
@@ -355,14 +358,29 @@ function init() {
    mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
                                       mapOptions);
 
-   poly = new google.maps.Polyline({
-    strokeColor: '#FF0000',
+   polyRed = new google.maps.Polyline({
+    strokeColor: 'red',
     strokeOpacity: 1,
     strokeWeight: 3,
     map: mapCur
   });
 
-   }
+   
+
+  drawMap = function(latLng) {
+    var poly = new google.maps.Polyline({
+      strokeColor: '#FF0000',
+      strokeOpacity: 1,
+      strokeWeight: 3,
+      map: mapCur
+    });
+    
+    var path = polyRed.getPath(); // intended it to be poly.getPath(), but does not work. left it as polyRed.getPath() for presentation purposes
+    path.push(latLng);
+  }
+
+
+  }
 
   function fail(){
     alert('navigator.geolocation failed, may not be supported');
@@ -377,12 +395,6 @@ function updateMap(value) {
   drawMap(latLng);
 }
 
-function drawMap(latLng) {
-  // var color = (colorPrev == '#000000') ? '#000000' : '#FF0000';
-  var path = poly.getPath();
-  path.push(latLng);
-  // colorPrev = color;
-}
      
 
 </script>
@@ -395,8 +407,6 @@ function addDataToPoly(ideal, real, latLng, poly) {
   var path = poly.getPath();
   path.push(latLng);
 }
-
-
 
 </script>
 <script>
