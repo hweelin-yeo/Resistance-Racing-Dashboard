@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <script src="node_modules/epoch-charting/dist/js/epoch.min.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=locate">
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init">
   </script>
   
 
@@ -49,7 +49,7 @@
 
   </style>
 </head>
-<body onload = "locate()">
+<body onload = "init()">
 
   <div class="container text-center">
     <!-- <div class="col-sm-12">  -->   
@@ -196,6 +196,7 @@
 
 // Race Information 
 var lap = 0;
+var latestGPSTimeStamp;
 
 function changeLastUpdatedStats(num) {
   $('#lastUpdatedStats')[0].innerHTML = "" + num;
@@ -258,7 +259,6 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
 function getEventStream() {
   //Successful login: get devices events
   console.log('Begin event stream.');
-  console.log(token);
   particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
     stream.on('event', function(json) {
     console.log(JSON.stringify(json, null, 4));
@@ -270,15 +270,16 @@ function getEventStream() {
 // Parse live data
 function parseData (data) {
   // Parse live data 
-  var data_arr = data.split("_");
+  var dataArr = data.split("_");
 
-  for (var i in data_arr) {
+  for (var i in dataArr) {
 
-    var data_i = data_arr[i];
-    var data_i_arr = data_i.split(";");
-    var property = data_i_arr[0];
-    var value = data_i_arr[1];
-    var time = data_i_arr[2];
+    var dataI = dataArr[i];
+    var dataIArr = dataI.split(";");
+    var property = dataIArr[0];
+    var value = dataIArr[1];
+    var time = dataIArr[2];
+
     switch (property) {
       case "throttle": 
         changeThrottleStats(value, time);
@@ -291,6 +292,9 @@ function parseData (data) {
       case "fault":
         parseFaultData(value);
         break;
+      case "gps":
+        latestGPSTimeStamp = time;
+        updateMap(value);
       default:
         break;
     }
@@ -298,8 +302,6 @@ function parseData (data) {
 }
 
 function parseFaultData(value) {
-  console.log("there's a fault!")
-  console.log("fault " + value);
   switch (value) {
     case "0":
       faultBMS(false);
@@ -325,58 +327,67 @@ function parseFaultData(value) {
 </script>
 
 <script>
-/* Google Maps Init JS */
+/* Maps Init JS */
 var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+var curPos;
+var mapCur;
+var mapPrev;
 
-function locate(){
-  navigator.geolocation.getCurrentPosition(initialize,fail);
-}
-
-function initialize(position) {
-  var myLatLng = new google.maps.LatLng(position.coords.latitude,
-  position.coords.longitude);
+function init() {
+  var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
   
   var mapOptions = {
-    zoom: 17,
-    center: myLatLng,
-    mapTypeId: google.maps.MapTypeId.TERRAIN
-  }
+          zoom: 17,
+          center: initLatLng,
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+   };
    
-  var map_curr = new google.maps.Map(document.getElementById('map_canvas_current'),
+   mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
                                       mapOptions);
 
-  var userMarker = new google.maps.Marker({
-    position: myLatLng,
-    map: map_curr,
-    icon: blueDot
-  });
+   curPos = new google.maps.Marker({
+            position: initLatLng,
+            map: mapCur,
+            icon: blueDot
+        });
 
-  var map_prev = new google.maps.Map(document.getElementById('map_canvas_prev'),
+   mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
                                       mapOptions);
-}
 
-function fail(){
-  alert('navigator.geolocation failed, may not be supported');
+   }
+
+  function fail(){
+    alert('navigator.geolocation failed, may not be supported');
+  }
+
+function updateMap(value) {
+  var latLng_arr = value.split(",");
+  var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
+  mapCur.setCenter(latLng);
+  curPos.setPosition(latLng);
+
 }
      
 
 </script>
 
 <script>
-/* Map Drawing JS */
-var poly = new google.maps.Polyline({
-    strokeColor: '#000000',
-    strokeOpacity: 1,
-    strokeWeight: 3,
-    map: map_canvas_prev
-  });
+/* Map JS */
 
-function addLatLngToPoly(latLng, poly) {
-  var path = poly.getPath();
-  path.push(latLng);
-}
+// var poly = new google.maps.Polyline({
+//     strokeColor: '#000000',
+//     strokeOpacity: 1,
+//     strokeWeight: 3,
+//     map: map_canvas_prev
+//   });
 
-// TODO: Change var poly's stroke color depending on data
+// function addDataToPoly(ideal, real, latLng, poly) {
+//   var color = (real < ideal) ? 'red' : 'green';
+//   poly.setOptions({strokeColor: color});
+//   var path = poly.getPath();
+//   path.push(latLng);
+// }
+
 
 
 </script>
