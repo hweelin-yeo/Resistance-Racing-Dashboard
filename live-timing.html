@@ -332,6 +332,7 @@ var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
 var curPos;
 var mapCur;
 var mapPrev;
+var poly;
 
 function init() {
   var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
@@ -354,6 +355,13 @@ function init() {
    mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
                                       mapOptions);
 
+   poly = new google.maps.Polyline({
+    strokeColor: '#FF0000',
+    strokeOpacity: 1,
+    strokeWeight: 3,
+    map: mapCur
+  });
+
    }
 
   function fail(){
@@ -366,28 +374,27 @@ function updateMap(value) {
   mapCur.setCenter(latLng);
   mapPrev.setCenter(latLng);
   curPos.setPosition(latLng);
+  drawMap(latLng);
+}
 
+function drawMap(latLng) {
+  // var color = (colorPrev == '#000000') ? '#000000' : '#FF0000';
+  var path = poly.getPath();
+  path.push(latLng);
+  // colorPrev = color;
 }
      
 
 </script>
 
 <script>
-/* Map JS */
 
-// var poly = new google.maps.Polyline({
-//     strokeColor: '#000000',
-//     strokeOpacity: 1,
-//     strokeWeight: 3,
-//     map: map_canvas_prev
-//   });
-
-// function addDataToPoly(ideal, real, latLng, poly) {
-//   var color = (real < ideal) ? 'red' : 'green';
-//   poly.setOptions({strokeColor: color});
-//   var path = poly.getPath();
-//   path.push(latLng);
-// }
+function addDataToPoly(ideal, real, latLng, poly) {
+  var color = (real < ideal) ? 'red' : 'green';
+  poly.setOptions({strokeColor: color});
+  var path = poly.getPath();
+  path.push(latLng);
+}
 
 
 
