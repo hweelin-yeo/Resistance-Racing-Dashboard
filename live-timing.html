@@ -17,78 +17,78 @@
   <link rel="stylesheet" type="text/css" href="node_modules/epoch-charting/dist/css/epoch.min.css">
 
   <style>    
-    footer {
-      background-color: #555;
-      color: white;
-      padding: 15px;
-    }
+  footer {
+    background-color: #555;
+    color: white;
+    padding: 15px;
+  }
 
-    
-    .circle {
-      width: 30px;
-      height: 30px;
-      background: #56BF56;
-      -moz-border-radius: 50px;
-      -webkit-border-radius: 50px;
-      border-radius: 50px;
-    }
 
-    .borderless-panel {
-      border-width: 0;
-      border-bottom-width: 0;
-    }
+  .circle {
+    width: 30px;
+    height: 30px;
+    background: #56BF56;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+  }
 
-    .well-white {
-      background-color: white;
-    }
+  .borderless-panel {
+    border-width: 0;
+    border-bottom-width: 0;
+  }
 
-    .btn-higher {
-      top: 0;
-    }
+  .well-white {
+    background-color: white;
+  }
+
+  .btn-higher {
+    top: 0;
+  }
 }
 
-  </style>
+</style>
 </head>
 <body onload = "init()">
 
   <div class="container text-center">
     <!-- <div class="col-sm-12">  -->   
-     <div class="row">
-       <!-- <div class="col-sm-12"> -->
-         <div class="panel panel-default text-left borderless-panel">
-           <div class="panel-body">
-            <div class = "col-sm-6">
-             <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
-            </div>
-            <div class = "col-sm-3">
-             <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
-            </div>
-           </div>
-         </div>
-       <!-- </div> -->
+    <div class="row">
+     <!-- <div class="col-sm-12"> -->
+     <div class="panel panel-default text-left borderless-panel">
+       <div class="panel-body">
+        <div class = "col-sm-6">
+         <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+       </div>
+       <div class = "col-sm-3">
+         <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
+       </div>
      </div>
+   </div>
    <!-- </div> -->
-  </div>
+ </div>
+ <!-- </div> -->
+</div>
 
 
-  <div class="container text-left"> 
-     <div class="row">
-         <!-- <div class="panel panel-default text-left borderless-panel"> -->
-           <!-- <div class="panel-body"> -->
-           <div class = "col-sm-1">
-             <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
-          </div>
-          <!-- <div class = "col-sm-5"> -->
-             <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
-             <div> <br> </div>
-           <!-- </div> -->
-         <!-- </div> -->
-      <!--  </div> -->
+<div class="container text-left"> 
+ <div class="row">
+   <!-- <div class="panel panel-default text-left borderless-panel"> -->
+   <!-- <div class="panel-body"> -->
+   <div class = "col-sm-1">
+     <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
+   </div>
+   <!-- <div class = "col-sm-5"> -->
+   <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
+   <div> <br> </div>
+   <!-- </div> -->
+   <!-- </div> -->
+   <!--  </div> -->
 
-     </div>
-  </div>
+ </div>
+</div>
 
-  
+
 <div class="container text-center">    
   <div class="row">
 
@@ -96,96 +96,98 @@
     <div class="col-sm-3 well well-white">
       <p> <strong> Faults </strong> </p>
       <div class="well well-white">
-         <div class="row">
-            <div class="col-sm-2">
-              <div class="circle" id = "BMSFault"></div>
-            </div>
-            <div class="col-sm-8">
-              <p>BMS</p>
-            </div>
-         </div>
-
-         <br>
-
-        <div class="row">
-            <div class="col-sm-2">
-              <div class="circle" id = "MCFault"></div>
-            </div>
-            <div class="col-sm-8">
-              <p>Motor Controller</p>
-            </div>
-         </div>
-        
-
+       <div class="row">
+        <div class="col-sm-2">
+          <div class="circle" id = "BMSFault"></div>
+        </div>
+        <div class="col-sm-8">
+          <p>BMS</p>
+        </div>
       </div>
 
-      <div class="well"> </div>
+      <br>
 
-      <div class="alert alert-success fade in">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-        <p><strong> Highlight!</strong></p>
-        
+      <div class="row">
+        <div class="col-sm-2">
+          <div class="circle" id = "MCFault"></div>
+        </div>
+        <div class="col-sm-8">
+          <p>Motor Controller</p>
+        </div>
       </div>
-      
+
+
     </div>
 
+    <div class="well"> </div>
 
-    <div class="col-sm-7">
-    
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="panel panel-default text-left">
-            <div class="panel-body">
-              <p> Stats (Prelim Display) </p>
-              <p> <strong> Throttle</strong> </p>
-              <p id = "throttleStats">  </p>
-              <p> <strong> Speed</strong> </p>
-              <p id = "speedStats">  </p>
-              <p> <strong> Last Updated</strong> </p>
-              <p id = "lastUpdatedStats">  </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="col-sm-6">
-          <div class="well">
-           <p style = "font-weight:bold">Current</p>
-           <div id="map_canvas_current" style="height:300px"></div>
-           <!-- <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar"> -->
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="well">
-            <p style = "font-weight:bold">Previous</p>
-            <div id="map_canvas_prev" style="height:300px"></div>
-          </div>
-        </div>
-      </div>
+    <div class="alert alert-success fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+      <p><strong> Highlight!</strong></p>
 
-    
     </div>
 
+  </div>
 
-    <div class="col-sm-2 well">     
-      <div class="well">
-        <p>Additional</p>
+
+  <div class="col-sm-7">
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="panel panel-default text-left">
+          <div class="panel-body">
+            <p> Stats (Prelim Display) </p>
+            <p> <strong> Throttle</strong> </p>
+            <p id = "throttleStats">  </p>
+            <p> <strong> Speed</strong> </p>
+            <p id = "speedStats">  </p>
+            <p> <strong> Last Updated</strong> </p>
+            <p id = "lastUpdatedStats">  </p>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="well">
+         <p style = "font-weight:bold">Current</p>
+         <p> Double click on the map to add a note. </p>
+         <div id="map_canvas_current" style="height:300px"></div>
+         <!-- <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar"> -->
+       </div>
+     </div>
+     <div class="col-sm-6">
       <div class="well">
-        <p>Additional</p>
+        <p style = "font-weight:bold">Previous</p>
+        <p> Description </p>
+        <div id="map_canvas_prev" style="height:300px"></div>
       </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-sm-12">
-      <h3>Speed</h3>
-      <div id="speedChart" class="epoch" style="height: 200px;"></div>
-      <h3>Throttle</h3>
-      <div id="throttleChart" class="epoch" style="height: 200px;"></div>
-    </div>
+
+</div>
+
+
+<div class="col-sm-2 well">     
+  <div class="well">
+    <p>Additional</p>
   </div>
+  <div class="well">
+    <p>Additional</p>
+  </div>
+</div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <h3>Speed</h3>
+    <div id="speedChart" class="epoch" style="height: 200px;"></div>
+    <h3>Throttle</h3>
+    <div id="throttleChart" class="epoch" style="height: 200px;"></div>
+  </div>
+</div>
 </div>
 
 <footer class="container-fluid text-center">
@@ -254,7 +256,7 @@ particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).
   function (err) {
     console.log('Could not log in.', err);
   }
-);
+  );
 
 // Get event stream
 function getEventStream() {
@@ -262,8 +264,8 @@ function getEventStream() {
   console.log('Begin event stream.');
   particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
     stream.on('event', function(json) {
-    console.log(JSON.stringify(json, null, 4));
-    parseData (json.data);
+      console.log(JSON.stringify(json, null, 4));
+      parseData (json.data);
     });
   });
 }
@@ -283,21 +285,21 @@ function parseData (data) {
 
     switch (property) {
       case "throttle": 
-        changeThrottleStats(value, time);
-        throttleChartInstance.push([{time: time/1000.0, y: value}]);
-        break;
+      changeThrottleStats(value, time);
+      throttleChartInstance.push([{time: time/1000.0, y: value}]);
+      break;
       case "speed": 
-        changeSpeedStats(value, time);
-        speedChartInstance.push([{time: time/1000.0, y: value}]);
-        break;
+      changeSpeedStats(value, time);
+      speedChartInstance.push([{time: time/1000.0, y: value}]);
+      break;
       case "fault":
-        parseFaultData(value);
-        break;
+      parseFaultData(value);
+      break;
       case "gps":
-        latestGPSTimeStamp = time;
-        updateMap(value);
+      latestGPSTimeStamp = time;
+      updateMap(value);
       default:
-        break;
+      break;
     }
   }
 }
@@ -305,33 +307,64 @@ function parseData (data) {
 function parseFaultData(value) {
   switch (value) {
     case "0":
-      faultBMS(false);
-      faultMC(false);
-      break;
+    faultBMS(false);
+    faultMC(false);
+    break;
     case "1":
-      faultBMS(false);
-      faultMC(true);
-      break;
+    faultBMS(false);
+    faultMC(true);
+    break;
     case "2":
-      faultBMS(true);
-      faultMC(false);
-      break;
+    faultBMS(true);
+    faultMC(false);
+    break;
     case "3":
-      faultBMS(true);
-      faultMC(true);
-      break;
+    faultBMS(true);
+    faultMC(true);
+    break;
     default:
-      break;
+    break;
   }
 }
 
 
 
 </script>
+<script>
+// Input form div, for google maps note taking later on
+var controlDiv = document.createElement('DIV');
+controlDiv.id = "controls";
 
+var controlInput = document.createElement('input');
+controlInput.id = "note";
+controlInput.name = "note";
+// controlInput.value = "Hi there!";
+
+var controlLabel = document.createElement('label');
+controlLabel.innerHTML = 'Note';
+controlLabel.setAttribute("for","note");
+
+var controlButton = document.createElement('button');
+controlButton.innerHTML = 'Create note!';
+controlButton.innerHTML = 'Send it!';
+
+controlButton.addEventListener ("click", function() {
+  if (latestNoteMarker != undefined) {
+    latestNoteMarker.title = $("#note").val();
+    controlInput.value = "";
+  }
+})
+
+
+controlDiv.appendChild(controlLabel);
+controlDiv.appendChild(controlInput);
+controlDiv.appendChild(controlButton);
+
+</script>
 <script>
 /* Maps Init JS */
 var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+var noteMarker = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
 var curPos;
 var mapCur;
 var mapPrev;
@@ -340,38 +373,38 @@ var change = 0;
 var colorCur = 'green';
 var prevLatLng;
 var drawMap;
+var latestNoteMarker;
 
 function init() {
   var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
   
   var mapOptions = {
-          zoom: 17,
-          center: initLatLng,
-          mapTypeId: google.maps.MapTypeId.TERRAIN
-   };
-   
-   mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
-                                      mapOptions);
+    zoom: 17,
+    center: initLatLng,
+    mapTypeId: google.maps.MapTypeId.TERRAIN,
+    disableDoubleClickZoom: true
+  };
 
-   curPos = new google.maps.Marker({
-            position: initLatLng,
-            map: mapCur,
-            icon: blueDot
-        });
+  mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
+    mapOptions);
 
-   mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
-                                      mapOptions);
+  curPos = new google.maps.Marker({
+    position: initLatLng,
+    map: mapCur,
+    icon: blueDot
+  });
 
-   polyCur = new google.maps.Polyline({
+  mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
+    mapOptions);
+
+  polyCur = new google.maps.Polyline({
     strokeColor: colorCur,
     strokeOpacity: 1,
     strokeWeight: 3,
     map: mapCur
   });
 
-
-   
-   // just for presentation purposes
+   // ROUTE DRAWING (for presentation purposes)
   drawMap = function(latLng) {
     if (change % 5 == 0 && change != 0) {
       var color = (colorCur == 'green') ? 'red' : 'green';
@@ -396,11 +429,28 @@ function init() {
       prevLatLng = latLng;
     }
   }
+
+  // NOTE MARKING (for presentation purposes)
+  mapCur.addListener('dblclick', function(e) {
+
+    var marker = new google.maps.Marker({
+      position: e.latLng,
+      map: mapCur,
+      icon: noteMarker,
+      title: "Note1",
+    });
+    latestNoteMarker = marker;
+  });
+
+  mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+  
+
+
 }
 
-  function fail(){
-    alert('navigator.geolocation failed, may not be supported');
-  }
+function fail(){
+  alert('navigator.geolocation failed, may not be supported');
+}
 
 function updateMap(value) {
   var latLng_arr = value.split(",");
@@ -411,7 +461,7 @@ function updateMap(value) {
   drawMap(latLng);
 }
 
-     
+
 
 </script>
 
@@ -428,20 +478,20 @@ function addDataToPoly(ideal, real, latLng, poly) {
 <script>
 /* Charting JS */
 var speedData = [
-  { label: 'Speed', values: [] }
+{ label: 'Speed', values: [] }
 ];
 var throttleData = [
-  { label: 'Throttle', values: [] }
+{ label: 'Throttle', values: [] }
 ];
 var speedChartInstance = $('#speedChart').epoch({
-    type: 'time.line',
-    data: speedData,
-    axes: ['left', 'right', 'bottom']
+  type: 'time.line',
+  data: speedData,
+  axes: ['left', 'right', 'bottom']
 });
 var throttleChartInstance = $('#throttleChart').epoch({
-    type: 'time.line',
-    data: throttleData,
-    axes: ['left', 'right', 'bottom']
+  type: 'time.line',
+  data: throttleData,
+  axes: ['left', 'right', 'bottom']
 });
 </script>
 
