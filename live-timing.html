@@ -197,6 +197,7 @@
 // Race Information 
 var lap = 0;
 var latestGPSTimeStamp;
+var latestGPSCoordinates;
 
 function changeLastUpdatedStats(num) {
   $('#lastUpdatedStats')[0].innerHTML = "" + num;
@@ -324,6 +325,8 @@ function parseFaultData(value) {
   }
 }
 
+
+
 </script>
 
 <script>
@@ -332,7 +335,9 @@ var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
 var curPos;
 var mapCur;
 var mapPrev;
-var polyRed;
+var polyCur;
+var change = 0;
+var colorCur = 'green';
 // var polyGreen;
 // var polyRGBool; // testing
 var drawMap;
@@ -358,29 +363,39 @@ function init() {
    mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
                                       mapOptions);
 
-   polyRed = new google.maps.Polyline({
-    strokeColor: 'red',
+   polyCur = new google.maps.Polyline({
+    strokeColor: colorCur,
     strokeOpacity: 1,
     strokeWeight: 3,
     map: mapCur
   });
 
+
    
-
+   // just for presentation purposes
   drawMap = function(latLng) {
-    var poly = new google.maps.Polyline({
-      strokeColor: '#FF0000',
-      strokeOpacity: 1,
-      strokeWeight: 3,
-      map: mapCur
-    });
-    
-    var path = polyRed.getPath(); // intended it to be poly.getPath(), but does not work. left it as polyRed.getPath() for presentation purposes
-    path.push(latLng);
-  }
+    if (change % 5 == 0) {
+      var color = (colorCur == 'green') ? 'red' : 'green';
+      var poly = new google.maps.Polyline({
+        strokeColor: color,
+        strokeOpacity: 1,
+        strokeWeight: 3,
+        map: mapCur
+      });
 
+      polyCur = poly;
+      change++;
+      colorCur = color;
 
+      var path = poly.getPath();
+      path.push(latLng);
+    } else {
+      path = polyCur.getPath();
+      path.push(latLng);
+      change++;
+    }
   }
+}
 
   function fail(){
     alert('navigator.geolocation failed, may not be supported');
