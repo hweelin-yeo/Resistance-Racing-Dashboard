@@ -338,8 +338,7 @@ var mapPrev;
 var polyCur;
 var change = 0;
 var colorCur = 'green';
-// var polyGreen;
-// var polyRGBool; // testing
+var prevLatLng;
 var drawMap;
 
 function init() {
@@ -374,7 +373,7 @@ function init() {
    
    // just for presentation purposes
   drawMap = function(latLng) {
-    if (change % 5 == 0) {
+    if (change % 5 == 0 && change != 0) {
       var color = (colorCur == 'green') ? 'red' : 'green';
       var poly = new google.maps.Polyline({
         strokeColor: color,
@@ -388,11 +387,13 @@ function init() {
       colorCur = color;
 
       var path = poly.getPath();
+      path.push(prevLatLng);
       path.push(latLng);
     } else {
       path = polyCur.getPath();
       path.push(latLng);
       change++;
+      prevLatLng = latLng;
     }
   }
 }
