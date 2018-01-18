@@ -350,7 +350,7 @@ controlButton.innerHTML = 'Send it!';
 
 controlButton.addEventListener ("click", function() {
   if (latestNoteMarker != undefined) {
-    latestNoteMarker.title = $("#note").val();
+    latestNoteMarker.setTitle($("#note").val());
     controlInput.value = "";
   }
 })
@@ -364,7 +364,7 @@ controlDiv.appendChild(controlButton);
 <script>
 /* Maps Init JS */
 var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
-var noteMarker = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
 var curPos;
 var mapCur;
 var mapPrev;
@@ -400,24 +400,40 @@ function init() {
   polyCur = new google.maps.Polyline({
     strokeColor: colorCur,
     strokeOpacity: 1,
-    strokeWeight: 3,
+    strokeWeight: 5,
     map: mapCur
   });
 
+  polyCur.addListener('dblclick', function(e) {
+    this.setOptions({strokeOpacity: 0.5});
+  });
+
+  polyCur.addListener('click', function(e) {
+    this.setOptions({strokeOpacity: 0.5});
+  });
+
    // ROUTE DRAWING (for presentation purposes)
-  drawMap = function(latLng) {
+   drawMap = function(latLng) {
+
     if (change % 5 == 0 && change != 0) {
-      var color = (colorCur == 'green') ? 'red' : 'green';
+      colorCur = (colorCur == 'green') ? 'red' : 'green';
       var poly = new google.maps.Polyline({
-        strokeColor: color,
+        strokeColor: colorCur,
         strokeOpacity: 1,
-        strokeWeight: 3,
+        strokeWeight: 5,
         map: mapCur
+      });
+
+      poly.addListener('dblclick', function(e) {
+        this.setOptions({strokeOpacity: 0.5});
+      });
+
+      poly.addListener('click', function(e) {
+        this.setOptions({strokeOpacity: 0.5});
       });
 
       polyCur = poly;
       change++;
-      colorCur = color;
 
       var path = poly.getPath();
       path.push(prevLatLng);
