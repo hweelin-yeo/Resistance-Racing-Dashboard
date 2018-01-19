@@ -184,6 +184,11 @@
     <div id="speedChart"></div>
   </div>
 </div>
+<div class="row">
+  <div class="col-sm-12">
+    <div id="throttleChart"></div>
+  </div>
+</div>
 </div>
 
 <footer class="container-fluid text-center">
@@ -282,6 +287,7 @@ function parseData (data) {
     switch (property) {
       case "throttle": 
       changeThrottleStats(value, time);
+      pushThrottleChart(value, time);
       break;
       case "speed": 
       changeSpeedStats(value, time);
@@ -489,7 +495,8 @@ function addDataToPoly(ideal, real, latLng, poly) {
 <script>
 /* Charting JS */
 'use strict';
-// create the real time chart
+
+// ----------- SPEED ------------
 var speedChart = realTimeChart()
     .title("Speed")
     .yTitle("kmph")
@@ -497,17 +504,15 @@ var speedChart = realTimeChart()
     .border(true)
     .width(800)
     .height(290)
-    .barWidth(1);
-
-// invoke the chart
-var chartDiv = d3.select("#speedChart").append("div")
+    .barWidth(1)
+    .minY(0)
+    .maxY(100);
+d3.select("#speedChart").append("div")
     .attr("id", "chartDiv")
     .call(speedChart);
 
 function pushSpeedChart(value, time) {
-  console.log(time);
   var dt = new Date(parseInt(time));
-  console.log(dt, dt.getTime());
   var obj = {
     value: value,
     time: dt,
@@ -515,6 +520,33 @@ function pushSpeedChart(value, time) {
     ts: dt.getTime(),
   };
   speedChart.datum(obj);
+}
+
+// ----------- THROTTLE ------------
+var throttleChart = realTimeChart()
+    .title("Throttle")
+    .yTitle("on/off")
+    .xTitle("time")
+    .border(true)
+    .width(800)
+    .height(290)
+    .barWidth(1)
+    .minY(0)
+    .maxY(1);
+d3.select("#throttleChart").append("div")
+    .attr("id", "chartDiv")
+    .call(throttleChart);
+
+function pushThrottleChart(value, time) {
+  var dt = new Date(parseInt(time));
+  if (value == 0) value = 0.1;
+  var obj = {
+    value: value,
+    time: dt,
+    color: "#0949b7", // TODO choose relevant color
+    ts: dt.getTime(),
+  };
+  throttleChart.datum(obj);
 }
 </script>
 

@@ -315,6 +315,8 @@ function realTimeChart() {
       navG.append('path')
           .attr('class', 'line')
           .attr('d', navLine(data)); 
+
+      console.log(startTimeViewport, endTimeViewport);
     
     } // end refreshChart function
 
@@ -421,6 +423,20 @@ function realTimeChart() {
     if (arguments.length == 0) return barWidth;
     barWidth = _;
     return chart;       
+  }
+
+  // minimum y
+  chart.minY = function(_) {
+    if (arguments.length == 0) return minY;
+    minY = _;
+    return chart;
+  }
+
+  // maximum y
+  chart.maxY = function(_) {
+    if (arguments.length == 0) return maxY;
+    maxY = _;
+    return chart;
   }
 
   // version
