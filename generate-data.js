@@ -14,7 +14,7 @@ const MockSensor = function(name, frequency, generator) {
 	this.connectSensor = function() {
 		setInterval(function() {
 			const nowDatetime = new Date();
-			const nowEpoch = nowDatetime.getTime() - initEpoch;
+			const nowEpoch = nowDatetime.getTime()/* - initEpoch */;
 			sensorReadingsQueue.push({name: name, value: generator(nowEpoch), epoch: nowEpoch});
 		}, this.frequency);
 	};
@@ -22,7 +22,7 @@ const MockSensor = function(name, frequency, generator) {
 
 /* Configure mock sensors */
 const SpeedSensor = new MockSensor("speed", 500, function(epoch) {
-	return 50 + 50*Math.sin(epoch/2000);
+	return 40 + 40*Math.sin(epoch/2000);
 });
 const ThrottleSensor = new MockSensor("throttle", 250, function(epoch) {
 	return epoch % 2;

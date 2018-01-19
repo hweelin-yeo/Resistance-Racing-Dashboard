@@ -8,13 +8,12 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
-  <script src="https://d3js.org/d3.v3.min.js"></script>
-  <script src="node_modules/epoch-charting/dist/js/epoch.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script src="realTimeChart.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init">
   </script>
-  
 
-  <link rel="stylesheet" type="text/css" href="node_modules/epoch-charting/dist/css/epoch.min.css">
+  <link rel="stylesheet" href="realTimeChart.css">
 
   <style>    
   footer {
@@ -182,10 +181,7 @@
 
 <div class="row">
   <div class="col-sm-12">
-    <h3>Speed</h3>
-    <div id="speedChart" class="epoch" style="height: 200px;"></div>
-    <h3>Throttle</h3>
-    <div id="throttleChart" class="epoch" style="height: 200px;"></div>
+    <div id="speedChart"></div>
   </div>
 </div>
 </div>
@@ -286,11 +282,10 @@ function parseData (data) {
     switch (property) {
       case "throttle": 
       changeThrottleStats(value, time);
-      throttleChartInstance.push([{time: time/1000.0, y: value}]);
       break;
       case "speed": 
       changeSpeedStats(value, time);
-      speedChartInstance.push([{time: time/1000.0, y: value}]);
+      pushSpeedChart(value, time);
       break;
       case "fault":
       parseFaultData(value);
@@ -493,22 +488,34 @@ function addDataToPoly(ideal, real, latLng, poly) {
 </script>
 <script>
 /* Charting JS */
-var speedData = [
-{ label: 'Speed', values: [] }
-];
-var throttleData = [
-{ label: 'Throttle', values: [] }
-];
-var speedChartInstance = $('#speedChart').epoch({
-  type: 'time.line',
-  data: speedData,
-  axes: ['left', 'right', 'bottom']
-});
-var throttleChartInstance = $('#throttleChart').epoch({
-  type: 'time.line',
-  data: throttleData,
-  axes: ['left', 'right', 'bottom']
-});
+'use strict';
+// create the real time chart
+var speedChart = realTimeChart()
+    .title("Speed")
+    .yTitle("kmph")
+    .xTitle("time")
+    .border(true)
+    .width(800)
+    .height(290)
+    .barWidth(1);
+
+// invoke the chart
+var chartDiv = d3.select("#speedChart").append("div")
+    .attr("id", "chartDiv")
+    .call(speedChart);
+
+function pushSpeedChart(value, time) {
+  console.log(time);
+  var dt = new Date(parseInt(time));
+  console.log(dt, dt.getTime());
+  var obj = {
+    value: value,
+    time: dt,
+    color: "#0949b7", // TODO choose relevant color
+    ts: dt.getTime(),
+  };
+  speedChart.datum(obj);
+}
 </script>
 
 </body>
