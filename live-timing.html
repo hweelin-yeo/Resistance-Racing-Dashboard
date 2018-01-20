@@ -367,26 +367,17 @@ function init() {
       polyLinesForLap.push(poly);
       prevLatLng = latLng;
     } else {
-      var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];
-
-      if (polyPrev.strokeColor == col) {
-        var pathPrev = polyPrev.getPath();
-        pathPrev.push(latLng);
-        prevLatLng = latLng;
-      } else {
-
-        var pathPrev = polyPrev.getPath();
-        pathPrev.push(latLng);
-
+      var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];  
+      if (polyPrev.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
         var poly = createPoly(col);
         var path = poly.getPath();
-        path.push(prevLatLng);
         path.push(latLng);
-
         polyLinesForLap.push(poly);
-        prevLatLng = latLng;
-
-      }
+      } 
+      
+      var pathPrev = polyPrev.getPath();
+      pathPrev.push(latLng);
+      prevLatLng = latLng;
       
     }
   }
