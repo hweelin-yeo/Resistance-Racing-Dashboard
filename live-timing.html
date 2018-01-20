@@ -76,7 +76,7 @@
    <!-- <div class="panel panel-default text-left borderless-panel"> -->
    <!-- <div class="panel-body"> -->
    <div class = "col-sm-1">
-     <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
+     <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 1 </p>
    </div>
    <!-- <div class = "col-sm-5"> -->
    <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
@@ -242,20 +242,24 @@ function parseData (data) {
         changeThrottleStats(value, time);
         // throtTimeLocHashM.set(key: time, value: prevLatLng);
         pushThrottleChart(value, time);
-      break;
+        break;
       case "speed": 
         changeSpeedStats(value, time);
         pushSpeedChart(value, time);
-      break;
+        break;
       case "fault":
         parseFaultData(value);
-      break;
+        break;
       case "gps":
         latestGPSTimeStamp = time;
         updateMap(value);
+      case "power": 
+        // TODO: IMPLEMENT
+        break;
+
       default:
         break;
-      // TODO: case power (will have this)/ voltage (might have)
+      // TODO: case voltage (UNCONFIRMED)
     }
   }
 }
@@ -282,6 +286,34 @@ function parseFaultData(value) {
       break;
   }
 }
+
+</script>
+
+<script>
+/* Data storage */
+
+// LapInfo class declaration
+const LapInfo = function() {
+  this.polylines = [];
+  this.notes = [];
+  this.selectPolys = new HashMap();
+};
+
+// lapInfoArr is an array of type lapInfo.
+var lapInfoArr = [];
+lapInfoArr.push(new LapInfo()); // init for lap 1 
+console.log("made lap info arr");
+
+var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
+
+function timeToCoords(time) { // time would not be found in 
+  if throtTimeLocHashM.has(key: time) {
+     return throtTimeLocHashM.get(time);
+  } else {
+    var timeP = approxTime(time);
+    return throtTimeLocHashM.get(timeP);
+   }
+ }
 
 </script>
 
@@ -337,7 +369,7 @@ function init() {
     this.setOptions({strokeOpacity: 0.5});
   });
 
- var createPoly = function (col) {
+  var createPoly = function (col) {
     var poly = new google.maps.Polyline({
       strokeColor: col,
       strokeOpacity: 1,
@@ -358,6 +390,7 @@ function init() {
 
    // ROUTE DRAWING 
    drawMap = function(latLng, col) {
+    
     if (polyLinesForLap.length == 0) {
       var poly = createPoly(col);
       var path = poly.getPath();
@@ -446,28 +479,12 @@ controlDiv.appendChild(controlInput);
 controlDiv.appendChild(controlButton);
 
 </script>
-<script>
-/* Data storage */
-  var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
-  
-  function timeToCoords(time) { // time would not be found in 
-    if throtTimeLocHashM.has(key: time) {
-      return throtTimeLocHashM.get(time);
-    } else {
-      var timeP = approxTime(time);
-      return throtTimeLocHashM.get(timeP);
-    }
-  }
-  
-  timeToCoords(123);
-
-  </script>
 
 
 <script>
 
 // Race Information 
-var lap = 0;
+var lap = 1;
 var latestGPSTimeStamp;
 var latestGPSCoordinates;
 var idealThrottle = 0; // testing 
@@ -514,6 +531,7 @@ function updateLap() {
   if (lap == 8) {
     // TODO: send data back to Electron
   } else {
+    lapInfoArr.push(new LapInfo());
     lap ++;
     $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   }
