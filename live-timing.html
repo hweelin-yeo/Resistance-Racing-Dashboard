@@ -292,17 +292,18 @@ function parseFaultData(value) {
 <script>
 /* Data storage */
 
-// LapInfo class declaration
-const LapInfo = function() {
+// LapData class declaration
+const LapData = function() {
   this.polylines = [];
   this.notes = [];
-  this.selectPolys = new HashMap();
+  this.selectPolys = new HashMap(); // default - key: polyline, value: false
+  this.polyStartEndTime = new HashMap(); // key: polyline, value: [startTime, endTime];
 };
 
-// lapInfoArr is an array of type lapInfo.
-var lapInfoArr = [];
-lapInfoArr.push(new LapInfo()); // init for lap 1 
-console.log("made lap info arr");
+
+var lapDataArr = [];
+lapDataArr.push(new LapData()); // init for lap 1 
+console.log("made lap data arr");
 
 var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
 
@@ -361,12 +362,29 @@ function init() {
     map: mapCur
   });
 
+
   polyCur.addListener('dblclick', function(e) {
+    // var lapData = lapDataArr[lap - 1];
+    // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+    // if (selBool) {
+    //  this.setOptions({strokeOpacity: 1});
+    // } else {
     this.setOptions({strokeOpacity: 0.5});
+    // }
   });
 
   polyCur.addListener('click', function(e) {
+    // var lapData = lapDataArr[lap - 1];
+    // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+    // if (selBool) {
+    //  this.setOptions({strokeOpacity: 1});
+    // } else {
     this.setOptions({strokeOpacity: 0.5});
+    // TODO: trigger selection
+    // var startTime;
+    // var endTime;
+    // triggerSelectPolys(startTime, endTime);
+    // }
   });
 
   var createPoly = function (col) {
@@ -430,6 +448,10 @@ function init() {
   });
 
   mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+}
+
+function triggerSelectPolys(startTime, endTime) {
+  // TODO:
 }
 
 function fail(){
@@ -531,7 +553,7 @@ function updateLap() {
   if (lap == 8) {
     // TODO: send data back to Electron
   } else {
-    lapInfoArr.push(new LapInfo());
+    lapDataArr.push(new LapData());
     lap ++;
     $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   }
