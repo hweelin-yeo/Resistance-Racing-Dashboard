@@ -17,6 +17,7 @@
     "express": "4.15.2",
     "gpx-parse": "^0.10.4",
     "gpxreplay": "^1.0.0",
+    "hashmap": "^2.3.0",
     "particle-api-js": "^7.0.1",
     "pg": "6.4.2"
   },

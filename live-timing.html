@@ -12,6 +12,7 @@
   <script src="realTimeChart.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init">
   </script>
+  <script src="node_modules/hashmap/hashmap.js"></script>
 
   <link rel="stylesheet" href="realTimeChart.css">
 
@@ -196,54 +197,6 @@
 </footer>
 
 <script>
-
-// Race Information 
-var lap = 0;
-var latestGPSTimeStamp;
-var latestGPSCoordinates;
-
-function changeLastUpdatedStats(num) {
-  $('#lastUpdatedStats')[0].innerHTML = "" + num;
-}
-
-function changeThrottleStats(num, lastUpdated) {
-  $('#throttleStats')[0].innerHTML = "" + num;
-  changeLastUpdatedStats(lastUpdated);
-}
-
-function changeSpeedStats(num, lastUpdated) {
-  $('#speedStats')[0].innerHTML = "" + num;
-  changeLastUpdatedStats(lastUpdated);
-}
-
-function faultBMS(bool) {
-  if (bool) {
-    $('#BMSFault')[0].style.background = "#E53838";
-  } else {
-    $('#BMSFault')[0].style.background = "#56BF56";
-  }
-}
-
-function faultMC(bool) {
-  if (bool) {
-    $('#MCFault')[0].style.background = "#E53838";
-  } else {
-    $('#MCFault')[0].style.background = "#56BF56";
-  }
-}
-
-function updateLap() {
-  if (lap == 8) {
-    // TODO: send data back to Electron
-  } else {
-    lap ++;
-    $('#lapNumber')[0].innerHTML = "Lap # " + lap;
-  }
-}
-
-</script>
-
-<script>
 var particle = new Particle();
 var token;
 // Login
@@ -286,21 +239,23 @@ function parseData (data) {
 
     switch (property) {
       case "throttle": 
-      changeThrottleStats(value, time);
-      pushThrottleChart(value, time);
+        changeThrottleStats(value, time);
+        // throtTimeLocHashM.set(key: time, value: prevLatLng);
+        pushThrottleChart(value, time);
       break;
       case "speed": 
-      changeSpeedStats(value, time);
-      pushSpeedChart(value, time);
+        changeSpeedStats(value, time);
+        pushSpeedChart(value, time);
       break;
       case "fault":
-      parseFaultData(value);
+        parseFaultData(value);
       break;
       case "gps":
-      latestGPSTimeStamp = time;
-      updateMap(value);
+        latestGPSTimeStamp = time;
+        updateMap(value);
       default:
-      break;
+        break;
+      // TODO: case power (will have this)/ voltage (might have)
     }
   }
 }
@@ -308,24 +263,162 @@ function parseData (data) {
 function parseFaultData(value) {
   switch (value) {
     case "0":
-    faultBMS(false);
-    faultMC(false);
-    break;
+      faultBMS(false);
+      faultMC(false);
+      break;
     case "1":
-    faultBMS(false);
-    faultMC(true);
-    break;
+      faultBMS(false);
+      faultMC(true);
+      break;
     case "2":
-    faultBMS(true);
-    faultMC(false);
-    break;
+      faultBMS(true);
+      faultMC(false);
+      break;
     case "3":
-    faultBMS(true);
-    faultMC(true);
-    break;
+      faultBMS(true);
+      faultMC(true);
+      break;
     default:
-    break;
+      break;
   }
+}
+
+</script>
+
+<script>
+  /* Maps Init JS */
+var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
+var curPos;
+var mapCur;
+var mapPrev;
+var polyCur;
+var change = 0;
+var colorCur = 'green';
+var drawMap;
+var latestNoteMarker;
+var polyLinesForLap = [];
+
+function init() {
+  var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+  prevLatLng = initLatLng;
+
+  var mapOptions = {
+    zoom: 17,
+    center: initLatLng,
+    mapTypeId: google.maps.MapTypeId.TERRAIN,
+    disableDoubleClickZoom: true
+  };
+
+  mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
+    mapOptions);
+
+  curPos = new google.maps.Marker({
+    position: initLatLng,
+    map: mapCur,
+    icon: blueDot
+  });
+
+  mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
+    mapOptions);
+
+  polyCur = new google.maps.Polyline({
+    strokeColor: colorCur,
+    strokeOpacity: 1,
+    strokeWeight: 5,
+    map: mapCur
+  });
+
+  polyCur.addListener('dblclick', function(e) {
+    this.setOptions({strokeOpacity: 0.5});
+  });
+
+  polyCur.addListener('click', function(e) {
+    this.setOptions({strokeOpacity: 0.5});
+  });
+
+ var createPoly = function (col) {
+    var poly = new google.maps.Polyline({
+      strokeColor: col,
+      strokeOpacity: 1,
+      strokeWeight: 5,
+      map: mapCur
+    });
+
+    poly.addListener('dblclick', function(e) {
+      this.setOptions({strokeOpacity: 0.5});
+    });
+
+    poly.addListener('click', function(e) {
+      this.setOptions({strokeOpacity: 0.5});
+    });
+
+    return poly;
+  }
+
+   // ROUTE DRAWING 
+   drawMap = function(latLng, col) {
+    if (polyLinesForLap.length == 0) {
+      var poly = createPoly(col);
+      var path = poly.getPath();
+      path.push(prevLatLng);
+      path.push(latLng);
+
+      polyLinesForLap.push(poly);
+      prevLatLng = latLng;
+    } else {
+      var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];
+
+      if (polyPrev.strokeColor == col) {
+        var pathPrev = polyPrev.getPath();
+        pathPrev.push(latLng);
+        prevLatLng = latLng;
+      } else {
+
+        var pathPrev = polyPrev.getPath();
+        pathPrev.push(latLng);
+
+        var poly = createPoly(col);
+        var path = poly.getPath();
+        path.push(prevLatLng);
+        path.push(latLng);
+
+        polyLinesForLap.push(poly);
+        prevLatLng = latLng;
+
+      }
+      
+    }
+  }
+
+  
+
+  // NOTE MARKING (for presentation purposes)
+  mapCur.addListener('dblclick', function(e) {
+
+    var marker = new google.maps.Marker({
+      position: e.latLng,
+      map: mapCur,
+      icon: noteMarker,
+      title: "Note1",
+    });
+    latestNoteMarker = marker;
+  });
+
+  mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+}
+
+function fail(){
+  alert('navigator.geolocation failed, may not be supported');
+}
+
+function updateMap(value) {
+  var latLng_arr = value.split(",");
+  var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
+  mapCur.setCenter(latLng);
+  mapPrev.setCenter(latLng);
+  curPos.setPosition(latLng);
+  prevLatLng = latLng;
 }
 
 
@@ -363,153 +456,99 @@ controlDiv.appendChild(controlButton);
 
 </script>
 <script>
-/* Maps Init JS */
-var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
-var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
-var curPos;
-var mapCur;
-var mapPrev;
-var polyCur;
-var change = 0;
-var colorCur = 'green';
-var prevLatLng;
-var drawMap;
-var latestNoteMarker;
-
-function init() {
-  var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+/* Data storage */
+  var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
   
-  var mapOptions = {
-    zoom: 17,
-    center: initLatLng,
-    mapTypeId: google.maps.MapTypeId.TERRAIN,
-    disableDoubleClickZoom: true
-  };
-
-  mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
-    mapOptions);
-
-  curPos = new google.maps.Marker({
-    position: initLatLng,
-    map: mapCur,
-    icon: blueDot
-  });
-
-  mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
-    mapOptions);
-
-  polyCur = new google.maps.Polyline({
-    strokeColor: colorCur,
-    strokeOpacity: 1,
-    strokeWeight: 5,
-    map: mapCur
-  });
-
-  polyCur.addListener('dblclick', function(e) {
-    this.setOptions({strokeOpacity: 0.5});
-  });
-
-  polyCur.addListener('click', function(e) {
-    this.setOptions({strokeOpacity: 0.5});
-  });
-
-   // ROUTE DRAWING (for presentation purposes)
-   drawMap = function(latLng) {
-
-    if (change % 5 == 0 && change != 0) {
-      colorCur = (colorCur == 'green') ? 'red' : 'green';
-      var poly = new google.maps.Polyline({
-        strokeColor: colorCur,
-        strokeOpacity: 1,
-        strokeWeight: 5,
-        map: mapCur
-      });
-
-      poly.addListener('dblclick', function(e) {
-        this.setOptions({strokeOpacity: 0.5});
-      });
-
-      poly.addListener('click', function(e) {
-        this.setOptions({strokeOpacity: 0.5});
-      });
-
-      polyCur = poly;
-      change++;
-
-      var path = poly.getPath();
-      path.push(prevLatLng);
-      path.push(latLng);
+  function timeToCoords(time) { // time would not be found in 
+    if throtTimeLocHashM.has(key: time) {
+      return throtTimeLocHashM.get(time);
     } else {
-      path = polyCur.getPath();
-      path.push(latLng);
-      change++;
-      prevLatLng = latLng;
+      var timeP = approxTime(time);
+      return throtTimeLocHashM.get(timeP);
     }
   }
-
-  // NOTE MARKING (for presentation purposes)
-  mapCur.addListener('dblclick', function(e) {
-
-    var marker = new google.maps.Marker({
-      position: e.latLng,
-      map: mapCur,
-      icon: noteMarker,
-      title: "Note1",
-    });
-    latestNoteMarker = marker;
-  });
-
-  mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
   
+  timeToCoords(123);
 
+  </script>
 
-}
-
-function fail(){
-  alert('navigator.geolocation failed, may not be supported');
-}
-
-function updateMap(value) {
-  var latLng_arr = value.split(",");
-  var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
-  mapCur.setCenter(latLng);
-  mapPrev.setCenter(latLng);
-  curPos.setPosition(latLng);
-  drawMap(latLng);
-}
-
-
-
-</script>
 
 <script>
 
-function addDataToPoly(ideal, real, latLng, poly) {
-  var color = (real < ideal) ? 'red' : 'green';
-  poly.setOptions({strokeColor: color});
-  var path = poly.getPath();
-  path.push(latLng);
+// Race Information 
+var lap = 0;
+var latestGPSTimeStamp;
+var latestGPSCoordinates;
+var idealThrottle = 0; // testing 
+var prevLatLng;
+
+function valueToCol (ideal, value) {
+  var col = (value > ideal) ? 'red' : ((value < ideal) ? 'blue' : 'green');
+  return col;
+}
+
+function changeLastUpdatedStats(num) {
+  $('#lastUpdatedStats')[0].innerHTML = "" + num;
+}
+
+function changeThrottleStats(num, lastUpdated) {
+  $('#throttleStats')[0].innerHTML = "" + num;
+  var col = valueToCol (idealThrottle, num);
+  drawMap(prevLatLng, col);
+  changeLastUpdatedStats(lastUpdated);
+}
+
+function changeSpeedStats(num, lastUpdated) {
+  $('#speedStats')[0].innerHTML = "" + num;
+  changeLastUpdatedStats(lastUpdated);
+}
+
+function faultBMS(bool) {
+  if (bool) {
+    $('#BMSFault')[0].style.background = "#E53838";
+  } else {
+    $('#BMSFault')[0].style.background = "#56BF56";
+  }
+}
+
+function faultMC(bool) {
+  if (bool) {
+    $('#MCFault')[0].style.background = "#E53838";
+  } else {
+    $('#MCFault')[0].style.background = "#56BF56";
+  }
+}
+
+function updateLap() {
+  if (lap == 8) {
+    // TODO: send data back to Electron
+  } else {
+    lap ++;
+    $('#lapNumber')[0].innerHTML = "Lap # " + lap;
+  }
 }
 
 </script>
+
+
 <script>
 /* Charting JS */
 'use strict';
 
 // ----------- SPEED ------------
 var speedChart = realTimeChart()
-    .title("Speed")
-    .yTitle("kmph")
-    .xTitle("time")
-    .border(true)
-    .width(800)
-    .height(290)
-    .barWidth(1)
-    .minY(0)
-    .maxY(100);
+.title("Speed")
+.yTitle("kmph")
+.xTitle("time")
+.border(true)
+.width(800)
+.height(290)
+.barWidth(1)
+.minY(0)
+.maxY(100);
 d3.select("#speedChart").append("div")
-    .attr("id", "chartDiv")
-    .call(speedChart);
+.attr("id", "chartDiv")
+.call(speedChart);
 
 function pushSpeedChart(value, time) {
   var dt = new Date(parseInt(time));
@@ -524,18 +563,18 @@ function pushSpeedChart(value, time) {
 
 // ----------- THROTTLE ------------
 var throttleChart = realTimeChart()
-    .title("Throttle")
-    .yTitle("on/off")
-    .xTitle("time")
-    .border(true)
-    .width(800)
-    .height(290)
-    .barWidth(1)
-    .minY(0)
-    .maxY(1);
+.title("Throttle")
+.yTitle("on/off")
+.xTitle("time")
+.border(true)
+.width(800)
+.height(290)
+.barWidth(1)
+.minY(0)
+.maxY(1);
 d3.select("#throttleChart").append("div")
-    .attr("id", "chartDiv")
-    .call(throttleChart);
+.attr("id", "chartDiv")
+.call(throttleChart);
 
 function pushThrottleChart(value, time) {
   var dt = new Date(parseInt(time));

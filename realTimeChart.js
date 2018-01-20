@@ -316,7 +316,7 @@ function realTimeChart() {
           .attr('class', 'line')
           .attr('d', navLine(data)); 
 
-      console.log(startTimeViewport, endTimeViewport);
+      // console.log(startTimeViewport, endTimeViewport);
     
     } // end refreshChart function
 
