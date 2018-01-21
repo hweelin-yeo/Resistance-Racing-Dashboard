@@ -182,12 +182,18 @@
 
 <div class="row">
   <div class="col-sm-12">
-    <div id="speedChart"></div>
+    <div class="chartCollapsor">
+      Speed <a href="#speedChart" data-toggle="collapse"><span class="caret"></span></a>
+    </div>
+    <div id="speedChart" class="collapse in chartContent"></div>
   </div>
 </div>
 <div class="row">
   <div class="col-sm-12">
-    <div id="throttleChart"></div>
+    <div class="chartCollapsor">
+      Throttle <a href="#throttleChart" data-toggle="collapse"><span class="caret"></span></a>
+    </div>
+    <div id="throttleChart" class="collapse in chartContent"></div>
   </div>
 </div>
 </div>
@@ -568,7 +574,7 @@ function updateLap() {
 
 // ----------- SPEED ------------
 var speedChart = realTimeChart()
-.title("Speed")
+.title(" ")
 .yTitle("kmph")
 .xTitle("time")
 .border(true)
@@ -594,7 +600,7 @@ function pushSpeedChart(value, time) {
 
 // ----------- THROTTLE ------------
 var throttleChart = realTimeChart()
-.title("Throttle")
+.title(" ")
 .yTitle("on/off")
 .xTitle("time")
 .border(true)

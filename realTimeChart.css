@@ -38,3 +38,17 @@
 .viewport .extent {
   fill: green;
 }
+.chartCollapsor {
+  border-bottom:1px solid black;
+  width:800px;
+  margin:0 auto;
+  background:#000000c7;
+  margin-top:20px;
+  color:white;
+}
+.chartCollapsor>a {
+  color:white;
+}
+.chartContent {
+  margin-bottom:20px;
+}
