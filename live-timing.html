@@ -288,7 +288,7 @@
          var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
          
          function timeToCoords(time) { // time would not be found in 
-           if (throtTimeLocHashM.has(key: time)) {
+           if throtTimeLocHashM.has(key: time) {
             return throtTimeLocHashM.get(time);
           } else {
            var timeP = approxTime(time);
@@ -414,11 +414,13 @@
            }
          
           transferPolys = function() {
-           console.log(polyLinesForLap.length);
-             for (poly in polyLinesForLap) { 
-               console.log(poly);
-               poly.setMap(mapPrev);
-             }
+           for (i = 0; i < polyLinesForLap.length ; i++) {
+            var poly = polyLinesForLap[i];
+            var polyNew = createPoly(poly.strokeColor);
+            console.log(poly.getPath());
+            polyNew.setPath(poly.getPath());
+            polyNew.setMap(mapPrev);
+          }
          
          }
            
@@ -592,7 +594,7 @@
              // TODO: send data back to Electron
            } else {
              transferPolys();
-             lapDataArr.push(new LapData());
+             // lapDataArr.push(new LapData());
              lap ++;
              $('#lapNumber')[0].innerHTML = "Lap # " + lap;
              var now = new Date();
