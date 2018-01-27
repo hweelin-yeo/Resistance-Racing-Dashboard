@@ -56,38 +56,38 @@
     <!-- <div class="col-sm-12">  -->   
     <div class="row">
      <!-- <div class="col-sm-12"> -->
-     <div class="panel panel-default text-left borderless-panel">
-       <div class="panel-body">
-        <div class = "col-sm-6">
-         <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
-       </div>
-       <div class = "col-sm-3">
-         <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
-       </div>
-     </div>
-   </div>
+      <div class="panel panel-default text-left borderless-panel">
+        <div class="panel-body">
+          <div class = "col-sm-6">
+            <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+          </div>
+          <div class = "col-sm-3">
+            <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
+          </div>
+        </div>
+      </div>
    <!-- </div> -->
- </div>
+    </div>
  <!-- </div> -->
-</div>
+  </div>
 
 
-<div class="container text-left"> 
- <div class="row">
-   <!-- <div class="panel panel-default text-left borderless-panel"> -->
-   <!-- <div class="panel-body"> -->
-   <div class = "col-sm-1">
-     <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 1 </p>
+  <div class="container text-left"> 
+   <div class="row">
+     <!-- <div class="panel panel-default text-left borderless-panel"> -->
+     <!-- <div class="panel-body"> -->
+     <div class = "col-sm-1">
+       <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 1 </p>
+     </div>
+     <!-- <div class = "col-sm-5"> -->
+     <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
+     <div> <br> </div>
+     <!-- </div> -->
+     <!-- </div> -->
+     <!--  </div> -->
+
    </div>
-   <!-- <div class = "col-sm-5"> -->
-   <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
-   <div> <br> </div>
-   <!-- </div> -->
-   <!-- </div> -->
-   <!--  </div> -->
-
- </div>
-</div>
+  </div>
 
 
 <div class="container text-center">    
@@ -148,20 +148,28 @@
         </div>
       </div>
     </div>
-
-
   </div>
 
 
   <div class="col-sm-2 well">     
     <div class="well">
-      <p>Additional</p>
+      <h4>Total Time</h4>
+      <h3 id="stopwatch">00:00.000</h3>
     </div>
     <div class="well">
-      <p>Additional</p>
+      <table class="table" id="lapTable">
+        <thead>
+          <tr>
+            <th>Lap</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
     </div>
   </div>
-</div>
+
 
 <div class="row">
   <div class="col-sm-6">
@@ -315,7 +323,7 @@ console.log("made lap data arr");
 var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
 
 function timeToCoords(time) { // time would not be found in 
-  if throtTimeLocHashM.has(key: time) {
+  if (throtTimeLocHashM.has(key: time)) {
    return throtTimeLocHashM.get(time);
  } else {
   var timeP = approxTime(time);
@@ -624,6 +632,13 @@ function updateLap() {
     lapDataArr.push(new LapData());
     lap ++;
     $('#lapNumber')[0].innerHTML = "Lap # " + lap;
+    var now = new Date();
+    var diff = (now - lapStart) - idealLapMillis;
+    var compText = millisToString(Math.abs(diff));
+    compText = (diff < 0 ? "-" : "+") + compText;
+    $("#lapTable tbody tr:first-child td:nth-child(2)").append("<br>("+compText+")");
+    $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+    lapStart = now;
   }
 }
 
@@ -684,6 +699,47 @@ function pushThrottleChart(value, time) {
     ts: dt.getTime(),
   };
   throttleChart.datum(obj);
+}
+</script>
+
+<script>
+// Timing logic
+var runStart = new Date();
+var lapStart = runStart; // TODO fetch both from database
+const interval = 10;
+const idealLapMillis = 60000;
+function updateStopwatch() {
+  var millisText = millisToString(new Date() - runStart);
+  $("#stopwatch").text(millisText);
+  var lapText = millisToString(new Date() - lapStart);
+  $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
+  setTimeout(function() {
+    updateStopwatch();
+  }, interval);
+}
+updateStopwatch();
+
+function initLapTable() {
+  // TODO fetch from db
+  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+}
+initLapTable();
+
+function millisToString(m) {
+  var minutes = Math.floor(m / 60000);
+  m = m % 60000;
+  var seconds = Math.floor(m / 1000);
+  m = m % 1000;
+  var millis = m;
+  return pad(minutes, 2) + ":" + pad(seconds, 2) + "." + pad(millis, 3);
+}
+
+function pad(quantity, nums) {
+  s = quantity + "";
+  if (s.length >= nums) {
+    return s;
+  }
+  return pad("0"+quantity, nums);
 }
 </script>
 
