@@ -1,747 +1,706 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title> Live Timing Dashboard</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-  <script src="realTimeChart.js"></script>
-  <script src="js-colormaps.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init">
-  </script>
-  <script src="node_modules/hashmap/hashmap.js"></script>
-
-  <link rel="stylesheet" href="realTimeChart.css">
-
-  <style>    
-  footer {
-    background-color: #555;
-    color: white;
-    padding: 15px;
-  }
-
-
-  .circle {
-    width: 30px;
-    height: 30px;
-    background: #56BF56;
-    -moz-border-radius: 50px;
-    -webkit-border-radius: 50px;
-    border-radius: 50px;
-  }
-
-  .borderless-panel {
-    border-width: 0;
-    border-bottom-width: 0;
-  }
-
-  .well-white {
-    background-color: white;
-  }
-
-  .btn-higher {
-    top: 0;
-  }
-}
-
-</style>
-</head>
-<body onload = "init()">
-
-  <div class="container text-center">
-    <!-- <div class="col-sm-12">  -->   
-    <div class="row">
-     <!-- <div class="col-sm-12"> -->
-      <div class="panel panel-default text-left borderless-panel">
-        <div class="panel-body">
-          <div class = "col-sm-6">
-            <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
-          </div>
-          <div class = "col-sm-3">
-            <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
-          </div>
-        </div>
+   <head>
+      <title> Live Timing Dashboard</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+      <script src="realTimeChart.js"></script>
+      <script src="js-colormaps.js"></script>
+      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init"></script>
+      <script src="node_modules/hashmap/hashmap.js"></script>
+      <link rel="stylesheet" href="realTimeChart.css">
+      <style>    
+         footer {
+         background-color: #555;
+         color: white;
+         padding: 15px;
+         }
+         .circle {
+         width: 30px;
+         height: 30px;
+         background: #56BF56;
+         -moz-border-radius: 50px;
+         -webkit-border-radius: 50px;
+         border-radius: 50px;
+         }
+         .borderless-panel {
+         border-width: 0;
+         border-bottom-width: 0;
+         }
+         .well-white {
+         background-color: white;
+         }
+         .btn-higher {
+         top: 0;
+         }
+         }
+      </style>
+   </head>
+   <body onload = "init()">
+      <div class="container text-center">
+         <!-- <div class="col-sm-12">  -->   
+         <div class="row">
+            <!-- <div class="col-sm-12"> -->
+            <div class="panel panel-default text-left borderless-panel">
+               <div class="panel-body">
+                  <div class = "col-sm-6">
+                     <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+                  </div>
+                  <div class = "col-sm-3">
+                     <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
+                  </div>
+               </div>
+            </div>
+            <!-- </div> -->
+         </div>
+         <!-- </div> -->
       </div>
-   <!-- </div> -->
-    </div>
- <!-- </div> -->
-  </div>
-
-
-  <div class="container text-left"> 
-   <div class="row">
-     <!-- <div class="panel panel-default text-left borderless-panel"> -->
-     <!-- <div class="panel-body"> -->
-     <div class = "col-sm-1">
-       <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 1 </p>
-     </div>
-     <!-- <div class = "col-sm-5"> -->
-     <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
-     <div> <br> </div>
-     <!-- </div> -->
-     <!-- </div> -->
-     <!--  </div> -->
-
-   </div>
-  </div>
-
-
-<div class="container text-center">    
-  <div class="row">
-
-
-    <div class="col-sm-3 well well-white">
-      <p> <strong> Faults </strong> </p>
-      <div class="well well-white">
-       <div class="row">
-        <div class="col-sm-2">
-          <div class="circle" id = "BMSFault"></div>
-        </div>
-        <div class="col-sm-8">
-          <p>BMS</p>
-        </div>
+      <div class="container text-left">
+         <div class="row">
+            <!-- <div class="panel panel-default text-left borderless-panel"> -->
+            <!-- <div class="panel-body"> -->
+            <div class = "col-sm-1">
+               <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 1 </p>
+            </div>
+            <!-- <div class = "col-sm-5"> -->
+            <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
+            <div> <br> </div>
+            <!-- </div> -->
+            <!-- </div> -->
+            <!--  </div> -->
+         </div>
       </div>
-
-      <br>
-
+      <div class="container text-center">
       <div class="row">
-        <div class="col-sm-2">
-          <div class="circle" id = "MCFault"></div>
-        </div>
-        <div class="col-sm-8">
-          <p>Motor Controller</p>
-        </div>
+         <div class="col-sm-3 well well-white">
+            <p> <strong> Faults </strong> </p>
+            <div class="well well-white">
+               <div class="row">
+                  <div class="col-sm-2">
+                     <div class="circle" id = "BMSFault"></div>
+                  </div>
+                  <div class="col-sm-8">
+                     <p>BMS</p>
+                  </div>
+               </div>
+               <br>
+               <div class="row">
+                  <div class="col-sm-2">
+                     <div class="circle" id = "MCFault"></div>
+                  </div>
+                  <div class="col-sm-8">
+                     <p>Motor Controller</p>
+                  </div>
+               </div>
+            </div>
+            <div class="well"> </div>
+            <div class="alert alert-success fade in">
+               <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+               <p><strong> Highlight!</strong></p>
+            </div>
+         </div>
+         <div class="col-sm-7">
+            <div class="row">
+               <div class="col-sm-12">
+                  <div class="panel panel-default text-left">
+                     <div class="panel-body">
+                        <p> Stats (Prelim Display) </p>
+                        <p> <strong> Throttle</strong> </p>
+                        <p id = "throttleStats">  </p>
+                        <p> <strong> Speed</strong> </p>
+                        <p id = "speedStats">  </p>
+                        <p> <strong> Last Updated</strong> </p>
+                        <p id = "lastUpdatedStats">  </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="col-sm-2 well">
+            <div class="well">
+               <h4>Total Time</h4>
+               <h3 id="stopwatch">00:00.000</h3>
+            </div>
+            <div class="well">
+               <table class="table" id="lapTable">
+                  <thead>
+                     <tr>
+                        <th>Lap</th>
+                        <th>Time</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-sm-6">
+               <div class="well">
+                  <p style = "font-weight:bold">Current</p>
+                  <p> Double click on the map to add a note. </p>
+                  <div id="map_canvas_current" style="height:300px"></div>
+                  <!-- <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar"> -->
+               </div>
+            </div>
+            <div class="col-sm-6">
+               <div class="well">
+                  <p style = "font-weight:bold">Previous</p>
+                  <p> Description </p>
+                  <div id="map_canvas_prev" style="height:300px"></div>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-sm-12">
+               <div class="chartCollapsor">
+                  Speed <a href="#speedChart" data-toggle="collapse"><span class="caret"></span></a>
+               </div>
+               <div id="speedChart" class="collapse in chartContent"></div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-sm-12">
+               <div class="chartCollapsor">
+                  Throttle <a href="#throttleChart" data-toggle="collapse"><span class="caret"></span></a>
+               </div>
+               <div id="throttleChart" class="collapse in chartContent"></div>
+            </div>
+         </div>
       </div>
-
-
-    </div>
-
-    <div class="well"> </div>
-
-    <div class="alert alert-success fade in">
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-      <p><strong> Highlight!</strong></p>
-
-    </div>
-
-  </div>
-
-
-  <div class="col-sm-7">
-
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="panel panel-default text-left">
-          <div class="panel-body">
-            <p> Stats (Prelim Display) </p>
-            <p> <strong> Throttle</strong> </p>
-            <p id = "throttleStats">  </p>
-            <p> <strong> Speed</strong> </p>
-            <p id = "speedStats">  </p>
-            <p> <strong> Last Updated</strong> </p>
-            <p id = "lastUpdatedStats">  </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="col-sm-2 well">     
-    <div class="well">
-      <h4>Total Time</h4>
-      <h3 id="stopwatch">00:00.000</h3>
-    </div>
-    <div class="well">
-      <table class="table" id="lapTable">
-        <thead>
-          <tr>
-            <th>Lap</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-
-<div class="row">
-  <div class="col-sm-6">
-    <div class="well">
-     <p style = "font-weight:bold">Current</p>
-     <p> Double click on the map to add a note. </p>
-     <div id="map_canvas_current" style="height:300px"></div>
-     <!-- <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar"> -->
-   </div>
- </div>
- <div class="col-sm-6">
-  <div class="well">
-    <p style = "font-weight:bold">Previous</p>
-    <p> Description </p>
-    <div id="map_canvas_prev" style="height:300px"></div>
-  </div>
-</div>
-</div>
-
-<div class="row">
-  <div class="col-sm-12">
-    <div class="chartCollapsor">
-      Speed <a href="#speedChart" data-toggle="collapse"><span class="caret"></span></a>
-    </div>
-    <div id="speedChart" class="collapse in chartContent"></div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-12">
-    <div class="chartCollapsor">
-      Throttle <a href="#throttleChart" data-toggle="collapse"><span class="caret"></span></a>
-    </div>
-    <div id="throttleChart" class="collapse in chartContent"></div>
-  </div>
-</div>
-</div>
-
-<footer class="container-fluid text-center">
-  <p>Footer Text</p>
-</footer>
-
-<script>
-var particle = new Particle();
-var token;
-// Login
-particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
-  function(data) {
-    console.log('LOGGED IN.');
-    token = data.body.access_token;
-    console.log(token);
-    getEventStream();
-  },
-  function (err) {
-    console.log('Could not log in.', err);
-  }
-  );
-
-// Get event stream
-function getEventStream() {
-  //Successful login: get devices events
-  console.log('Begin event stream.');
-  particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-    stream.on('event', function(json) {
-      console.log(JSON.stringify(json, null, 4));
-      parseData (json.data);
-    });
-  });
-}
-
-// Parse live data
-function parseData (data) {
-  // Parse live data 
-  var dataArr = data.split("_");
-
-  for (var i in dataArr) {
-
-    var dataI = dataArr[i];
-    var dataIArr = dataI.split(";");
-    var property = dataIArr[0];
-    var value = dataIArr[1];
-    var time = dataIArr[2];
-
-    switch (property) {
-      case "throttle": 
-      changeThrottleStats(value, time);
-        // throtTimeLocHashM.set(key: time, value: prevLatLng);
-        pushThrottleChart(value, time);
-        break;
-        case "speed": 
-        changeSpeedStats(value, time);
-        pushSpeedChart(value, time);
-        break;
-        case "fault":
-        parseFaultData(value);
-        break;
-        case "gps":
-        latestGPSTimeStamp = time;
-        updateMap(value);
-        case "power": 
-        // TODO: IMPLEMENT
-        break;
-
-        default:
-        break;
-      // TODO: case voltage (UNCONFIRMED)
-    }
-  }
-}
-
-function parseFaultData(value) {
-  switch (value) {
-    case "0":
-    faultBMS(false);
-    faultMC(false);
-    break;
-    case "1":
-    faultBMS(false);
-    faultMC(true);
-    break;
-    case "2":
-    faultBMS(true);
-    faultMC(false);
-    break;
-    case "3":
-    faultBMS(true);
-    faultMC(true);
-    break;
-    default:
-    break;
-  }
-}
-
-</script>
-
-<script>
-/* Data storage */
-
-// LapData class declaration
-const LapData = function() {
-  this.polylines = [];
-  this.notes = [];
-  this.selectPolys = new HashMap(); // default - key: polyline, value: false
-  this.polyStartEndTime = new HashMap(); // key: polyline, value: [startTime, endTime];
-};
-
-
-var lapDataArr = [];
-lapDataArr.push(new LapData()); // init for lap 1 
-console.log("made lap data arr");
-
-var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
-
-function timeToCoords(time) { // time would not be found in 
-  if (throtTimeLocHashM.has(key: time)) {
-   return throtTimeLocHashM.get(time);
- } else {
-  var timeP = approxTime(time);
-  return throtTimeLocHashM.get(timeP);
-}
-}
-
-</script>
-
-<script>
-/* Maps Init JS */
-var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
-var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
-var curPos;
-var mapCur;
-var mapPrev;
-var polyCur;
-var change = 0;
-var colorCur = 'green';
-var drawMap;
-var latestNoteMarker;
-var polyLinesForLap = [];
-var transferPolys;
-
-function init() {
-  var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
-  prevLatLng = initLatLng;
-
-  var mapOptions = {
-    zoom: 17,
-    center: initLatLng,
-    mapTypeId: google.maps.MapTypeId.TERRAIN,
-    disableDoubleClickZoom: true
-  };
-
-  mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
-    mapOptions);
-
-  curPos = new google.maps.Marker({
-    position: initLatLng,
-    map: mapCur,
-    icon: blueDot
-  });
-
-  mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
-    mapOptions);
-
-  polyCur = new google.maps.Polyline({
-    strokeColor: colorCur,
-    strokeOpacity: 1,
-    strokeWeight: 5,
-    map: mapCur
-  });
-
-
-  polyCur.addListener('dblclick', function(e) {
-    // var lapData = lapDataArr[lap - 1];
-    // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
-    // if (selBool) {
-    //  this.setOptions({strokeOpacity: 1});
-    // } else {
-      this.setOptions({strokeOpacity: 0.5});
-    // }
-  });
-
-  polyCur.addListener('click', function(e) {
-    // var lapData = lapDataArr[lap - 1];
-    // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
-    // if (selBool) {
-    //  this.setOptions({strokeOpacity: 1});
-    // } else {
-      this.setOptions({strokeOpacity: 0.5});
-    // TODO: trigger selection
-    // var startTime;
-    // var endTime;
-    // triggerSelectPolys(startTime, endTime);
-    // }
-  });
-
-  var createPoly = function (col) {
-    var poly = new google.maps.Polyline({
-      strokeColor: col,
-      strokeOpacity: 1,
-      strokeWeight: 5,
-      map: mapCur
-    });
-
-    poly.addListener('dblclick', function(e) {
-      this.setOptions({strokeOpacity: 0.5});
-    });
-
-    poly.addListener('click', function(e) {
-      this.setOptions({strokeOpacity: 0.5});
-    });
-
-    return poly;
-  }
-
-   // ROUTE DRAWING 
-   drawMap = function(latLng, col) {
-
-    if (polyLinesForLap.length == 0) {
-      var poly = createPoly(col);
-      var path = poly.getPath();
-      path.push(prevLatLng);
-      path.push(latLng);
-
-      polyLinesForLap.push(poly);
-      prevLatLng = latLng;
-    } else {
-      var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];  
-      if (polyPrev.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
-        var poly = createPoly(col);
-        var path = poly.getPath();
-        path.push(latLng);
-        polyLinesForLap.push(poly);
-      } 
-      
-      var pathPrev = polyPrev.getPath();
-      pathPrev.push(latLng);
-      prevLatLng = latLng;
-      
-    }
-  }
-
- transferPolys = function() {
-  console.log(polyLinesForLap.length);
-    for (poly in polyLinesForLap) { 
-      console.log(poly);
-      poly.setMap(mapPrev);
-    }
-
-}
-  
-
-  // NOTE MARKING (for presentation purposes)
-  mapCur.addListener('dblclick', function(e) {
-
-    var marker = new google.maps.Marker({
-      position: e.latLng,
-      map: mapCur,
-      icon: noteMarker,
-      title: "Note1",
-    });
-    latestNoteMarker = marker;
-  });
-
-  mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-
-}
-
-function triggerSelectPolys(startTime, endTime) {
-  // TODO:
-}
-
-function fail(){
-  alert('navigator.geolocation failed, may not be supported');
-}
-
-function updateMap(value) {
-  var latLng_arr = value.split(",");
-  var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
-  mapCur.setCenter(latLng);
-  mapPrev.setCenter(latLng);
-  curPos.setPosition(latLng);
-  prevLatLng = latLng;
-}
-
-
-
-</script>
-<script>
-// Input form div, for google maps note taking later on
-var controlDiv = document.createElement('DIV');
-controlDiv.id = "controls";
-
-var controlInput = document.createElement('input');
-controlInput.id = "note";
-controlInput.name = "note";
-// controlInput.value = "Hi there!";
-
-var controlLabel = document.createElement('label');
-controlLabel.innerHTML = 'Note';
-controlLabel.setAttribute("for","note");
-
-var controlButton = document.createElement('button');
-controlButton.innerHTML = 'Create note!';
-controlButton.innerHTML = 'Send it!';
-
-controlButton.addEventListener ("click", function() {
-  if (latestNoteMarker != undefined) {
-    latestNoteMarker.setTitle($("#note").val());
-    controlInput.value = "";
-  }
-})
-
-
-controlDiv.appendChild(controlLabel);
-controlDiv.appendChild(controlInput);
-controlDiv.appendChild(controlButton);
-
-</script>
-
-<script>
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-function enforceBounds(x) {
-  if (x < 0) {
-    return 0;
-  } else if (x > 1){
-    return 1;
-  } else {
-    return x;
-  }
-}
-
-function interpolateLinearly(x, values) {
-  // Split values into four lists
-  var x_values = [];
-  var r_values = [];
-  var g_values = [];
-  var b_values = [];
-  for (i in values) {
-    x_values.push(values[i][0]);
-    r_values.push(values[i][1][0]);
-    g_values.push(values[i][1][1]);
-    b_values.push(values[i][1][2]);
-  }
-   var i = 1;
-   while (x_values[i] < x) {
-    i = i+1;
-   }
-   i = i-1;
-   var width = Math.abs(x_values[i] - x_values[i+1]);
-   var scaling_factor = (x - x_values[i]) / width;
-   // Get the new color values though interpolation
-   var r = r_values[i] + scaling_factor * (r_values[i+1] - r_values[i]);
-   var g = g_values[i] + scaling_factor * (g_values[i+1] - g_values[i]);
-   var b = b_values[i] + scaling_factor * (b_values[i+1] - b_values[i]);
-   r = Math.round(255*enforceBounds(r));
-   g = Math.round(255*enforceBounds(g));
-   b = Math.round(255*enforceBounds(b));
-   return rgbToHex(r, g, b);
-  }
-
- </script>
-<script>
-
-// Race Information 
-var lap = 1;
-var latestGPSTimeStamp;
-var latestGPSCoordinates;
-var idealSpeed = 40.0; // testing 
-var prevLatLng;
-
-function valueToCol (ideal, value) {
-  var col = interpolateLinearly (value/ideal, Reds);
-  console.log(col);
-  return col;
-}
-
-function changeLastUpdatedStats(num) {
-  $('#lastUpdatedStats')[0].innerHTML = "" + num;
-}
-
-function changeThrottleStats(num, lastUpdated) {
-  $('#throttleStats')[0].innerHTML = "" + num;
-  changeLastUpdatedStats(lastUpdated);
-}
-
-function changeSpeedStats(num, lastUpdated) {
-  $('#speedStats')[0].innerHTML = "" + num;
-  var col = valueToCol (idealSpeed, num);
-  drawMap(prevLatLng, col);
-  changeLastUpdatedStats(lastUpdated);
-}
-
-function faultBMS(bool) {
-  if (bool) {
-    $('#BMSFault')[0].style.background = "#E53838";
-  } else {
-    $('#BMSFault')[0].style.background = "#56BF56";
-  }
-}
-
-function faultMC(bool) {
-  if (bool) {
-    $('#MCFault')[0].style.background = "#E53838";
-  } else {
-    $('#MCFault')[0].style.background = "#56BF56";
-  }
-}
-
-function updateLap() {
-  if (lap == 8) {
-    // TODO: send data back to Electron
-  } else {
-    transferPolys();
-    lapDataArr.push(new LapData());
-    lap ++;
-    $('#lapNumber')[0].innerHTML = "Lap # " + lap;
-    var now = new Date();
-    var diff = (now - lapStart) - idealLapMillis;
-    var compText = millisToString(Math.abs(diff));
-    compText = (diff < 0 ? "-" : "+") + compText;
-    $("#lapTable tbody tr:first-child td:nth-child(2)").append("<br>("+compText+")");
-    $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
-    lapStart = now;
-  }
-}
-
-</script>
-
-<script>
-/* Charting JS */
-'use strict';
-
-// ----------- SPEED ------------
-var speedChart = realTimeChart()
-.title(" ")
-.yTitle("kmph")
-.xTitle("time")
-.border(true)
-.width(800)
-.height(290)
-.barWidth(1)
-.minY(0)
-.maxY(100);
-d3.select("#speedChart").append("div")
-.attr("id", "chartDiv")
-.call(speedChart);
-
-function pushSpeedChart(value, time) {
-  var dt = new Date(parseInt(time));
-  var obj = {
-    value: value,
-    time: dt,
-    color: "#0949b7", // TODO choose relevant color
-    ts: dt.getTime(),
-  };
-  speedChart.datum(obj);
-}
-
-// ----------- THROTTLE ------------
-var throttleChart = realTimeChart()
-.title(" ")
-.yTitle("on/off")
-.xTitle("time")
-.border(true)
-.width(800)
-.height(290)
-.barWidth(1)
-.minY(0)
-.maxY(1);
-d3.select("#throttleChart").append("div")
-.attr("id", "chartDiv")
-.call(throttleChart);
-
-function pushThrottleChart(value, time) {
-  var dt = new Date(parseInt(time));
-  if (value == 0) value = 0.1;
-  var obj = {
-    value: value,
-    time: dt,
-    color: "#0949b7", // TODO choose relevant color
-    ts: dt.getTime(),
-  };
-  throttleChart.datum(obj);
-}
-</script>
-
-<script>
-// Timing logic
-var runStart = new Date();
-var lapStart = runStart; // TODO fetch both from database
-const interval = 10;
-const idealLapMillis = 60000;
-function updateStopwatch() {
-  var millisText = millisToString(new Date() - runStart);
-  $("#stopwatch").text(millisText);
-  var lapText = millisToString(new Date() - lapStart);
-  $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
-  setTimeout(function() {
-    updateStopwatch();
-  }, interval);
-}
-updateStopwatch();
-
-function initLapTable() {
-  // TODO fetch from db
-  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
-}
-initLapTable();
-
-function millisToString(m) {
-  var minutes = Math.floor(m / 60000);
-  m = m % 60000;
-  var seconds = Math.floor(m / 1000);
-  m = m % 1000;
-  var millis = m;
-  return pad(minutes, 2) + ":" + pad(seconds, 2) + "." + pad(millis, 3);
-}
-
-function pad(quantity, nums) {
-  s = quantity + "";
-  if (s.length >= nums) {
-    return s;
-  }
-  return pad("0"+quantity, nums);
-}
-</script>
-
-</body>
+      <footer class="container-fluid text-center">
+         <p>Footer Text</p>
+      </footer>
+      <script>
+         var particle = new Particle();
+         var token;
+         // Login
+         particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+           function(data) {
+             console.log('LOGGED IN.');
+             token = data.body.access_token;
+             console.log(token);
+             getEventStream();
+           },
+           function (err) {
+             console.log('Could not log in.', err);
+           }
+           );
+         
+         // Get event stream
+         function getEventStream() {
+           //Successful login: get devices events
+           console.log('Begin event stream.');
+           particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+             stream.on('event', function(json) {
+               console.log(JSON.stringify(json, null, 4));
+               parseData (json.data);
+             });
+           });
+         }
+         
+         // Parse live data
+         function parseData (data) {
+           // Parse live data 
+           var dataArr = data.split("_");
+         
+           for (var i in dataArr) {
+         
+             var dataI = dataArr[i];
+             var dataIArr = dataI.split(";");
+             var property = dataIArr[0];
+             var value = dataIArr[1];
+             var time = dataIArr[2];
+         
+             switch (property) {
+               case "throttle": 
+               changeThrottleStats(value, time);
+                 // throtTimeLocHashM.set(key: time, value: prevLatLng);
+                 pushThrottleChart(value, time);
+                 break;
+                 case "speed": 
+                 changeSpeedStats(value, time);
+                 pushSpeedChart(value, time);
+                 break;
+                 case "fault":
+                 parseFaultData(value);
+                 break;
+                 case "gps":
+                 latestGPSTimeStamp = time;
+                 updateMap(value);
+                 case "power": 
+                 // TODO: IMPLEMENT
+                 break;
+         
+                 default:
+                 break;
+               // TODO: case voltage (UNCONFIRMED)
+             }
+           }
+         }
+         
+         function parseFaultData(value) {
+           switch (value) {
+             case "0":
+             faultBMS(false);
+             faultMC(false);
+             break;
+             case "1":
+             faultBMS(false);
+             faultMC(true);
+             break;
+             case "2":
+             faultBMS(true);
+             faultMC(false);
+             break;
+             case "3":
+             faultBMS(true);
+             faultMC(true);
+             break;
+             default:
+             break;
+           }
+         }
+         
+      </script>
+      <script>
+         /* Data storage */
+         
+         // LapData class declaration
+         const LapData = function() {
+           this.polylines = [];
+           this.notes = [];
+           this.selectPolys = new HashMap(); // default - key: polyline, value: false
+           this.polyStartEndTime = new HashMap(); // key: polyline, value: [startTime, endTime];
+         };
+         
+         
+         var lapDataArr = [];
+         lapDataArr.push(new LapData()); // init for lap 1 
+         console.log("made lap data arr");
+         
+         var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
+         
+         function timeToCoords(time) { // time would not be found in 
+           if (throtTimeLocHashM.has(key: time)) {
+            return throtTimeLocHashM.get(time);
+          } else {
+           var timeP = approxTime(time);
+           return throtTimeLocHashM.get(timeP);
+         }
+         }
+         
+      </script>
+      <script>
+         /* Maps Init JS */
+         var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+         var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
+         var curPos;
+         var mapCur;
+         var mapPrev;
+         var polyCur;
+         var change = 0;
+         var colorCur = 'green';
+         var drawMap;
+         var latestNoteMarker;
+         var polyLinesForLap = [];
+         var transferPolys;
+         
+         function init() {
+           var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+           prevLatLng = initLatLng;
+         
+           var mapOptions = {
+             zoom: 17,
+             center: initLatLng,
+             mapTypeId: google.maps.MapTypeId.TERRAIN,
+             disableDoubleClickZoom: true
+           };
+         
+           mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
+             mapOptions);
+         
+           curPos = new google.maps.Marker({
+             position: initLatLng,
+             map: mapCur,
+             icon: blueDot
+           });
+         
+           mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
+             mapOptions);
+         
+           polyCur = new google.maps.Polyline({
+             strokeColor: colorCur,
+             strokeOpacity: 1,
+             strokeWeight: 5,
+             map: mapCur
+           });
+         
+         
+           polyCur.addListener('dblclick', function(e) {
+             // var lapData = lapDataArr[lap - 1];
+             // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+             // if (selBool) {
+             //  this.setOptions({strokeOpacity: 1});
+             // } else {
+               this.setOptions({strokeOpacity: 0.5});
+             // }
+           });
+         
+           polyCur.addListener('click', function(e) {
+             // var lapData = lapDataArr[lap - 1];
+             // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+             // if (selBool) {
+             //  this.setOptions({strokeOpacity: 1});
+             // } else {
+               this.setOptions({strokeOpacity: 0.5});
+             // TODO: trigger selection
+             // var startTime;
+             // var endTime;
+             // triggerSelectPolys(startTime, endTime);
+             // }
+           });
+         
+           var createPoly = function (col) {
+             var poly = new google.maps.Polyline({
+               strokeColor: col,
+               strokeOpacity: 1,
+               strokeWeight: 5,
+               map: mapCur
+             });
+         
+             poly.addListener('dblclick', function(e) {
+               this.setOptions({strokeOpacity: 0.5});
+             });
+         
+             poly.addListener('click', function(e) {
+               this.setOptions({strokeOpacity: 0.5});
+             });
+         
+             return poly;
+           }
+         
+            // ROUTE DRAWING 
+            drawMap = function(latLng, col) {
+         
+             if (polyLinesForLap.length == 0) {
+               var poly = createPoly(col);
+               var path = poly.getPath();
+               path.push(prevLatLng);
+               path.push(latLng);
+         
+               polyLinesForLap.push(poly);
+               prevLatLng = latLng;
+             } else {
+               var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];  
+               if (polyPrev.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
+                 var poly = createPoly(col);
+                 var path = poly.getPath();
+                 path.push(latLng);
+                 polyLinesForLap.push(poly);
+               } 
+               
+               var pathPrev = polyPrev.getPath();
+               pathPrev.push(latLng);
+               prevLatLng = latLng;
+               
+             }
+           }
+         
+          transferPolys = function() {
+           console.log(polyLinesForLap.length);
+             for (poly in polyLinesForLap) { 
+               console.log(poly);
+               poly.setMap(mapPrev);
+             }
+         
+         }
+           
+         
+           // NOTE MARKING (for presentation purposes)
+           mapCur.addListener('dblclick', function(e) {
+         
+             var marker = new google.maps.Marker({
+               position: e.latLng,
+               map: mapCur,
+               icon: noteMarker,
+               title: "Note1",
+             });
+             latestNoteMarker = marker;
+           });
+         
+           mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+         
+         }
+         
+         function triggerSelectPolys(startTime, endTime) {
+           // TODO:
+         }
+         
+         function fail(){
+           alert('navigator.geolocation failed, may not be supported');
+         }
+         
+         function updateMap(value) {
+           var latLng_arr = value.split(",");
+           var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
+           mapCur.setCenter(latLng);
+           mapPrev.setCenter(latLng);
+           curPos.setPosition(latLng);
+           prevLatLng = latLng;
+         }
+         
+         
+         
+      </script>
+      <script>
+         // Input form div, for google maps note taking later on
+         var controlDiv = document.createElement('DIV');
+         controlDiv.id = "controls";
+         
+         var controlInput = document.createElement('input');
+         controlInput.id = "note";
+         controlInput.name = "note";
+         // controlInput.value = "Hi there!";
+         
+         var controlLabel = document.createElement('label');
+         controlLabel.innerHTML = 'Note';
+         controlLabel.setAttribute("for","note");
+         
+         var controlButton = document.createElement('button');
+         controlButton.innerHTML = 'Create note!';
+         controlButton.innerHTML = 'Send it!';
+         
+         controlButton.addEventListener ("click", function() {
+           if (latestNoteMarker != undefined) {
+             latestNoteMarker.setTitle($("#note").val());
+             controlInput.value = "";
+           }
+         })
+         
+         
+         controlDiv.appendChild(controlLabel);
+         controlDiv.appendChild(controlInput);
+         controlDiv.appendChild(controlButton);
+         
+      </script>
+      <script>
+         function componentToHex(c) {
+             var hex = c.toString(16);
+             return hex.length == 1 ? "0" + hex : hex;
+         }
+         
+         function rgbToHex(r, g, b) {
+             return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+         }
+         
+         function enforceBounds(x) {
+           if (x < 0) {
+             return 0;
+           } else if (x > 1){
+             return 1;
+           } else {
+             return x;
+           }
+         }
+         
+         function interpolateLinearly(x, values) {
+           // Split values into four lists
+           var x_values = [];
+           var r_values = [];
+           var g_values = [];
+           var b_values = [];
+           for (i in values) {
+             x_values.push(values[i][0]);
+             r_values.push(values[i][1][0]);
+             g_values.push(values[i][1][1]);
+             b_values.push(values[i][1][2]);
+           }
+            var i = 1;
+            while (x_values[i] < x) {
+             i = i+1;
+            }
+            i = i-1;
+            var width = Math.abs(x_values[i] - x_values[i+1]);
+            var scaling_factor = (x - x_values[i]) / width;
+            // Get the new color values though interpolation
+            var r = r_values[i] + scaling_factor * (r_values[i+1] - r_values[i]);
+            var g = g_values[i] + scaling_factor * (g_values[i+1] - g_values[i]);
+            var b = b_values[i] + scaling_factor * (b_values[i+1] - b_values[i]);
+            r = Math.round(255*enforceBounds(r));
+            g = Math.round(255*enforceBounds(g));
+            b = Math.round(255*enforceBounds(b));
+            return rgbToHex(r, g, b);
+           }
+         
+          
+      </script>
+      <script>
+         // Race Information 
+         var lap = 1;
+         var latestGPSTimeStamp;
+         var latestGPSCoordinates;
+         var idealSpeed = 40.0; // testing 
+         var prevLatLng;
+         
+         function valueToCol (ideal, value) {
+           var col = interpolateLinearly (value/ideal, Reds);
+           console.log(col);
+           return col;
+         }
+         
+         function changeLastUpdatedStats(num) {
+           $('#lastUpdatedStats')[0].innerHTML = "" + num;
+         }
+         
+         function changeThrottleStats(num, lastUpdated) {
+           $('#throttleStats')[0].innerHTML = "" + num;
+           changeLastUpdatedStats(lastUpdated);
+         }
+         
+         function changeSpeedStats(num, lastUpdated) {
+           $('#speedStats')[0].innerHTML = "" + num;
+           var col = valueToCol (idealSpeed, num);
+           drawMap(prevLatLng, col);
+           changeLastUpdatedStats(lastUpdated);
+         }
+         
+         function faultBMS(bool) {
+           if (bool) {
+             $('#BMSFault')[0].style.background = "#E53838";
+           } else {
+             $('#BMSFault')[0].style.background = "#56BF56";
+           }
+         }
+         
+         function faultMC(bool) {
+           if (bool) {
+             $('#MCFault')[0].style.background = "#E53838";
+           } else {
+             $('#MCFault')[0].style.background = "#56BF56";
+           }
+         }
+         
+         function updateLap() {
+           if (lap == 8) {
+             // TODO: send data back to Electron
+           } else {
+             transferPolys();
+             lapDataArr.push(new LapData());
+             lap ++;
+             $('#lapNumber')[0].innerHTML = "Lap # " + lap;
+             var now = new Date();
+             var diff = (now - lapStart) - idealLapMillis;
+             var compText = millisToString(Math.abs(diff));
+             compText = (diff < 0 ? "-" : "+") + compText;
+             $("#lapTable tbody tr:first-child td:nth-child(2)").append("<br>("+compText+")");
+             $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+             lapStart = now;
+           }
+         }
+         
+      </script>
+      <script>
+         /* Charting JS */
+         'use strict';
+         
+         // ----------- SPEED ------------
+         var speedChart = realTimeChart()
+         .title(" ")
+         .yTitle("kmph")
+         .xTitle("time")
+         .border(true)
+         .width(800)
+         .height(290)
+         .barWidth(1)
+         .minY(0)
+         .maxY(100);
+         d3.select("#speedChart").append("div")
+         .attr("id", "chartDiv")
+         .call(speedChart);
+         
+         function pushSpeedChart(value, time) {
+           var dt = new Date(parseInt(time));
+           var obj = {
+             value: value,
+             time: dt,
+             color: "#0949b7", // TODO choose relevant color
+             ts: dt.getTime(),
+           };
+           speedChart.datum(obj);
+         }
+         
+         // ----------- THROTTLE ------------
+         var throttleChart = realTimeChart()
+         .title(" ")
+         .yTitle("on/off")
+         .xTitle("time")
+         .border(true)
+         .width(800)
+         .height(290)
+         .barWidth(1)
+         .minY(0)
+         .maxY(1);
+         d3.select("#throttleChart").append("div")
+         .attr("id", "chartDiv")
+         .call(throttleChart);
+         
+         function pushThrottleChart(value, time) {
+           var dt = new Date(parseInt(time));
+           if (value == 0) value = 0.1;
+           var obj = {
+             value: value,
+             time: dt,
+             color: "#0949b7", // TODO choose relevant color
+             ts: dt.getTime(),
+           };
+           throttleChart.datum(obj);
+         }
+      </script>
+      <script>
+         // Timing logic
+         var runStart = new Date();
+         var lapStart = runStart; // TODO fetch both from database
+         const interval = 10;
+         const idealLapMillis = 60000;
+         function updateStopwatch() {
+           var millisText = millisToString(new Date() - runStart);
+           $("#stopwatch").text(millisText);
+           var lapText = millisToString(new Date() - lapStart);
+           $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
+           setTimeout(function() {
+             updateStopwatch();
+           }, interval);
+         }
+         updateStopwatch();
+         
+         function initLapTable() {
+           // TODO fetch from db
+           $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+         }
+         initLapTable();
+         
+         function millisToString(m) {
+           var minutes = Math.floor(m / 60000);
+           m = m % 60000;
+           var seconds = Math.floor(m / 1000);
+           m = m % 1000;
+           var millis = m;
+           return pad(minutes, 2) + ":" + pad(seconds, 2) + "." + pad(millis, 3);
+         }
+         
+         function pad(quantity, nums) {
+           s = quantity + "";
+           if (s.length >= nums) {
+             return s;
+           }
+           return pad("0"+quantity, nums);
+         }
+      </script>
+   </body>
 </html>
