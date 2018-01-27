@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
   <script src="realTimeChart.js"></script>
+  <script src="js-colormaps.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init">
   </script>
   <script src="node_modules/hashmap/hashmap.js"></script>
@@ -148,34 +149,34 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-sm-6">
-        <div class="well">
-         <p style = "font-weight:bold">Current</p>
-         <p> Double click on the map to add a note. </p>
-         <div id="map_canvas_current" style="height:300px"></div>
-         <!-- <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar"> -->
-       </div>
-     </div>
-     <div class="col-sm-6">
-      <div class="well">
-        <p style = "font-weight:bold">Previous</p>
-        <p> Description </p>
-        <div id="map_canvas_prev" style="height:300px"></div>
-      </div>
+
+  </div>
+
+
+  <div class="col-sm-2 well">     
+    <div class="well">
+      <p>Additional</p>
+    </div>
+    <div class="well">
+      <p>Additional</p>
     </div>
   </div>
-
-
 </div>
 
-
-<div class="col-sm-2 well">     
+<div class="row">
+  <div class="col-sm-6">
+    <div class="well">
+     <p style = "font-weight:bold">Current</p>
+     <p> Double click on the map to add a note. </p>
+     <div id="map_canvas_current" style="height:300px"></div>
+     <!-- <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar"> -->
+   </div>
+ </div>
+ <div class="col-sm-6">
   <div class="well">
-    <p>Additional</p>
-  </div>
-  <div class="well">
-    <p>Additional</p>
+    <p style = "font-weight:bold">Previous</p>
+    <p> Description </p>
+    <div id="map_canvas_prev" style="height:300px"></div>
   </div>
 </div>
 </div>
@@ -245,25 +246,25 @@ function parseData (data) {
 
     switch (property) {
       case "throttle": 
-        changeThrottleStats(value, time);
+      changeThrottleStats(value, time);
         // throtTimeLocHashM.set(key: time, value: prevLatLng);
         pushThrottleChart(value, time);
         break;
-      case "speed": 
+        case "speed": 
         changeSpeedStats(value, time);
         pushSpeedChart(value, time);
         break;
-      case "fault":
+        case "fault":
         parseFaultData(value);
         break;
-      case "gps":
+        case "gps":
         latestGPSTimeStamp = time;
         updateMap(value);
-      case "power": 
+        case "power": 
         // TODO: IMPLEMENT
         break;
 
-      default:
+        default:
         break;
       // TODO: case voltage (UNCONFIRMED)
     }
@@ -273,23 +274,23 @@ function parseData (data) {
 function parseFaultData(value) {
   switch (value) {
     case "0":
-      faultBMS(false);
-      faultMC(false);
-      break;
+    faultBMS(false);
+    faultMC(false);
+    break;
     case "1":
-      faultBMS(false);
-      faultMC(true);
-      break;
+    faultBMS(false);
+    faultMC(true);
+    break;
     case "2":
-      faultBMS(true);
-      faultMC(false);
-      break;
+    faultBMS(true);
+    faultMC(false);
+    break;
     case "3":
-      faultBMS(true);
-      faultMC(true);
-      break;
+    faultBMS(true);
+    faultMC(true);
+    break;
     default:
-      break;
+    break;
   }
 }
 
@@ -315,17 +316,17 @@ var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
 
 function timeToCoords(time) { // time would not be found in 
   if throtTimeLocHashM.has(key: time) {
-     return throtTimeLocHashM.get(time);
-  } else {
-    var timeP = approxTime(time);
-    return throtTimeLocHashM.get(timeP);
-   }
- }
+   return throtTimeLocHashM.get(time);
+ } else {
+  var timeP = approxTime(time);
+  return throtTimeLocHashM.get(timeP);
+}
+}
 
 </script>
 
 <script>
-  /* Maps Init JS */
+/* Maps Init JS */
 var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
 var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
 var curPos;
@@ -337,6 +338,7 @@ var colorCur = 'green';
 var drawMap;
 var latestNoteMarker;
 var polyLinesForLap = [];
+var transferPolys;
 
 function init() {
   var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
@@ -375,7 +377,7 @@ function init() {
     // if (selBool) {
     //  this.setOptions({strokeOpacity: 1});
     // } else {
-    this.setOptions({strokeOpacity: 0.5});
+      this.setOptions({strokeOpacity: 0.5});
     // }
   });
 
@@ -385,7 +387,7 @@ function init() {
     // if (selBool) {
     //  this.setOptions({strokeOpacity: 1});
     // } else {
-    this.setOptions({strokeOpacity: 0.5});
+      this.setOptions({strokeOpacity: 0.5});
     // TODO: trigger selection
     // var startTime;
     // var endTime;
@@ -414,7 +416,7 @@ function init() {
 
    // ROUTE DRAWING 
    drawMap = function(latLng, col) {
-    
+
     if (polyLinesForLap.length == 0) {
       var poly = createPoly(col);
       var path = poly.getPath();
@@ -439,6 +441,14 @@ function init() {
     }
   }
 
+ transferPolys = function() {
+  console.log(polyLinesForLap.length);
+    for (poly in polyLinesForLap) { 
+      console.log(poly);
+      poly.setMap(mapPrev);
+    }
+
+}
   
 
   // NOTE MARKING (for presentation purposes)
@@ -454,6 +464,7 @@ function init() {
   });
 
   mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+
 }
 
 function triggerSelectPolys(startTime, endTime) {
@@ -508,18 +519,68 @@ controlDiv.appendChild(controlButton);
 
 </script>
 
+<script>
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
 
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function enforceBounds(x) {
+  if (x < 0) {
+    return 0;
+  } else if (x > 1){
+    return 1;
+  } else {
+    return x;
+  }
+}
+
+function interpolateLinearly(x, values) {
+  // Split values into four lists
+  var x_values = [];
+  var r_values = [];
+  var g_values = [];
+  var b_values = [];
+  for (i in values) {
+    x_values.push(values[i][0]);
+    r_values.push(values[i][1][0]);
+    g_values.push(values[i][1][1]);
+    b_values.push(values[i][1][2]);
+  }
+   var i = 1;
+   while (x_values[i] < x) {
+    i = i+1;
+   }
+   i = i-1;
+   var width = Math.abs(x_values[i] - x_values[i+1]);
+   var scaling_factor = (x - x_values[i]) / width;
+   // Get the new color values though interpolation
+   var r = r_values[i] + scaling_factor * (r_values[i+1] - r_values[i]);
+   var g = g_values[i] + scaling_factor * (g_values[i+1] - g_values[i]);
+   var b = b_values[i] + scaling_factor * (b_values[i+1] - b_values[i]);
+   r = Math.round(255*enforceBounds(r));
+   g = Math.round(255*enforceBounds(g));
+   b = Math.round(255*enforceBounds(b));
+   return rgbToHex(r, g, b);
+  }
+
+ </script>
 <script>
 
 // Race Information 
 var lap = 1;
 var latestGPSTimeStamp;
 var latestGPSCoordinates;
-var idealThrottle = 0; // testing 
+var idealSpeed = 40.0; // testing 
 var prevLatLng;
 
 function valueToCol (ideal, value) {
-  var col = (value > ideal) ? 'red' : ((value < ideal) ? 'blue' : 'green');
+  var col = interpolateLinearly (value/ideal, Reds);
+  console.log(col);
   return col;
 }
 
@@ -529,13 +590,13 @@ function changeLastUpdatedStats(num) {
 
 function changeThrottleStats(num, lastUpdated) {
   $('#throttleStats')[0].innerHTML = "" + num;
-  var col = valueToCol (idealThrottle, num);
-  drawMap(prevLatLng, col);
   changeLastUpdatedStats(lastUpdated);
 }
 
 function changeSpeedStats(num, lastUpdated) {
   $('#speedStats')[0].innerHTML = "" + num;
+  var col = valueToCol (idealSpeed, num);
+  drawMap(prevLatLng, col);
   changeLastUpdatedStats(lastUpdated);
 }
 
@@ -559,6 +620,7 @@ function updateLap() {
   if (lap == 8) {
     // TODO: send data back to Electron
   } else {
+    transferPolys();
     lapDataArr.push(new LapData());
     lap ++;
     $('#lapNumber')[0].innerHTML = "Lap # " + lap;
@@ -566,7 +628,6 @@ function updateLap() {
 }
 
 </script>
-
 
 <script>
 /* Charting JS */
