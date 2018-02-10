@@ -70,7 +70,7 @@ function endLapDataQuery(runid, lapno, endtime, res) {
 }
 
 function startRunDataQuery(runname, starttime, res) {
-  client.query('INSERT INTO rundata (runid, lapno, starttime)' +
+  client.query('INSERT INTO rundata (runname, starttime)' +
        'VALUES ($1, $2, $3)', [runname, starttime], (err, rows) => {
       if (err){
         console.log(err.stack);
