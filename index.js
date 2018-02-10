@@ -25,74 +25,9 @@ var device_ID = "34004a000251363131363432";
 /** Race Information */
 var lap = 1;
 
-
-// // Login
-// particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
-//   function(data) {
-    
-//     console.log('LOGGED IN.');
-//     token = data.body.access_token;
-//     console.log(token);
-// 		getEventStream();
-//   },
-//   function (err) {
-//     console.log('Could not log in.', err);
-//   }
-// );
-
-/** Lap Functions */
-
-// var ifLastLap = particle.callFunction({ deviceId: 'device_ID', name: 'brew', argument: 'lap', auth: token });
-
-// ifLastLap.then(
-//   function(data) {
-//     console.log('Function called succesfully:', data);
-//   }, function(err) {
-//     console.log('An error occurred:', err);
-//   });
-
-// // Get event stream
-// function getEventStream() {
-// 	//Successful login: get devices events
-//   console.log('Begin event stream.');
-//   console.log(token);
-// 	particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-//     stream.on('event', function(json) {
-//     console.log("Event: " + json);
-//     console.log(JSON.stringify(json, null, 4));
-//     processLiveData (json.data);
-//     });
-//   });
-// }
-
-// function processLiveData (data) {
-//   // Parse live data 
-//   var data_arr = data.split("_");
-
-//   for (var i in data_arr) {
-
-//     var data_i = data_arr[i];
-//     var data_i_arr = data_i.split(";");
-//     var property = data_i_arr[0];
-//     var value = data_i_arr[1];
-//     var time = data_i_arr[2];
-
-//     switch (property) {
-//       case "throttle": 
-//          changeThrottleStats(value);
-//         break;
-//       case "speed": 
-//          changeSpeedStats(value);
-//         break;
-//       default:
-//         break;
-//     }
-//   }
-// }
-
-function insertQuery(property, value, res) {
+function insertDataQuery(property, value, res) {
   client.query('INSERT INTO data (timestamp, property, value)' +
-       'VALUES (NOW(), $1, $2)', [property, value], (err, rows) => {
+       'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -101,11 +36,48 @@ function insertQuery(property, value, res) {
       res.end("sent");
       
     });
-
 }
 
-// Database: Post data
-app.post('/add', function (req, res) {
+function insertRunDataQuery(property, value, res) {
+  client.query('INSERT INTO rundata (runid, lapno, starttime, endtime)' +
+       'VALUES ($1, $2, $3)', [property, value], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      res.end("sent");
+      
+    });
+}
+
+ runid     | integer                     |           |          | 
+ lapno     | integer                     |           |          | 
+ starttime | timestamp without time zone |           |          | 
+ endtime
+
+// Database: Post Data
+app.post('/addData', function (req, res) {
+  console.log("reached add request function");
+  var data = req.body.data;
+  console.log(req.body.data);
+
+  var data_arr = data.split("_");
+  for (var i in data_arr) {
+
+    var data_i = data_arr[i];
+    var data_i_arr = data_i.split(";");
+
+    var property = data_i_arr[0];
+    var value = data_i_arr[1];
+    var time = data_i_arr[2];
+    console.log(value);
+    insertDataQuery(property, value, res);
+  }
+});
+
+// Database: Post runData
+app.post('/addRunData', function (req, res) {
   console.log("reached add request function");
   var data = req.body.data;
   console.log(req.body.data);
