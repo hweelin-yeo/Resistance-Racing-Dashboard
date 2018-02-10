@@ -17,9 +17,12 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+app.use('/live', express.static('live-timing.html'))
 
 /** Server Information */
-app.listen(process.env.PORT || 5000);
+app.listen(process.env.PORT || 5000, function() {
+  console.log("Listening on port " + (process.env.PORT || 5000));
+});
 
 /** Particle Information */
 var Particle = require('particle-api-js');
@@ -92,7 +95,6 @@ function endRunDataQuery(runname, endtime, res) {
         console.log(rows.rows[0]);
       }
       res.end("sent");
-      
     });
 }
 
