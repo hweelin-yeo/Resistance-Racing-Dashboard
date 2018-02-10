@@ -70,7 +70,7 @@ function endLapDataQuery(runid, lapno, endtime, res) {
 }
 
 function startRunDataQuery(runname, starttime, res) {
-  console.log(starttime);
+  console.log("START TIME IS "+ starttime);
   client.query('INSERT INTO rundata (runname, starttime)' +
        'VALUES ($1, $2)', [runname, starttime], (err, rows) => {
       if (err){
