@@ -51,7 +51,7 @@ function constructBatch() {
 	sensorReadingsQueue = [];
 	const batchData = batchStrings.join("_");
 	console.log("Sending batch to Particle Cloud...");
-	var publishPromise = particle.publishEvent({ name: "general", data: batchData, auth: token });
+	var publishPromise = particle.publishEvent({ name: "General", data: batchData, auth: token });
 	publishPromise.then(
   		function(data) {
     		if (data.body.ok) { console.log("Batch published!") }

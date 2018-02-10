@@ -1,0 +1,95 @@
+<html>
+	<head>
+		<title>Speed Test</title>
+		<meta charset="utf-8">
+	  	<meta name="viewport" content="width=device-width, initial-scale=1">
+	  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	  	<script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
+	</head>
+	<body>
+		<div class="container text-center">
+			<div class="row">
+				<div class="col-sm-12">
+					<img id="currentView" src="https://maps.googleapis.com/maps/api/streetview?size=640x400&fov=180&location=38.16121,-122.45422&heading=306&pitch=0&key=AIzaSyB-MC67BpUc_cYMDFXNNV4rOErGHXmOo7Q" />
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var latestGPSCoordinates = "38.16121,-122.45422";
+			// Particle
+			var particle = new Particle();
+			var token;
+			particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+           		function(data) {
+             		console.log('LOGGED IN.');
+             		token = data.body.access_token;
+             		console.log(token);
+             		getEventStream();
+           		},
+           		function (err) {
+             		console.log('Could not log in.', err);
+           		}
+           	);
+         
+         	// Get event stream
+         	function getEventStream() {
+           		//Successful login: get devices events
+           		console.log('Begin event stream.');
+           		particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+             		stream.on('event', function(json) {
+               			console.log(JSON.stringify(json, null, 4));
+               			parseData (json.data);
+             		});
+           		});
+         	}
+         
+         	// Parse live data
+         	function parseData (data) {
+         		console.log("Parsing..."+data);
+           		// Parse live data 
+           		var dataArr = data.split("_");
+           		for (var i in dataArr) {
+             		var dataI = dataArr[i];
+             		var dataIArr = dataI.split(";");
+             		var property = dataIArr[0];
+             		var value = dataIArr[1];
+             		var time = dataIArr[2];
+
+             		switch (property) {
+                 		case "gps":
+                 			updateImage(value);
+                 			latestGPSCoordinates = value;
+                 			break;
+                 		default:
+                 			break;
+             		}
+           		}
+         	}
+
+         	function getHeading(newGPS) {
+         		if (newGPS == latestGPSCoordinates) {
+         			return 306;
+         		}
+         		var latLng2_arr = newGPS.split(",");
+           		var lat2 = parseFloat(latLng2_arr[0]);
+           		var lng2 = parseFloat(latLng2_arr[1]);
+           		var latLng1_arr = latestGPSCoordinates.split(",");
+           		var lat1 = parseFloat(latLng1_arr[0]);
+           		var lng1 = parseFloat(latLng1_arr[1]);
+           		var atan = Math.atan2(lat2-lat1, lng2-lng1);
+           		if (atan < 0) atan += Math.PI;
+           		return atan * 180.0 / Math.PI;
+         	}
+
+         	function updateImage(newGPS) {
+         		console.log("Updating image...");
+         		var URL = "https://maps.googleapis.com/maps/api/streetview?size=640x400&fov=180&location="+newGPS+"&heading="+getHeading(newGPS)+"&pitch=0&key=AIzaSyB-MC67BpUc_cYMDFXNNV4rOErGHXmOo7Q";
+         		$("#currentView").attr('src', URL);
+         		console.log("Updated.");
+         	}
+		</script>
+	</body>
+</html>
