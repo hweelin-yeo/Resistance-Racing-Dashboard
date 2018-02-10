@@ -194,7 +194,12 @@
 </footer>
 
 <script>
-  var runID = 999999999;
+var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
+var startRunEndPoint = endPointBaseURL + "startRunData";
+var endRunEndPoint = endPointBaseURL + "endRunData";
+var startLapEndPoint = endPointBaseURL + "startLapData";
+var endLapEndPoint = endPointBaseURL + "endLapData";
+var runID = 999999999;
 </script>
 
 <script>
@@ -489,27 +494,29 @@ var token;
           var startTime = $.now();
           $("#run-name-input").value= "";
           startTimer();
-          insertRunQuery(runName, startTime);
-         }
+          $.post(startRunEndPoint, function( data ) {
+            console.log(data);
+          });
+        }
 
-         function insertRunQuery(runName, startTime) {
-
-          
-         }
-
-         function addEndTimeInfo (endTime, runID) {
-
-         }
-
-         function startTimer() {
-
-         }
-
-         </script>
+        function insertRunQuery(runName, startTime) {
 
 
+        }
 
-         <script>
+        function addEndTimeInfo (endTime, runID) {
+
+        }
+
+        function startTimer() {
+
+        }
+
+        </script>
+
+
+
+        <script>
          // Input form div, for google maps note taking later on
          var controlDiv = document.createElement('DIV');
          controlDiv.id = "controls";
