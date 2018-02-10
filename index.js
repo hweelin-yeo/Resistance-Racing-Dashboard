@@ -7,7 +7,7 @@ const client = new Client({
   ssl: false, 
 });
 
-client.connect();
+client.connect((err) => {console.log("Postgres connection error: " + err);});
 
 var bodyparser = require('body-parser');
 app.use(bodyparser.json());
