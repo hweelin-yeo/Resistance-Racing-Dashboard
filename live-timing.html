@@ -491,11 +491,12 @@ var token;
 
          function registerRun() {
           var runName =  $("#run-name-input").val();
-          var startTime = $.now();
+          var startTime = new Date();
+          startTime.toISOString();
           console.log("startTime is "+ startTime);
           $("#run-name-input").value= "";
           startTimer();
-          $.post(startRunEndPoint, { runname: runName, startTime: startTime}).done(function(data) {
+          $.post(startRunEndPoint, { runname: runName, starttime: startTime}).done(function(data) {
             console.log("done");
             console.log(data);
           });
