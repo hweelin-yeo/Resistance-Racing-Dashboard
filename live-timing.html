@@ -253,6 +253,7 @@ var token;
                  break;
                  case "gps":
                  latestGPSTimeStamp = time;
+                 latestGPSCoordinates = value;
                  updateMap(value);
                  case "power": 
                  // TODO: IMPLEMENT
@@ -602,7 +603,13 @@ var token;
          var prevLatLng;
          
          function valueToCol (ideal, value) {
-           var col = interpolateLinearly (value/ideal, Reds);
+           console.log(ideal);
+           var col;
+           if (value/ideal > 1) {
+             col = interpolateLinearly((value/ideal)-1, Greens);
+           } else {
+             col = interpolateLinearly (1-(value/ideal), Reds);
+           }
            console.log(col);
            return col;
          }
@@ -616,8 +623,23 @@ var token;
            changeLastUpdatedStats(lastUpdated);
          }
          
+         function mockIdealSpeed(gps) {
+           if (!gps) return 40;
+           console.log(gps);
+           var latLng_arr = gps.split(",");
+           console.log(latLng_arr);
+           var lat = parseFloat(latLng_arr[0]);
+           var lng = parseFloat(latLng_arr[1]);
+           var l2 = Math.sqrt(lat*lat + lng*lng);
+           console.log(l2);
+           return 40+20*Math.sin(l2*1000);
+         }
+
          function changeSpeedStats(num, lastUpdated) {
            $('#speedStats')[0].innerHTML = "" + num;
+           console.log("here");
+           var idealSpeed = mockIdealSpeed(latestGPSCoordinates);
+           console.log("Ideal: "+idealSpeed);
            var col = valueToCol (idealSpeed, num);
            drawMap(prevLatLng, col);
            changeLastUpdatedStats(lastUpdated);

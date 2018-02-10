@@ -7,6 +7,15 @@
 	  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	  	<script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
+	  	<style>
+	  		#speed_display {
+	  			margin:20px auto;
+	  			font-size:20px;
+	  		}
+	  		#speed_val {
+	  			font-size:32px;
+	  		}
+	  	</style>
 	</head>
 	<body>
 		<div class="container text-center">
@@ -15,10 +24,19 @@
 					<img id="currentView" src="https://maps.googleapis.com/maps/api/streetview?size=640x400&fov=180&location=38.16121,-122.45422&heading=306&pitch=0&key=AIzaSyB-MC67BpUc_cYMDFXNNV4rOErGHXmOo7Q" />
 				</div>
 			</div>
+			<div class="row" id="speed_display">
+				<div class="col-sm-12">
+					<b>Your Speed</b>
+				</div>
+				<div class="col-sm-12">
+					<span id="speed_val">0</span> kmph
+				</div>
+			</div>
 		</div>
 
 		<script>
 			var latestGPSCoordinates = "38.16121,-122.45422";
+			var currentSpeed = 0;
 			// Particle
 			var particle = new Particle();
 			var token;
@@ -79,8 +97,9 @@
            		var latLng1_arr = latestGPSCoordinates.split(",");
            		var lat1 = parseFloat(latLng1_arr[0]);
            		var lng1 = parseFloat(latLng1_arr[1]);
-           		var atan = Math.atan2(lat2-lat1, lng2-lng1);
-           		if (atan < 0) atan += Math.PI;
+           		var atan = Math.atan2(lng2-lng1, lat2-lat1);
+           		console.log(atan);
+           		if (atan < 0) atan += 2*Math.PI;
            		return atan * 180.0 / Math.PI;
          	}
 
@@ -90,6 +109,49 @@
          		$("#currentView").attr('src', URL);
          		console.log("Updated.");
          	}
+
+         	$(document).keydown(function(e) {
+			    switch(e.which) {
+			        case 38: currentSpeed = Math.min(80, currentSpeed+1);
+			        break;
+			        case 40: currentSpeed = Math.max(0, currentSpeed-1);
+			        break;
+			        default: return; // exit this handler for other keys
+			    }
+			    $("#speed_val").text(currentSpeed);
+			    e.preventDefault(); // prevent the default action (scroll / move caret)
+			});
+
+         	var sensorReadingsQueue = [];
+         	setInterval(function() {
+         		const nowDatetime = new Date();
+         		const nowEpoch = nowDatetime.getTime()
+         		sensorReadingsQueue.push({name: "speed", value: currentSpeed, epoch: nowEpoch});
+         	}, 250);
+
+         	function constructBatch() {
+				var batchStrings = [];
+				sensorReadingsQueue.forEach(function(sensorReading) {
+					batchStrings.push(sensorReading.name + ";" + sensorReading.value + ";" + sensorReading.epoch);
+				});
+				sensorReadingsQueue = [];
+				const batchData = batchStrings.join("_");
+				console.log("Sending batch to Particle Cloud...");
+				var publishPromise = particle.publishEvent({ name: "general", data: batchData, auth: token });
+				publishPromise.then(
+			  		function(data) {
+			    		if (data.body.ok) { console.log("Batch published!") }
+			  		},
+			  		function(err) {
+			    		console.log("Failed to publish batch: " + err)
+			    		console.log(batchData);
+			  		}
+				);
+			}
+
+			const batchFrequency = 1500;
+
+			setInterval(constructBatch, batchFrequency);
 		</script>
 	</body>
 </html>
