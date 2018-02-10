@@ -39,7 +39,7 @@ function insertDataQuery(property, value, res) {
 }
 
 function insertLapDataQuery(runid, lapno, starttime, endtime, res) {
-  client.query('INSERT INTO rundata (runid, lapno, starttime, endtime)' +
+  client.query('INSERT INTO lapdata (runid, lapno, starttime, endtime)' +
        'VALUES ($1, $2, $3)', [runid, lapno, starttime, endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
