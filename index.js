@@ -12,6 +12,11 @@ client.connect((err) => { if (err) console.log("Postgres connection error: " + e
 var bodyparser = require('body-parser');
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 /** Server Information */
 app.listen(process.env.PORT || 5000);
@@ -38,9 +43,9 @@ function insertDataQuery(property, value, res) {
     });
 }
 
-function insertLapDataQuery(runid, lapno, starttime, endtime, res) {
-  client.query('INSERT INTO rundata (runid, lapno, starttime, endtime)' +
-       'VALUES ($1, $2, $3)', [runid, lapno, starttime, endtime], (err, rows) => {
+function startLapDataQuery(runid, lapno, starttime, res) {
+  client.query('INSERT INTO lapdata (runid, lapno, starttime)' +
+       'VALUES ($1, $2, $3)', [runid, lapno, starttime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -51,9 +56,36 @@ function insertLapDataQuery(runid, lapno, starttime, endtime, res) {
     });
 }
 
-function insertRunDataQuery(runname, starttime, endtime, res) {
-  client.query('INSERT INTO rundata (runid, lapno, starttime, endtime)' +
-       'VALUES ($1, $2, $3)', [runname, starttime, endtime], (err, rows) => {
+function endLapDataQuery(runid, lapno, endtime, res) {
+  client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+       [runid, lapno, endtime], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      res.end("sent");
+      
+    });
+}
+
+function startRunDataQuery(runname, starttime, res) {
+  console.log("START TIME IS "+ starttime);
+  client.query('INSERT INTO rundata (runname, starttime)' +
+       'VALUES ($1, $2)', [runname, starttime], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      res.end("sent");
+      
+    });
+}
+
+function endRunDataQuery(runname, endtime, res) {
+  client.query('UPDATE rundata SET endtime = ($2) WHERE runname = ($1)', 
+       [runname, endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -65,24 +97,37 @@ function insertRunDataQuery(runname, starttime, endtime, res) {
 }
 
 // Webhook from live-timing.html: Post LapData
-app.post('/addLapData', function (req, res) {
+app.post('/startLapData', function (req, res) {
   console.log("reached add lap data request function");
   var runid = req.body.runid;
   var lapno = req.body.lapno;
   var starttime = req.body.starttime;
+  startLapDataQuery(runid, lapno, starttime, res);
+  
+});
+
+app.post('/endLapData', function (req, res) {
+  console.log("reached add lap data request function");
+  var runid = req.body.runid;
+  var lapno = req.body.lapno;
   var endtime = req.body.endtime;
-  insertRunDataQuery(runid, lapno, starttime, endtime, res);
+  endLapDataQuery(runid, lapno, endtime, res);
   
 });
 
 // Webhook from live-timing.html: Post RunData
-app.post('/addRunData', function (req, res) {
+app.post('/startRunData', function (req, res) {
   console.log("reached add run data request function");
   var runname = req.body.runname;
   var starttime = req.body.starttime;
-  var endtime = req.body.endtime;
-  insertRunDataQuery(runname, starttime, endtime, res);
+  startRunDataQuery(runname, starttime, res);
   
+});
+
+app.post('/endRunData', function (req, res) {
+  console.log("reached add run data request function");
+  var endtime = req.body.endtime;
+  endRunDataQuery(runname, endtime, res);
 });
 
 // Webhook from Electron: Post Data
