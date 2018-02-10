@@ -38,9 +38,9 @@ function insertDataQuery(property, value, res) {
     });
 }
 
-function insertRunDataQuery(property, value, res) {
+function insertLapDataQuery(runid, lapno, starttime, endtime, res) {
   client.query('INSERT INTO rundata (runid, lapno, starttime, endtime)' +
-       'VALUES ($1, $2, $3)', [property, value], (err, rows) => {
+       'VALUES ($1, $2, $3)', [runid, lapno, starttime, endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -51,12 +51,41 @@ function insertRunDataQuery(property, value, res) {
     });
 }
 
- runid     | integer                     |           |          | 
- lapno     | integer                     |           |          | 
- starttime | timestamp without time zone |           |          | 
- endtime
+function insertRunDataQuery(runname, starttime, endtime, res) {
+  client.query('INSERT INTO rundata (runid, lapno, starttime, endtime)' +
+       'VALUES ($1, $2, $3)', [runname, starttime, endtime], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      res.end("sent");
+      
+    });
+}
 
-// Database: Post Data
+// Webhook from live-timing.html: Post LapData
+app.post('/addLapData', function (req, res) {
+  console.log("reached add lap data request function");
+  var runid = req.body.runid;
+  var lapno = req.body.lapno;
+  var starttime = req.body.starttime;
+  var endtime = req.body.endtime;
+  insertRunDataQuery(runid, lapno, starttime, endtime, res);
+  
+});
+
+// Webhook from live-timing.html: Post RunData
+app.post('/addRunData', function (req, res) {
+  console.log("reached add run data request function");
+  var runname = req.body.runname;
+  var starttime = req.body.starttime;
+  var endtime = req.body.endtime;
+  insertRunDataQuery(runname, starttime, endtime, res);
+  
+});
+
+// Webhook from Electron: Post Data
 app.post('/addData', function (req, res) {
   console.log("reached add request function");
   var data = req.body.data;
@@ -75,28 +104,6 @@ app.post('/addData', function (req, res) {
     insertDataQuery(property, value, res);
   }
 });
-
-// Database: Post runData
-app.post('/addRunData', function (req, res) {
-  console.log("reached add request function");
-  var data = req.body.data;
-  console.log(req.body.data);
-
-  var data_arr = data.split("_");
-  for (var i in data_arr) {
-
-    var data_i = data_arr[i];
-    var data_i_arr = data_i.split(";");
-
-    var property = data_i_arr[0];
-    var value = data_i_arr[1];
-    var time = data_i_arr[2];
-    console.log(value);
-    insertQuery(property, value, res);
-  }
-});
-
-  
 
   // Database: Get all results
   app.get('/db', function (req, res) {
