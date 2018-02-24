@@ -89,9 +89,8 @@ function startRunDataQuery(runname, starttime, res) {
 }
 
 function endRunDataQuery(endtime, res) {
-  client.query('UPDATE rundata SET endtime = ($1) WHERE id IN(
-       SELECT max(id) FROM rundata
-)', 
+  client.query('UPDATE rundata SET endtime = ($1)' +
+    'WHERE id IN( SELECT max(id) FROM rundata)', 
        [endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
