@@ -11,8 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
   <script src="realTimeChart.js"></script>
   <script src="js-colormaps.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init"></script>
-  <script src="node_modules/hashmap/hashmap.js"></script>
+  <script src="hashmap.js"></script>
   <link rel="stylesheet" href="realTimeChart.css">
   <style>    
   footer {
@@ -41,7 +40,7 @@
 }
 </style>
 </head>
-<body onload = "init()">
+<body>
   <div class="container text-center">
    <!-- <div class="col-sm-12">  -->   
    <div class="row">
@@ -811,5 +810,6 @@ var token;
            return pad("0"+quantity, nums);
          }
          </script>
+         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init"></script>
        </body>
        </html>
