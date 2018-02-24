@@ -33,7 +33,7 @@ const FaultSensor = new MockSensor("fault", 5000, function(epoch) {
 const GPSSensor = new MockSensor("gps", 1500, function(epoch) {
 	if (!gpsLoaded) return;
 	var latlon = waypoints[waypointIndex].lat + "," + waypoints[waypointIndex].lon;
-	waypointIndex++;
+	waypointIndex+=2;
 	if (waypointIndex == waypoints.length) waypointIndex = 0;
 	return latlon;
 })
