@@ -18,6 +18,8 @@ app.use(function(req, res, next) {
     next();
 });
 app.use('/live', express.static('live-timing.html'))
+app.use('/user-test', express.static('control-speed.html'))
+app.use(express.static('static'))
 
 /** Server Information */
 app.listen(process.env.PORT || 5000, function() {
