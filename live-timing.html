@@ -67,7 +67,7 @@
    <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 1 </p>
  </div>
  <div class = "col-sm-6">
-  <button onClick = "updateLap()" type="button" class="btn btn-danger btn-higher">Next Lap</button>
+  <button onClick = "updateLap()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
   <div> <br> </div>
 </div>
 
@@ -198,7 +198,8 @@ var startRunEndPoint = endPointBaseURL + "startRunData";
 var endRunEndPoint = endPointBaseURL + "endRunData";
 var startLapEndPoint = endPointBaseURL + "startLapData";
 var endLapEndPoint = endPointBaseURL + "endLapData";
-var runID = 999999999;
+var runIDEndPoint = endPointBaseURL + "getRunID";
+var lapNoEndPoint = = endPointBaseURL + "getLapNo";
 </script>
 
 <script>
@@ -488,6 +489,7 @@ var token;
          </script>
 
          <script>
+
          var registerRun = true;
 
          function registerEndRun() {
@@ -522,10 +524,24 @@ var token;
         }
 
         function insertRunQuery(runName, startTime) {
-          $.post(startLapEndPoint, { runid: runName, lapno: endTime, starttime: startTime}).done(function(data) {
+          var runID;
+          var lapNo;
+          var startTime = new Date();
+          startTime = startTime.toLocaleString('en-US');
+
+          $.get(runIDEndPoint).done(function(data) {
+              console.log(data);
+              runID = data;
+            });
+
+          $.get(lapNoEndPoint, {runname: runName, starttime: startTime}).done(function(data) {
+              console.log(data);
+              lapNo = data;
+            });
+          
+          $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
               console.log("ended run");
               console.log(data);
-              
             });
 
         }
@@ -697,7 +713,9 @@ var token;
            if (lap == 8) {
              // TODO: send data back to Electron
            } else {
+             $("#lapButton").text('Next Lap');
              transferPolys();
+
              // lapDataArr.push(new LapData());
              lap ++;
              $('#lapNumber')[0].innerHTML = "Lap # " + lap;
@@ -710,6 +728,8 @@ var token;
              lapStart = now;
            }
          }
+
+
          
          </script>
          <script>

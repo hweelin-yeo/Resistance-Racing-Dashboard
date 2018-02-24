@@ -87,7 +87,7 @@ var gpxParse = require("gpx-parse");
 var gpsLoaded = false;
 var waypoints;
 var waypointIndex = 0;
-gpxParse.parseGpxFromFile("./sonoma-test.gpx.xml", function(error, data) {
+gpxParse.parseGpxFromFile("./static/sonoma-test.gpx.xml", function(error, data) {
 	waypoints = data.tracks[0].segments[0];
 	gpsLoaded = true;
 });
