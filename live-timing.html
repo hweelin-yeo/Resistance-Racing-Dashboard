@@ -81,7 +81,7 @@
 </div>
 
 <div class = "col-sm-2">
-  <button onClick = "registerEndRun()" id = "registerEndRun" type="button" class="btn btn-warning">Register Run</button>
+  <button onClick = "registerEndRun()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
 </div>
 <div> <br> </div>
 <!-- </div> -->
@@ -489,14 +489,12 @@ var token;
 
          <script>
          var registerRun = true;
-         var runName;
-         var runID;
 
          function registerEndRun() {
           if (registerRun) {
             runName =  $("#run-name-input").val();
             var startTime = new Date();
-            startTime.toISOString();
+            startTime = startTime.toLocaleString('en-US');
             console.log("startTime is "+ startTime);
             startTimer();
             $.post(startRunEndPoint, { runname: runName, starttime: startTime}).done(function(data) {
@@ -504,19 +502,20 @@ var token;
               console.log(data);
             });
             registerRun = false;
-            $('#registerEndRun').text('End Run');
-            $('#registerEndRun').removeClass("btn-warning").addClass("btn-danger");
+            $('#runButton').text('End Run');
+            $('#runButton').removeClass("btn-warning").addClass("btn-danger");
           } 
 
           else {
             var endTime = new Date();
+            endTime = endTime.toLocaleString('en-US');
             $.post(endRunEndPoint, {endtime: endTime}).done(function(data) {
               console.log("ended run");
               console.log(data);
             });
-            $('#registerEndRun').removeClass("btn-danger").addClass("btn-warning");
+            $('#runButton').removeClass("btn-danger").addClass("btn-warning");
             $('#run-name-input').val('');
-            $('#registerEndRun').text('Register Run');
+            $('#runButton').text('Register Run');
             registerRun = true;
           }
 
