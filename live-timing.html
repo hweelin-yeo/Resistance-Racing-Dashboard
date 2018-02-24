@@ -509,7 +509,7 @@ var token;
 
           else {
             var endTime = new Date();
-            $.post(endRunEndPoint, { runname: runName, endTime: endTime}).done(function(data) {
+            $.post(endRunEndPoint, { runname: runName, endtime: endTime}).done(function(data) {
               console.log("ended run");
               console.log(data);
             });
@@ -522,7 +522,7 @@ var token;
         }
 
         function insertRunQuery(runName, startTime) {
-          
+
 
         }
 
