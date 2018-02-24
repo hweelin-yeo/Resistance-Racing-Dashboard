@@ -313,7 +313,7 @@ var token;
          var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
          
          function timeToCoords(time) { // time would not be found in 
-           if throtTimeLocHashM.has(key: time) {
+           if (throtTimeLocHashM.has(time)) {
             return throtTimeLocHashM.get(time);
           } else {
            var timeP = approxTime(time);
