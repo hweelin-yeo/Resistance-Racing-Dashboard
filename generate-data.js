@@ -30,14 +30,14 @@ const ThrottleSensor = new MockSensor("throttle", 250, function(epoch) {
 const FaultSensor = new MockSensor("fault", 5000, function(epoch) {
 	return epoch % 4;
 });
-const GPSSensor = new MockSensor("gps", 1000, function(epoch) {
+const GPSSensor = new MockSensor("gps", 1500, function(epoch) {
 	if (!gpsLoaded) return;
 	var latlon = waypoints[waypointIndex].lat + "," + waypoints[waypointIndex].lon;
 	waypointIndex++;
 	if (waypointIndex == waypoints.length) waypointIndex = 0;
 	return latlon;
 })
-const ConnectedSensors = [SpeedSensor, ThrottleSensor, FaultSensor, GPSSensor];
+const ConnectedSensors = [GPSSensor];
 ConnectedSensors.forEach(function(sensor) {
 	sensor.connectSensor();
 });
@@ -63,7 +63,7 @@ function constructBatch() {
 	);
 }
 
-const batchFrequency = 1000; // frequency (in ms) at which batches are to be published
+const batchFrequency = 1500; // frequency (in ms) at which batches are to be published
 
 /* Particle Setup */
 var Particle = require('particle-api-js');

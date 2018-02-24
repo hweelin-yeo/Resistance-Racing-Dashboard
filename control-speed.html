@@ -1,0 +1,157 @@
+<html>
+	<head>
+		<title>Speed Test</title>
+		<meta charset="utf-8">
+	  	<meta name="viewport" content="width=device-width, initial-scale=1">
+	  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	  	<script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
+	  	<style>
+	  		#speed_display {
+	  			margin:20px auto;
+	  			font-size:20px;
+	  		}
+	  		#speed_val {
+	  			font-size:32px;
+	  		}
+	  	</style>
+	</head>
+	<body>
+		<div class="container text-center">
+			<div class="row">
+				<div class="col-sm-12">
+					<img id="currentView" src="https://maps.googleapis.com/maps/api/streetview?size=640x400&fov=180&location=38.16121,-122.45422&heading=306&pitch=0&key=AIzaSyB-MC67BpUc_cYMDFXNNV4rOErGHXmOo7Q" />
+				</div>
+			</div>
+			<div class="row" id="speed_display">
+				<div class="col-sm-12">
+					<b>Your Speed</b>
+				</div>
+				<div class="col-sm-12">
+					<span id="speed_val">0</span> kmph
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var latestGPSCoordinates = "38.16121,-122.45422";
+			var currentSpeed = 0;
+			// Particle
+			var particle = new Particle();
+			var token;
+			particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+           		function(data) {
+             		console.log('LOGGED IN.');
+             		token = data.body.access_token;
+             		console.log(token);
+             		getEventStream();
+           		},
+           		function (err) {
+             		console.log('Could not log in.', err);
+           		}
+           	);
+         
+         	// Get event stream
+         	function getEventStream() {
+           		//Successful login: get devices events
+           		console.log('Begin event stream.');
+           		particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+             		stream.on('event', function(json) {
+               			console.log(JSON.stringify(json, null, 4));
+               			parseData (json.data);
+             		});
+           		});
+         	}
+         
+         	// Parse live data
+         	function parseData (data) {
+         		console.log("Parsing..."+data);
+           		// Parse live data 
+           		var dataArr = data.split("_");
+           		for (var i in dataArr) {
+             		var dataI = dataArr[i];
+             		var dataIArr = dataI.split(";");
+             		var property = dataIArr[0];
+             		var value = dataIArr[1];
+             		var time = dataIArr[2];
+
+             		switch (property) {
+                 		case "gps":
+                 			updateImage(value);
+                 			latestGPSCoordinates = value;
+                 			break;
+                 		default:
+                 			break;
+             		}
+           		}
+         	}
+
+         	function getHeading(newGPS) {
+         		if (newGPS == latestGPSCoordinates) {
+         			return 306;
+         		}
+         		var latLng2_arr = newGPS.split(",");
+           		var lat2 = parseFloat(latLng2_arr[0]);
+           		var lng2 = parseFloat(latLng2_arr[1]);
+           		var latLng1_arr = latestGPSCoordinates.split(",");
+           		var lat1 = parseFloat(latLng1_arr[0]);
+           		var lng1 = parseFloat(latLng1_arr[1]);
+           		var atan = Math.atan2(lng2-lng1, lat2-lat1);
+           		console.log(atan);
+           		if (atan < 0) atan += 2*Math.PI;
+           		return atan * 180.0 / Math.PI;
+         	}
+
+         	function updateImage(newGPS) {
+         		console.log("Updating image...");
+         		var URL = "https://maps.googleapis.com/maps/api/streetview?size=640x400&fov=180&location="+newGPS+"&heading="+getHeading(newGPS)+"&pitch=0&key=AIzaSyB-MC67BpUc_cYMDFXNNV4rOErGHXmOo7Q";
+         		$("#currentView").attr('src', URL);
+         		console.log("Updated.");
+         	}
+
+         	$(document).keydown(function(e) {
+			    switch(e.which) {
+			        case 38: currentSpeed = Math.min(80, currentSpeed+1);
+			        break;
+			        case 40: currentSpeed = Math.max(0, currentSpeed-1);
+			        break;
+			        default: return; // exit this handler for other keys
+			    }
+			    $("#speed_val").text(currentSpeed);
+			    e.preventDefault(); // prevent the default action (scroll / move caret)
+			});
+
+         	var sensorReadingsQueue = [];
+         	setInterval(function() {
+         		const nowDatetime = new Date();
+         		const nowEpoch = nowDatetime.getTime()
+         		sensorReadingsQueue.push({name: "speed", value: currentSpeed, epoch: nowEpoch});
+         	}, 250);
+
+         	function constructBatch() {
+				var batchStrings = [];
+				sensorReadingsQueue.forEach(function(sensorReading) {
+					batchStrings.push(sensorReading.name + ";" + sensorReading.value + ";" + sensorReading.epoch);
+				});
+				sensorReadingsQueue = [];
+				const batchData = batchStrings.join("_");
+				console.log("Sending batch to Particle Cloud...");
+				var publishPromise = particle.publishEvent({ name: "general", data: batchData, auth: token });
+				publishPromise.then(
+			  		function(data) {
+			    		if (data.body.ok) { console.log("Batch published!") }
+			  		},
+			  		function(err) {
+			    		console.log("Failed to publish batch: " + err)
+			    		console.log(batchData);
+			  		}
+				);
+			}
+
+			const batchFrequency = 1500;
+
+			setInterval(constructBatch, batchFrequency);
+		</script>
+	</body>
+</html>
