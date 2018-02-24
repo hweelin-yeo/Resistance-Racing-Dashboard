@@ -490,6 +490,7 @@ var token;
          <script>
          var registerRun = true;
          var runName;
+         var runID;
 
          function registerEndRun() {
           if (registerRun) {
@@ -509,7 +510,7 @@ var token;
 
           else {
             var endTime = new Date();
-            $.post(endRunEndPoint, { runname: runName, endtime: endTime}).done(function(data) {
+            $.post(endRunEndPoint, {endtime: endTime}).done(function(data) {
               console.log("ended run");
               console.log(data);
             });
@@ -522,7 +523,11 @@ var token;
         }
 
         function insertRunQuery(runName, startTime) {
-
+          $.post(startLapEndPoint, { runid: runName, lapno: endTime, starttime: startTime}).done(function(data) {
+              console.log("ended run");
+              console.log(data);
+              
+            });
 
         }
 

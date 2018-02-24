@@ -30,7 +30,7 @@ var device_ID = "34004a000251363131363432";
 /** Race Information */
 var lap = 1;
 
-function insertDataQuery(property, value, res) {
+function insertDataQuery(time, property, value, res) {
   client.query('INSERT INTO data (timestamp, property, value)' +
        'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
       if (err){
@@ -83,8 +83,8 @@ function startRunDataQuery(runname, starttime, res) {
     });
 }
 
-function endRunDataQuery(runname, endtime, res) {
-  client.query('UPDATE rundata SET endtime = ($2) WHERE runname = ($1)', 
+function endRunDataQuery(endtime, res) {
+  client.query('UPDATE rundata SET endtime = ($1) WHERE runname = ($1)', 
        [runname, endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
@@ -126,9 +126,8 @@ app.post('/startRunData', function (req, res) {
 
 app.post('/endRunData', function (req, res) {
   console.log("reached add run data request function");
-  var runname = req.body.runname;
   var endtime = req.body.endtime;
-  endRunDataQuery(runname, endtime, res);
+  endRunDataQuery(endtime, res);
 });
 
 // Webhook from Electron: Post Data
@@ -147,7 +146,7 @@ app.post('/addData', function (req, res) {
     var value = data_i_arr[1];
     var time = data_i_arr[2];
     console.log(value);
-    insertDataQuery(property, value, res);
+    insertDataQuery(time, property, value, res);
   }
 });
 
