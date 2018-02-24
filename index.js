@@ -87,8 +87,10 @@ function startRunDataQuery(runname, starttime, res) {
 }
 
 function endRunDataQuery(endtime, res) {
-  client.query('UPDATE rundata SET endtime = ($1) WHERE runname = ($1)', 
-       [runname, endtime], (err, rows) => {
+  client.query('UPDATE rundata SET endtime = ($1) WHERE id IN(
+       SELECT max(id) FROM rundata
+)', 
+       [endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -127,7 +129,7 @@ app.post('/startRunData', function (req, res) {
 });
 
 app.post('/endRunData', function (req, res) {
-  console.log("reached add run data request function");
+  console.log("reached end run data request function");
   var endtime = req.body.endtime;
   endRunDataQuery(endtime, res);
 });
