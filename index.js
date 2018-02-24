@@ -126,6 +126,7 @@ app.post('/startRunData', function (req, res) {
 
 app.post('/endRunData', function (req, res) {
   console.log("reached add run data request function");
+  var endtime = req.body.runname;
   var endtime = req.body.endtime;
   endRunDataQuery(runname, endtime, res);
 });

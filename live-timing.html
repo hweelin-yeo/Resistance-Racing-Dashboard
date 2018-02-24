@@ -82,7 +82,7 @@
 </div>
 
 <div class = "col-sm-2">
-  <button onClick = "registerRun()" type="button" class="btn btn-warning">Register Run</button>
+  <button onClick = "registerEndRun()" id = "registerEndRun" type="button" class="btn btn-warning">Register Run</button>
 </div>
 <div> <br> </div>
 <!-- </div> -->
@@ -488,24 +488,41 @@ var token;
          </script>
 
          <script>
+         var registerRun = true;
+         var runName;
 
-         function registerRun() {
-          var runName =  $("#run-name-input").val();
-          var startTime = new Date();
-          startTime.toISOString();
-          console.log("startTime is "+ startTime);
-          $("#run-name-input").value= "";
-          startTimer();
-          $.post(startRunEndPoint, { runname: runName, starttime: startTime}).done(function(data) {
-            console.log("done");
-            console.log(data);
-          });
+         function registerEndRun() {
+          if (registerRun) {
+            runName =  $("#run-name-input").val();
+            var startTime = new Date();
+            startTime.toISOString();
+            console.log("startTime is "+ startTime);
+            startTimer();
+            $.post(startRunEndPoint, { runname: runName, starttime: startTime}).done(function(data) {
+              console.log("started run");
+              console.log(data);
+            });
+            registerRun = false;
+            $('#registerEndRun').text('End Run');
+            $('#registerEndRun').removeClass("btn-warning").addClass("btn-danger");
+          } 
 
+          else {
+            var endTime = new Date();
+            $.post(endRunEndPoint, { runname: runName, endTime: endTime}).done(function(data) {
+              console.log("ended run");
+              console.log(data);
+            });
+            $('#registerEndRun').removeClass("btn-danger").addClass("btn-warning");
+            $('#run-name-input').val('');
+            $('#registerEndRun').text('Register Run');
+            registerRun = true;
+          }
 
         }
 
         function insertRunQuery(runName, startTime) {
-
+          
 
         }
 
