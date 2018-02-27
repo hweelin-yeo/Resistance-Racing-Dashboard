@@ -523,27 +523,25 @@ var token;
 
         }
 
-        function insertRunQuery(runName, startTime) {
+        function insertRunQuery() {
           var runID;
           var lapNo;
           var startTime = new Date();
           startTime = startTime.toLocaleString('en-US');
-
           $.get(runIDEndPoint).done(function(data) {
               console.log(data);
               runID = data;
             });
 
-          $.get(lapNoEndPoint, {runname: runName, starttime: startTime}).done(function(data) {
+          $.get(lapNoEndPoint, {runid: runID}).done(function(data) {
               console.log(data);
-              lapNo = data;
+              lapNo = (data == 8) ? 1 : data + 1;
             });
           
           $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
               console.log("ended run");
               console.log(data);
             });
-
         }
 
         function addEndTimeInfo (endTime, runID) {
@@ -719,6 +717,8 @@ var token;
              // lapDataArr.push(new LapData());
              lap ++;
              $('#lapNumber')[0].innerHTML = "Lap # " + lap;
+             insertRunQuery();
+
              var now = new Date();
              var diff = (now - lapStart) - idealLapMillis;
              var compText = millisToString(Math.abs(diff));
