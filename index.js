@@ -156,7 +156,7 @@ app.post('/addData', function (req, res) {
 });
 
 
-  app.get('getRunID', function (req, res) {
+  app.get('/getRunID', function (req, res) {
     console.log("reached get run id");
     client.query('SELECT id FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
       if (err){
@@ -168,7 +168,7 @@ app.post('/addData', function (req, res) {
     });
   });
 
-  app.get('getLapNo', function (req, res) {
+  app.get('/getLapNo', function (req, res) {
     client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM rundata)', [req.runid], (err, rows) => {
       if (err){
         console.log(err.stack);
