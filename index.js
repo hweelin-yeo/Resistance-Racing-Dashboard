@@ -157,6 +157,7 @@ app.post('/addData', function (req, res) {
 
 
   app.get('getRunID', function (req, res) {
+    console.log("reached get run id");
     client.query('SELECT id FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
       if (err){
         console.log(err.stack);
