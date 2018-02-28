@@ -169,7 +169,7 @@ app.post('/addData', function (req, res) {
   });
 
   app.get('/getLapNo', function (req, res) {
-    client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM rundata)', [req.runid], (err, rows) => {
+    client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [req.runid], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {

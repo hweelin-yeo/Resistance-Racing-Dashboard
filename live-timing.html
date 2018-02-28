@@ -529,19 +529,26 @@ var token;
           var startTime = new Date();
           startTime = startTime.toLocaleString('en-US');
           $.get(runIDEndPoint).done(function(data) {
-              console.log(data);
-              runID = data;
-            });
+            console.log(data.id);
+            runID = data.id;
 
-          $.get(lapNoEndPoint, {runid: runID}).done(function(data) {
+            $.get(lapNoEndPoint, {runid: runID}).done(function(data) {
               console.log(data);
-              lapNo = (data == 8) ? 1 : data + 1;
+              lapNo = ($.isEmptyObject(data)) ? 1 : data.lapID + 1;
+              console.log(lapNo);
+
+              $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
+                console.log("started run");
+                console.log(data);
+              });
+              
             });
+            
+          });
+
+
           
-          $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
-              console.log("ended run");
-              console.log(data);
-            });
+          
         }
 
         function addEndTimeInfo (endTime, runID) {
