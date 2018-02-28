@@ -534,6 +534,14 @@ var token;
 
             $.get(lapNoEndPoint, {runid: runID}).done(function(data) {
               console.log(data);
+
+              if (!($.isEmptyObject(data))) {
+                $.post(endLapEndPoint, {runid: runID, lapno: data.lapID, endtime: startTime}).done(function(data) {
+                  console.log("started run");
+                  console.log(data);
+                });
+              }
+
               lapNo = ($.isEmptyObject(data)) ? 1 : data.lapID + 1;
               console.log(lapNo);
 
@@ -543,7 +551,7 @@ var token;
               });
               
             });
-            
+
           });
 
 

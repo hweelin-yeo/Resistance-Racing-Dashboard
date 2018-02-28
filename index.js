@@ -173,7 +173,7 @@ app.post('/addData', function (req, res) {
       if (err){
         console.log(err.stack);
       } else {
-        console.log(rows.rows[0]);
+        console.log("no errors in " + rows.rows[0]);
       }
       res.send(rows.rows[0]);
     });
