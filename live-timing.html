@@ -528,21 +528,26 @@ var token;
           var lapNo;
           var startTime = new Date();
           startTime = startTime.toLocaleString('en-US');
+
+          // get runID
           $.get(runIDEndPoint).done(function(data) {
             console.log(data.id);
             runID = data.id;
 
+            // get lapNo
             $.get(lapNoEndPoint, {runid: runID}).done(function(data) {
               console.log(data);
 
+              // end previous lap (if there's a previous lap)
               if (!($.isEmptyObject(data))) {
-                $.post(endLapEndPoint, {runid: runID, lapno: data.lapID, endtime: startTime}).done(function(data) {
+                $.post(endLapEndPoint, {runid: runID, lapno: data.lapno, endtime: startTime}).done(function(data) {
                   console.log("started run");
                   console.log(data);
                 });
               }
 
-              lapNo = ($.isEmptyObject(data)) ? 1 : data.lapID + 1;
+              // update lapNo for insert query 
+              lapNo = ($.isEmptyObject(data)) ? 1 : data.lapno + 1;
               console.log(lapNo);
 
               $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {

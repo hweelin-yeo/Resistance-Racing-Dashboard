@@ -170,6 +170,10 @@ app.post('/addData', function (req, res) {
 
   app.get('/getLapNo', function (req, res) {
     client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [req.runid], (err, rows) => {
+      console.log("in get lap no endpoint");
+      console.log(rows);
+      console.log(rows.rows);
+      console.log(rows.rows[0]);
       if (err){
         console.log(err.stack);
       } else {
