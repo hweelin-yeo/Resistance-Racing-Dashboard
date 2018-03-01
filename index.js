@@ -169,8 +169,8 @@ app.post('/addData', function (req, res) {
   });
 
   app.get('/getLapNo', function (req, res) {
+    console.log("in get lap number and the run id is " + req.body.runid);
     client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [req.body.runid], (err, rows) => {
-      console.log("in get lap no endpoint");
       // console.log(rows);
       console.log(rows.rows);
       // console.log(rows.rows[0]);
