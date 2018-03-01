@@ -523,7 +523,7 @@ var token;
 
         }
 
-        function insertRunQuery() {
+        function lapQuery() {
           var runID;
           var lapNo;
           var startTime = new Date();
@@ -535,7 +535,7 @@ var token;
             runID = data.id;
 
             // get lapNo
-            $.get(lapNoEndPoint, {runid: runID}).done(function(data) {
+            $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
               console.log(data);
 
               // end previous lap (if there's a previous lap)
@@ -737,7 +737,7 @@ var token;
              // lapDataArr.push(new LapData());
              lap ++;
              $('#lapNumber')[0].innerHTML = "Lap # " + lap;
-             insertRunQuery();
+             lapQuery();
 
              var now = new Date();
              var diff = (now - lapStart) - idealLapMillis;
