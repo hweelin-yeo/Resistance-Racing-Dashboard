@@ -200,28 +200,35 @@ var startLapEndPoint = endPointBaseURL + "startLapData";
 var endLapEndPoint = endPointBaseURL + "endLapData";
 var runIDEndPoint = endPointBaseURL + "getRunID";
 var lapNoEndPoint = endPointBaseURL + "getLapNo";
+var runNameEndPoint = endPointBaseURL + "getRunName";
 var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
+
 </script>
 
 <script>
 var registerRun;
 
-function initRun() {
+function isRunOngoing() {
+  var bool;
   $.get(isRunOnEndPoint).done(function(data) {
-    if (data.endtime.length > 0) {
-      $("#run-name-input").attr("readonly", "readonly");
-      registerRun = true;
-    } else {
-      $("#run-name-input").attr("readonly", "readonly");
-    }
-    
+    bool = (data.endtime == null) ? true : false;
   });
+  return bool;
+}
 
-
+function initRun() {
+  if (isRunOngoing()) {
+    $("#run-name-input").attr("readonly", "readonly");
+    $.get(runNameEndPoint).done(function(data) {
+      $('#run-name-input').val(data.runname);
+    });
+  } else {
+    registerRun = true;
+    $("#run-name-input").removeAttr("readonly");
+  }
 }
 
 initRun();
-initLap();
 
 </script>
 

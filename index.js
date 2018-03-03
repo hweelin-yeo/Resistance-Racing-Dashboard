@@ -168,6 +168,18 @@ app.post('/addData', function (req, res) {
     });
   });
 
+  app.get('/getRunName', function (req, res) {
+    console.log("reached get run name");
+    client.query('SELECT runname FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      res.send(rows.rows[0]);
+    });
+  });
+
   app.get('/isRunOngoing', function (req, res) {
     console.log("reached isRunOngoing");
     client.query('SELECT endtime FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
