@@ -64,7 +64,7 @@
   <!-- <div class="panel panel-default text-left borderless-panel"> -->
   <!-- <div class="panel-body"> -->
   <div class = "col-sm-1">
-   <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 1 </p>
+   <p style = "font-weight:bold; font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
  </div>
  <div class = "col-sm-6">
   <button onClick = "updateLap()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
@@ -208,27 +208,60 @@ var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
 <script>
 var registerRun;
 
-function isRunOngoing() {
-  var bool;
+function runOngoing() {
+  registerRun = false;
+  $("#run-name-input").attr("readonly", "readonly");
+  $("#lapButton").removeAttr("disabled");
+  $('#runButton').text('End Run');
+  $('#runButton').removeClass("btn-warning").addClass("btn-danger");
+}
+
+function runNotOngoing() {
+  registerRun = true;
+  $('#runButton').removeClass("btn-danger").addClass("btn-warning");
+  $('#run-name-input').val('');
+  $('#runButton').text('Register Run');
+  $("#run-name-input").removeAttr("readonly");
+  $("#lapButton").attr("disabled", "disabled");
+}
+
+function lapButtonText(startOrNext) {
+  var lapButtonText = (startOrNext) ? "Start Lap" : "Next Lap";
+  $("#lapButton").text(lapButtonText);
+}
+
+function initRunLap() {
   $.get(isRunOnEndPoint).done(function(data) {
-    bool = (data.endtime == null) ? true : false;
+    if (data.endtime == null) {
+      // if a run is ongoing: set runName and lap#
+      runOngoing();
+      $.get(runNameEndPoint).done(function(data) {
+        $('#run-name-input').val(data.runname);
+      });
+
+      $.get(runIDEndPoint).done(function(data) {
+        $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
+          if (data.lapno != undefined) {
+            $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
+            lapButtonText(false);
+          } else {
+            lapButtonText(true);
+          }
+        });
+      });
+
+    } else {
+      // if a run is not ongoing
+      runNotOngoing();
+    }
   });
-  return bool;
 }
 
-function initRun() {
-  if (isRunOngoing()) {
-    $("#run-name-input").attr("readonly", "readonly");
-    $.get(runNameEndPoint).done(function(data) {
-      $('#run-name-input').val(data.runname);
-    });
-  } else {
-    registerRun = true;
-    $("#run-name-input").removeAttr("readonly");
-  }
-}
 
-initRun();
+initRunLap();
+
+
+//initRun();
 
 </script>
 
@@ -520,33 +553,22 @@ var token;
 
          <script>
 
+
          function registerEndRun() {
           if (registerRun) {
             runName =  $("#run-name-input").val();
             var startTime = new Date();
             startTime = startTime.toLocaleString('en-US');
-            console.log("startTime is "+ startTime);
             startTimer();
-            $.post(startRunEndPoint, { runname: runName, starttime: startTime}).done(function(data) {
-              console.log("started run");
-              console.log(data);
-            });
-            registerRun = false;
-            $('#runButton').text('End Run');
-            $('#runButton').removeClass("btn-warning").addClass("btn-danger");
-          } 
+            $.post(startRunEndPoint, { runname: runName, starttime: startTime});
+            runOngoing();
+            updateStopwatch();
 
-          else {
+          } else {
             var endTime = new Date();
             endTime = endTime.toLocaleString('en-US');
-            $.post(endRunEndPoint, {endtime: endTime}).done(function(data) {
-              console.log("ended run");
-              console.log(data);
-            });
-            $('#runButton').removeClass("btn-danger").addClass("btn-warning");
-            $('#run-name-input').val('');
-            $('#runButton').text('Register Run');
-            registerRun = true;
+            $.post(endRunEndPoint, {endtime: endTime});
+            runNotOngoing();
           }
 
         }
@@ -587,9 +609,6 @@ var token;
 
           });
 
-
-          
-          
         }
 
         function addEndTimeInfo (endTime, runID) {
@@ -690,7 +709,7 @@ var token;
           </script>
           <script>
          // Race Information 
-         var lap = 1;
+         var lap = 0;
          var latestGPSTimeStamp;
          var latestGPSCoordinates;
          var idealSpeed = 40.0; // testing 
@@ -853,7 +872,7 @@ var token;
              updateStopwatch();
            }, interval);
          }
-         updateStopwatch();
+         //updateStopwatch();
          
          function initLapTable() {
            // TODO fetch from db
