@@ -200,6 +200,29 @@ var startLapEndPoint = endPointBaseURL + "startLapData";
 var endLapEndPoint = endPointBaseURL + "endLapData";
 var runIDEndPoint = endPointBaseURL + "getRunID";
 var lapNoEndPoint = endPointBaseURL + "getLapNo";
+var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
+</script>
+
+<script>
+var registerRun;
+
+function initRun() {
+  $.get(isRunOnEndPoint).done(function(data) {
+    if (data.endtime.length > 0) {
+      $("#run-name-input").attr("readonly", "readonly");
+      registerRun = true;
+    } else {
+      $("#run-name-input").attr("readonly", "readonly");
+    }
+    
+  });
+
+
+}
+
+initRun();
+initLap();
+
 </script>
 
 <script>
@@ -490,8 +513,6 @@ var token;
 
          <script>
 
-         var registerRun = true;
-
          function registerEndRun() {
           if (registerRun) {
             runName =  $("#run-name-input").val();
@@ -729,6 +750,7 @@ var token;
          
          function updateLap() {
            if (lap == 8) {
+            // end lap request 
              // TODO: send data back to Electron
            } else {
              $("#lapButton").text('Next Lap');
