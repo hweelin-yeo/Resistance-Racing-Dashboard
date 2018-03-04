@@ -198,6 +198,7 @@ var startRunEndPoint = endPointBaseURL + "startRunData";
 var endRunEndPoint = endPointBaseURL + "endRunData";
 var startLapEndPoint = endPointBaseURL + "startLapData";
 var endLapEndPoint = endPointBaseURL + "endLapData";
+var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
 var runIDEndPoint = endPointBaseURL + "getRunID";
 var lapNoEndPoint = endPointBaseURL + "getLapNo";
 var runNameEndPoint = endPointBaseURL + "getRunName";
@@ -223,6 +224,7 @@ function runNotOngoing() {
   $('#runButton').text('Register Run');
   $("#run-name-input").removeAttr("readonly");
   $("#lapButton").attr("disabled", "disabled");
+  $('#lapNumber')[0].innerHTML = "Lap # " + 0;
 }
 
 function lapButtonText(startOrNext) {
@@ -568,6 +570,7 @@ var token;
             var endTime = new Date();
             endTime = endTime.toLocaleString('en-US');
             $.post(endRunEndPoint, {endtime: endTime});
+            $.post(endLapNoIDEndPoint, {endtime: endTime});
             runNotOngoing();
           }
 

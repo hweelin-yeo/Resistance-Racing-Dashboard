@@ -111,13 +111,25 @@ app.post('/startLapData', function (req, res) {
   
 });
 
+app.post('/endLapDataNoID', function (req, res) {
+  client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', 
+       [req.body.endtime], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      res.end("sent"); 
+    });
+  
+});
+
 app.post('/endLapData', function (req, res) {
   console.log("reached add lap data request function");
   var runid = req.body.runid;
   var lapno = req.body.lapno;
   var endtime = req.body.endtime;
   endLapDataQuery(runid, lapno, endtime, res);
-  
 });
 
 // Webhook from live-timing.html: Post RunData
