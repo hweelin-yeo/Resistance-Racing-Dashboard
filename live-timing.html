@@ -71,7 +71,7 @@
 
   </div>
 
-  <div class = "col-sm-6">
+  <div class = "col-sm-7">
     <button onClick = "registerEndRun()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
   </div>
 
@@ -122,25 +122,47 @@
 </div>
 </div>
 <div class="col-sm-5">
-   <div class="col-sm-12">
-    <div class="panel panel-default text-left">
-     <div class="panel-body">
+ <div class="col-sm-12">
+  <div class="panel panel-default text-left">
+   <div class="panel-body">
 
-        <p style = "font-weight:bold">Current</p>
-        <p> Double click on the map to add a note. </p>
-        <div id="map_canvas_current" style="height:300px"></div>
-      
+    <p style = "font-weight:bold">Current</p>
+    <p align = "center"> Double click on the map to add a note. </p>
+    <div id="map_canvas_current" style="height:300px"></div>
+
 
   </div>
 </div>
 </div>
 </div>
 
+<div class="col-sm-3">
+  <div class="panel panel-default text-left">
+   <div class="panel-body">
+ <div class="col-sm-12">
+  
+
+    <p align = "center" style="color: #A9A9A9">Current Speed: </p>
+    <p id = "speedStats" align = "center" style="font-size:2vw; color: #A9A9A9"> 0 kmph</p>
+    </div>
+
+  <div class="col-sm-12">
+  
+
+    <p align = "center">In 10 seconds: </p>
+    <p id = "in10seconds" align = "center" style="font-size:2vw; color: #006400"> 0 kmph</p>
+    </div>
+
+    
+    </div>
+  </div>
+</div>
+
 
 <div class="col-sm-2 well">
   <div class="well">
    <h4>Total Time</h4>
-   <h3 id="stopwatch">00:00.000</h3>
+   <h3 id="stopwatch" style="font-size:1.5vw">00:00.000</h3>
  </div>
  <div class="well">
    <table class="table" id="lapTable">
@@ -299,6 +321,7 @@ var token;
          
          // Parse live data
          function parseData (data) {
+
            // Parse live data 
            var dataArr = data.split("_");
 
@@ -723,21 +746,22 @@ var token;
          function valueToCol (ideal, value) {
            console.log(ideal);
            var col;
-           if (value/ideal > 1) {
-             col = interpolateLinearly((value/ideal)-1, Greens);
-           } else {
-             col = interpolateLinearly (1-(value/ideal), Reds);
-           }
+           col = interpolateLinearly(value/(2 * ideal), RdYlGn);
+           // if (value/ideal > 1) {
+           //   col = interpolateLinearly((value/ideal)-1, Greens);
+           // } else {
+           //   col = interpolateLinearly (1-(value/ideal), Reds);
+           // }
            console.log(col);
            return col;
          }
          
          function changeLastUpdatedStats(num) {
-           $('#lastUpdatedStats')[0].innerHTML = "" + num;
+           // $('#lastUpdatedStats')[0].innerHTML = "" + num;
          }
          
          function changeThrottleStats(num, lastUpdated) {
-           $('#throttleStats')[0].innerHTML = "" + num;
+           // $('#throttleStats')[0].innerHTML = "" + num;
            changeLastUpdatedStats(lastUpdated);
          }
          
@@ -753,11 +777,14 @@ var token;
            return 40+20*Math.sin(l2*1000);
          }
 
+
          function changeSpeedStats(num, lastUpdated) {
-           $('#speedStats')[0].innerHTML = "" + num;
-           console.log("here");
-           var idealSpeed = mockIdealSpeed(latestGPSCoordinates);
+           $('#speedStats')[0].innerHTML = "" + Math.round(num) + " kmph";
+           $('#in10seconds')[0].innerHTML = "" + (Math.round(num) + 5) + " kmph";
+           // $('#in20seconds')[0].innerHTML = "" + (Math.round(num) - 5) + " kmph";
+           var idealSpeed = 40; //mockIdealSpeed(latestGPSCoordinates);
            console.log("Ideal: "+idealSpeed);
+           console.log(valueToCol (idealSpeed, num));
            var col = valueToCol (idealSpeed, num);
            drawMap(prevLatLng, col);
            changeLastUpdatedStats(lastUpdated);
