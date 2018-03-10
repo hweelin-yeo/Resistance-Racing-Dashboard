@@ -22,7 +22,7 @@ const MockSensor = function(name, frequency, generator) {
 
 /* Configure mock sensors */
 const SpeedSensor = new MockSensor("speed", 500, function(epoch) {
-	return 40 + 40*Math.sin(epoch/2000);
+	return 40 + 40*Math.sin(epoch/(2000* 2));
 });
 const ThrottleSensor = new MockSensor("throttle", 250, function(epoch) {
 	return epoch % 2;
@@ -33,11 +33,11 @@ const FaultSensor = new MockSensor("fault", 5000, function(epoch) {
 const GPSSensor = new MockSensor("gps", 1500, function(epoch) {
 	if (!gpsLoaded) return;
 	var latlon = waypoints[waypointIndex].lat + "," + waypoints[waypointIndex].lon;
-	waypointIndex+=2;
+	waypointIndex+=1;
 	if (waypointIndex == waypoints.length) waypointIndex = 0;
 	return latlon;
 })
-const ConnectedSensors = [GPSSensor];
+const ConnectedSensors = [SpeedSensor, GPSSensor];
 ConnectedSensors.forEach(function(sensor) {
 	sensor.connectSensor();
 });
