@@ -13,895 +13,926 @@
   <script src="js-colormaps.js"></script>
   <script src="hashmap.js"></script>
   <link rel="stylesheet" href="realTimeChart.css">
-  <style>    
+  <style>
   footer {
-   background-color: #555;
-   color: white;
-   padding: 15px;
- }
- .circle {
-   width: 30px;
-   height: 30px;
-   background: #56BF56;
-   -moz-border-radius: 50px;
-   -webkit-border-radius: 50px;
-   border-radius: 50px;
- }
- .borderless-panel {
-   border-width: 0;
-   border-bottom-width: 0;
- }
- .well-white {
-   background-color: white;
- }
- .btn-higher {
-   top: 0;
- }
+    background-color: #555;
+    color: white;
+    padding: 15px;
+  }
+  .circle {
+    width: 30px;
+    height: 30px;
+    background: #56BF56;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+  }
+  .borderless-panel {
+    border-width: 0;
+    border-bottom-width: 0;
+  }
+  .well-white {
+    background-color: white;
+  }
+  .btn-higher {
+    top: 0;
+  }
+
+  .prevBestLapButton {
+    padding:5px;
+    margin:10px 0;
+    font-size:18px;
+  }
+
+  .prevBestLapButton>h3{
+    font-weight: bold;
+    padding-bottom:10px;
+    border-bottom:1px solid white;
+  }
+
+  .prevBestLapButton>div>.eff{
+    font-weight: bold;
+    font-size:36px;
+  }
 }
 </style>
 </head>
 <body>
   <div class="container text-center">
-   <!-- <div class="col-sm-12">  -->   
-   <div class="row">
-    <!-- <div class="col-sm-12"> -->
-    <div class="panel panel-default text-left borderless-panel">
-     <div class="panel-body">
+    <!-- <div class="col-sm-12">  -->
+    <div class="row">
+      <!-- <div class="col-sm-12"> -->
+      <div class="panel panel-default text-left borderless-panel">
+        <div class="panel-body">
+          <div class = "col-sm-6">
+            <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+          </div>
+          <div class = "col-sm-3">
+            <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
+          </div>
+        </div>
+      </div>
+      <!-- </div> -->
+    </div>
+    <!-- </div> -->
+  </div>
+  <div class="container text-left">
+    <div class="row">
+
+      <div class = "col-sm-3">
+        <!-- <label class="sr-only" for="inlineFormInputGroup">Test Run </label> -->
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+          <div class="input-group-addon"> Run Name</div>
+          <input type="text" class="form-control" value = "" id="run-name-input" placeholder="Test Run">
+        </div>
+
+      </div>
+
       <div class = "col-sm-6">
-       <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
-     </div>
-     <div class = "col-sm-3">
-       <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
-     </div>
-   </div>
- </div>
- <!-- </div> -->
-</div>
-<!-- </div> -->
-</div>
-<div class="container text-left">
- <div class="row">
+        <button onClick = "registerEndRun()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
+      </div>
 
-  <div class = "col-sm-3">
-    <!-- <label class="sr-only" for="inlineFormInputGroup">Test Run </label> -->
-    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-      <div class="input-group-addon"> Run Name</div>
-      <input type="text" class="form-control" value = "" id="run-name-input" placeholder="Test Run">
+
+      <!-- <div class="panel panel-default text-left borderless-panel"> -->
+      <!-- <div class="panel-body"> -->
+      <div class = "col-sm-1">
+        <p style = "font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
+      </div>
+      <div class = "col-sm-1">
+        <button onClick = "updateLap()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
+        <div> <br> </div>
+      </div>
+
+
+      <!-- </div> -->
+      <!-- </div> -->
+      <!--  </div> -->
     </div>
-
   </div>
+  <div class="container text-center">
+    <div class="row">
+      <div class="col-sm-2 well well-white">
+        <p> <strong> Faults </strong> </p>
+        <div class="well well-white">
+          <div class="row">
+            <div class="col-sm-2">
+              <div class="circle" id = "BMSFault"></div>
+            </div>
+            <div class="col-sm-8">
+              <p>BMS</p>
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-2">
+              <div class="circle" id = "MCFault"></div>
+            </div>
+            <div class="col-sm-8">
+              <p align="center">Motor Controller</p>
+            </div>
+          </div>
+        </div>
+        <div class="well"> </div>
+        <div class="alert alert-success fade in">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+          <p><strong> Highlight!</strong></p>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="col-sm-12">
+          <div class="panel panel-default text-left">
+            <div class="panel-body">
 
-  <div class = "col-sm-6">
-    <button onClick = "registerEndRun()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
-  </div>
-
-
-  <!-- <div class="panel panel-default text-left borderless-panel"> -->
-  <!-- <div class="panel-body"> -->
-  <div class = "col-sm-1">
-   <p style = "font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
- </div>
- <div class = "col-sm-1">
-  <button onClick = "updateLap()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
-  <div> <br> </div>
-</div>
-
-
-<!-- </div> -->
-<!-- </div> -->
-<!--  </div> -->
-</div>
-</div>
-<div class="container text-center">
-  <div class="row">
-   <div class="col-sm-2 well well-white">
-    <p> <strong> Faults </strong> </p>
-    <div class="well well-white">
-     <div class="row">
-      <div class="col-sm-2">
-       <div class="circle" id = "BMSFault"></div>
-     </div>
-     <div class="col-sm-8">
-       <p>BMS</p>
-     </div>
-   </div>
-   <br>
-   <div class="row">
-    <div class="col-sm-2">
-     <div class="circle" id = "MCFault"></div>
-   </div>
-   <div class="col-sm-8">
-     <p align="center">Motor Controller</p>
-   </div>
- </div>
-</div>
-<div class="well"> </div>
-<div class="alert alert-success fade in">
- <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
- <p><strong> Highlight!</strong></p>
-</div>
-</div>
-<div class="col-sm-5">
-   <div class="col-sm-12">
-    <div class="panel panel-default text-left">
-     <div class="panel-body">
-
-        <p style = "font-weight:bold">Current</p>
-        <p> Double click on the map to add a note. </p>
-        <div id="map_canvas_current" style="height:300px"></div>
-      
-
-  </div>
-</div>
-</div>
-</div>
+              <p style = "font-weight:bold">Current</p>
+              <p> Double click on the map to add a note. </p>
+              <div id="map_canvas_current" style="height:300px"></div>
 
 
-<div class="col-sm-2 well">
-  <div class="well">
-   <h4>Total Time</h4>
-   <h3 id="stopwatch">00:00.000</h3>
- </div>
- <div class="well">
-   <table class="table" id="lapTable">
-    <thead>
-     <tr>
-      <th>Lap</th>
-      <th>Time</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-</div>
-</div>
-<div class="row">
-  <div class="col-sm-12">
-    <!-- <div class="col-sm-6">
-     <div class="well">
-      <p style = "font-weight:bold">Current</p>
-      <p> Double click on the map to add a note. </p>
-      <div id="map_canvas_current" style="height:300px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-sm-2 well">
+        <div class="well">
+          <h4>Total Time</h4>
+          <h3 id="stopwatch">00:00.000</h3>
+        </div>
+        <div class="well">
+          <table class="table" id="lapTable">
+            <thead>
+              <tr>
+                <th>Lap</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="well">
+            <p style = "font-weight:bold">Previous</p>
+            <div id="map_canvas_prev" style="height:300px"></div>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="prevBestLapButton btn btn-primary col-sm-12">
+            <h3>Previous Lap</h3>
+            <div class="col-sm-6">
+              <h5>Efficiency</h5>
+              <span class="eff">83%</span>
+            </div>
+            <div class="col-sm-6">
+              <h5>Timing</h5>
+              06:22:121<br>(+0:30.004)
+            </div>
+          </div>
+          <div class="prevBestLapButton btn btn-info col-sm-12" style="background:#219653;">
+            <h3>Best Lap</h3>
+            <div class="col-sm-6">
+              <h5>Efficiency</h5>
+              <span class="eff">94%</span>
+            </div>
+            <div class="col-sm-6">
+              <h5>Timing</h5>
+              06:02:121<br>(+0:10.004)
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="chartCollapsor">
+            Speed <a href="#speedChart" data-toggle="collapse"><span class="caret"></span></a>
+          </div>
+          <div id="speedChart" class="collapse in chartContent"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="chartCollapsor">
+            Throttle <a href="#throttleChart" data-toggle="collapse"><span class="caret"></span></a>
+          </div>
+          <div id="throttleChart" class="collapse in chartContent"></div>
+        </div>
+      </div>
     </div>
-  </div> -->
-  <div class="col-sm-6">
-   <div class="well">
-    <p style = "font-weight:bold">Previous</p>
-    <p> Description </p>
-    <div id="map_canvas_prev" style="height:300px"></div>
-  </div>
-</div>
-</div>
-</div>
-<div class="row">
-  <div class="col-sm-12">
-   <div class="chartCollapsor">
-    Speed <a href="#speedChart" data-toggle="collapse"><span class="caret"></span></a>
-  </div>
-  <div id="speedChart" class="collapse in chartContent"></div>
-</div>
-</div>
-<div class="row">
-  <div class="col-sm-12">
-   <div class="chartCollapsor">
-    Throttle <a href="#throttleChart" data-toggle="collapse"><span class="caret"></span></a>
-  </div>
-  <div id="throttleChart" class="collapse in chartContent"></div>
-</div>
-</div>
-</div>
-<footer class="container-fluid text-center">
- <p>Footer Text</p>
-</footer>
+    <footer class="container-fluid text-center">
+      <p>Footer Text</p>
+    </footer>
 
-<script>
-var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
-var startRunEndPoint = endPointBaseURL + "startRunData";
-var endRunEndPoint = endPointBaseURL + "endRunData";
-var startLapEndPoint = endPointBaseURL + "startLapData";
-var endLapEndPoint = endPointBaseURL + "endLapData";
-var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
-var runIDEndPoint = endPointBaseURL + "getRunID";
-var lapNoEndPoint = endPointBaseURL + "getLapNo";
-var runNameEndPoint = endPointBaseURL + "getRunName";
-var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
+    <script>
+    var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
+    var startRunEndPoint = endPointBaseURL + "startRunData";
+    var endRunEndPoint = endPointBaseURL + "endRunData";
+    var startLapEndPoint = endPointBaseURL + "startLapData";
+    var endLapEndPoint = endPointBaseURL + "endLapData";
+    var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
+    var runIDEndPoint = endPointBaseURL + "getRunID";
+    var lapNoEndPoint = endPointBaseURL + "getLapNo";
+    var runNameEndPoint = endPointBaseURL + "getRunName";
+    var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
 
-</script>
+  </script>
 
-<script>
-var registerRun;
+  <script>
+  var registerRun;
 
-function runOngoing() {
-  registerRun = false;
-  $("#run-name-input").attr("readonly", "readonly");
-  $("#lapButton").removeAttr("disabled");
-  $('#runButton').text('End Run');
-  $('#runButton').removeClass("btn-warning").addClass("btn-danger");
-}
+  function runOngoing() {
+    registerRun = false;
+    $("#run-name-input").attr("readonly", "readonly");
+    $("#lapButton").removeAttr("disabled");
+    $('#runButton').text('End Run');
+    $('#runButton').removeClass("btn-warning").addClass("btn-danger");
+  }
 
-function runNotOngoing() {
-  registerRun = true;
-  $('#runButton').removeClass("btn-danger").addClass("btn-warning");
-  $('#run-name-input').val('');
-  $('#runButton').text('Register Run');
-  $("#run-name-input").removeAttr("readonly");
-  $("#lapButton").attr("disabled", "disabled");
-  $('#lapNumber')[0].innerHTML = "Lap # " + 0;
-}
+  function runNotOngoing() {
+    registerRun = true;
+    $('#runButton').removeClass("btn-danger").addClass("btn-warning");
+    $('#run-name-input').val('');
+    $('#runButton').text('Register Run');
+    $("#run-name-input").removeAttr("readonly");
+    $("#lapButton").attr("disabled", "disabled");
+    $('#lapNumber')[0].innerHTML = "Lap # " + 0;
+  }
 
-function lapButtonText(startOrNext) {
-  var lapButtonText = (startOrNext) ? "Start Lap" : "Next Lap";
-  $("#lapButton").text(lapButtonText);
-}
+  function lapButtonText(startOrNext) {
+    var lapButtonText = (startOrNext) ? "Start Lap" : "Next Lap";
+    $("#lapButton").text(lapButtonText);
+  }
 
-function initRunLap() {
-  $.get(isRunOnEndPoint).done(function(data) {
-    if (data.endtime == null) {
-      // if a run is ongoing: set runName and lap#
-      runOngoing();
-      $.get(runNameEndPoint).done(function(data) {
-        $('#run-name-input').val(data.runname);
-      });
-
-      $.get(runIDEndPoint).done(function(data) {
-        $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
-          if (data.lapno != undefined) {
-            $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
-            lapButtonText(false);
-          } else {
-            lapButtonText(true);
-          }
+  function initRunLap() {
+    $.get(isRunOnEndPoint).done(function(data) {
+      if (data.endtime == null) {
+        // if a run is ongoing: set runName and lap#
+        runOngoing();
+        $.get(runNameEndPoint).done(function(data) {
+          $('#run-name-input').val(data.runname);
         });
-      });
 
-    } else {
-      // if a run is not ongoing
-      runNotOngoing();
-    }
-  });
-}
+        $.get(runIDEndPoint).done(function(data) {
+          $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
+            if (data.lapno != undefined) {
+              $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
+              lapButtonText(false);
+            } else {
+              lapButtonText(true);
+            }
+          });
+        });
+
+      } else {
+        // if a run is not ongoing
+        runNotOngoing();
+      }
+    });
+  }
 
 
-initRunLap();
+  initRunLap();
 
 
-//initRun();
+  //initRun();
 
 </script>
 
 <script>
 var particle = new Particle();
 var token;
-         // Login
-         particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
-           function(data) {
-             console.log('LOGGED IN.');
-             token = data.body.access_token;
-             console.log(token);
-             getEventStream();
-           },
-           function (err) {
-             console.log('Could not log in.', err);
-           }
-           );
-         
-         // Get event stream
-         function getEventStream() {
-           //Successful login: get devices events
-           console.log('Begin event stream.');
-           particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-             stream.on('event', function(json) {
-               console.log(JSON.stringify(json, null, 4));
-               parseData (json.data);
-             });
-           });
-         }
-         
-         // Parse live data
-         function parseData (data) {
-           // Parse live data 
-           var dataArr = data.split("_");
+// Login
+particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+  function(data) {
+    console.log('LOGGED IN.');
+    token = data.body.access_token;
+    console.log(token);
+    getEventStream();
+  },
+  function (err) {
+    console.log('Could not log in.', err);
+  }
+);
 
-           for (var i in dataArr) {
+// Get event stream
+function getEventStream() {
+  //Successful login: get devices events
+  console.log('Begin event stream.');
+  particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+    stream.on('event', function(json) {
+      console.log(JSON.stringify(json, null, 4));
+      parseData (json.data);
+    });
+  });
+}
 
-             var dataI = dataArr[i];
-             var dataIArr = dataI.split(";");
-             var property = dataIArr[0];
-             var value = dataIArr[1];
-             var time = dataIArr[2];
+// Parse live data
+function parseData (data) {
+  // Parse live data
+  var dataArr = data.split("_");
 
-             switch (property) {
-               case "throttle": 
-               changeThrottleStats(value, time);
-                 // throtTimeLocHashM.set(key: time, value: prevLatLng);
-                 pushThrottleChart(value, time);
-                 break;
-                 case "speed": 
-                 changeSpeedStats(value, time);
-                 pushSpeedChart(value, time);
-                 break;
-                 case "fault":
-                 parseFaultData(value);
-                 break;
-                 case "gps":
-                 latestGPSTimeStamp = time;
-                 latestGPSCoordinates = value;
-                 updateMap(value);
-                 case "power": 
-                 // TODO: IMPLEMENT
-                 break;
+  for (var i in dataArr) {
 
-                 default:
-                 break;
-               // TODO: case voltage (UNCONFIRMED)
-             }
-           }
-         }
-         
-         function parseFaultData(value) {
-           switch (value) {
-             case "0":
-             faultBMS(false);
-             faultMC(false);
-             break;
-             case "1":
-             faultBMS(false);
-             faultMC(true);
-             break;
-             case "2":
-             faultBMS(true);
-             faultMC(false);
-             break;
-             case "3":
-             faultBMS(true);
-             faultMC(true);
-             break;
-             default:
-             break;
-           }
-         }
-         
-         </script>
-         <script>
-         /* Data storage */
-         
-         // LapData class declaration
-         const LapData = function() {
-           this.polylines = [];
-           this.notes = [];
-           this.selectPolys = new HashMap(); // default - key: polyline, value: false
-           this.polyStartEndTime = new HashMap(); // key: polyline, value: [startTime, endTime];
-         };
-         
-         
-         var lapDataArr = [];
-         lapDataArr.push(new LapData()); // init for lap 1 
-         console.log("made lap data arr");
-         
-         var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
-         
-         function timeToCoords(time) { // time would not be found in 
-           if (throtTimeLocHashM.has(time)) {
-            return throtTimeLocHashM.get(time);
-          } else {
-           var timeP = approxTime(time);
-           return throtTimeLocHashM.get(timeP);
-         }
-       }
+    var dataI = dataArr[i];
+    var dataIArr = dataI.split(";");
+    var property = dataIArr[0];
+    var value = dataIArr[1];
+    var time = dataIArr[2];
 
-       </script>
-       <script>
-       /* Maps Init JS */
-       var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
-         var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
-         var curPos;
-         var mapCur;
-         var mapPrev;
-         var polyCur;
-         var change = 0;
-         var colorCur = 'green';
-         var drawMap;
-         var latestNoteMarker;
-         var polyLinesForLap = [];
-         var transferPolys;
-         
-         function init() {
-           var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
-           prevLatLng = initLatLng;
+    switch (property) {
+      case "throttle":
+      changeThrottleStats(value, time);
+      // throtTimeLocHashM.set(key: time, value: prevLatLng);
+      pushThrottleChart(value, time);
+      break;
+      case "speed":
+      changeSpeedStats(value, time);
+      pushSpeedChart(value, time);
+      break;
+      case "fault":
+      parseFaultData(value);
+      break;
+      case "gps":
+      latestGPSTimeStamp = time;
+      latestGPSCoordinates = value;
+      updateMap(value);
+      case "power":
+      // TODO: IMPLEMENT
+      break;
 
-           var mapOptions = {
-             zoom: 17,
-             center: initLatLng,
-             mapTypeId: google.maps.MapTypeId.TERRAIN,
-             disableDoubleClickZoom: true
-           };
+      default:
+      break;
+      // TODO: case voltage (UNCONFIRMED)
+    }
+  }
+}
 
-           mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
-             mapOptions);
+function parseFaultData(value) {
+  switch (value) {
+    case "0":
+    faultBMS(false);
+    faultMC(false);
+    break;
+    case "1":
+    faultBMS(false);
+    faultMC(true);
+    break;
+    case "2":
+    faultBMS(true);
+    faultMC(false);
+    break;
+    case "3":
+    faultBMS(true);
+    faultMC(true);
+    break;
+    default:
+    break;
+  }
+}
 
-           curPos = new google.maps.Marker({
-             position: initLatLng,
-             map: mapCur,
-             icon: blueDot
-           });
+</script>
+<script>
+/* Data storage */
 
-           mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
-             mapOptions);
-
-           polyCur = new google.maps.Polyline({
-             strokeColor: colorCur,
-             strokeOpacity: 1,
-             strokeWeight: 5,
-             map: mapCur
-           });
+// LapData class declaration
+const LapData = function() {
+  this.polylines = [];
+  this.notes = [];
+  this.selectPolys = new HashMap(); // default - key: polyline, value: false
+  this.polyStartEndTime = new HashMap(); // key: polyline, value: [startTime, endTime];
+};
 
 
-           polyCur.addListener('dblclick', function(e) {
-             // var lapData = lapDataArr[lap - 1];
-             // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
-             // if (selBool) {
-             //  this.setOptions({strokeOpacity: 1});
-             // } else {
-               this.setOptions({strokeOpacity: 0.5});
-             // }
-           });
+var lapDataArr = [];
+lapDataArr.push(new LapData()); // init for lap 1
+console.log("made lap data arr");
 
-           polyCur.addListener('click', function(e) {
-             // var lapData = lapDataArr[lap - 1];
-             // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
-             // if (selBool) {
-             //  this.setOptions({strokeOpacity: 1});
-             // } else {
-               this.setOptions({strokeOpacity: 0.5});
-             // TODO: trigger selection
-             // var startTime;
-             // var endTime;
-             // triggerSelectPolys(startTime, endTime);
-             // }
-           });
+var throtTimeLocHashM = new HashMap(); // key: time, value: lat,lng
 
-           var createPoly = function (col) {
-             var poly = new google.maps.Polyline({
-               strokeColor: col,
-               strokeOpacity: 1,
-               strokeWeight: 5,
-               map: mapCur
-             });
+function timeToCoords(time) { // time would not be found in
+  if (throtTimeLocHashM.has(time)) {
+    return throtTimeLocHashM.get(time);
+  } else {
+    var timeP = approxTime(time);
+    return throtTimeLocHashM.get(timeP);
+  }
+}
 
-             poly.addListener('dblclick', function(e) {
-               this.setOptions({strokeOpacity: 0.5});
-             });
+</script>
+<script>
+/* Maps Init JS */
+var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
+var curPos;
+var mapCur;
+var mapPrev;
+var polyCur;
+var change = 0;
+var colorCur = 'green';
+var drawMap;
+var latestNoteMarker;
+var polyLinesForLap = [];
+var transferPolys;
 
-             poly.addListener('click', function(e) {
-               this.setOptions({strokeOpacity: 0.5});
-             });
+function init() {
+  var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+  prevLatLng = initLatLng;
 
-             return poly;
-           }
+  var mapOptions = {
+    zoom: 17,
+    center: initLatLng,
+    mapTypeId: google.maps.MapTypeId.TERRAIN,
+    disableDoubleClickZoom: true
+  };
 
-            // ROUTE DRAWING 
-            drawMap = function(latLng, col) {
+  mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
+  mapOptions);
 
-             if (polyLinesForLap.length == 0) {
-               var poly = createPoly(col);
-               var path = poly.getPath();
-               path.push(prevLatLng);
-               path.push(latLng);
+  curPos = new google.maps.Marker({
+    position: initLatLng,
+    map: mapCur,
+    icon: blueDot
+  });
 
-               polyLinesForLap.push(poly);
-               prevLatLng = latLng;
-             } else {
-               var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];  
-               if (polyPrev.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
-                 var poly = createPoly(col);
-                 var path = poly.getPath();
-                 path.push(latLng);
-                 polyLinesForLap.push(poly);
-               } 
-               
-               var pathPrev = polyPrev.getPath();
-               pathPrev.push(latLng);
-               prevLatLng = latLng;
-               
-             }
-           }
+  mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
+  mapOptions);
 
-           transferPolys = function() {
-             for (i = 0; i < polyLinesForLap.length ; i++) {
-              var poly = polyLinesForLap[i];
-              var polyNew = createPoly(poly.strokeColor);
-              console.log(poly.getPath());
-              polyNew.setPath(poly.getPath());
-              polyNew.setMap(mapPrev);
-            }
-
-          }
+  polyCur = new google.maps.Polyline({
+    strokeColor: colorCur,
+    strokeOpacity: 1,
+    strokeWeight: 5,
+    map: mapCur
+  });
 
 
-           // NOTE MARKING (for presentation purposes)
-           mapCur.addListener('dblclick', function(e) {
+  polyCur.addListener('dblclick', function(e) {
+    // var lapData = lapDataArr[lap - 1];
+    // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+    // if (selBool) {
+    //  this.setOptions({strokeOpacity: 1});
+    // } else {
+    this.setOptions({strokeOpacity: 0.5});
+    // }
+  });
 
-             var marker = new google.maps.Marker({
-               position: e.latLng,
-               map: mapCur,
-               icon: noteMarker,
-               title: "Note1",
-             });
-             latestNoteMarker = marker;
-           });
+  polyCur.addListener('click', function(e) {
+    // var lapData = lapDataArr[lap - 1];
+    // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+    // if (selBool) {
+    //  this.setOptions({strokeOpacity: 1});
+    // } else {
+    this.setOptions({strokeOpacity: 0.5});
+    // TODO: trigger selection
+    // var startTime;
+    // var endTime;
+    // triggerSelectPolys(startTime, endTime);
+    // }
+  });
 
-           mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+  var createPoly = function (col) {
+    var poly = new google.maps.Polyline({
+      strokeColor: col,
+      strokeOpacity: 1,
+      strokeWeight: 5,
+      map: mapCur
+    });
 
-         }
-         
-         function triggerSelectPolys(startTime, endTime) {
-           // TODO:
-         }
-         
-         function fail(){
-           alert('navigator.geolocation failed, may not be supported');
-         }
-         
-         function updateMap(value) {
-           var latLng_arr = value.split(",");
-           var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
-           mapCur.setCenter(latLng);
-           mapPrev.setCenter(latLng);
-           curPos.setPosition(latLng);
-           prevLatLng = latLng;
-         }
-         
-         
-         
-         </script>
+    poly.addListener('dblclick', function(e) {
+      this.setOptions({strokeOpacity: 0.5});
+    });
 
-         <script>
+    poly.addListener('click', function(e) {
+      this.setOptions({strokeOpacity: 0.5});
+    });
+
+    return poly;
+  }
+
+  // ROUTE DRAWING
+  drawMap = function(latLng, col) {
+
+    if (polyLinesForLap.length == 0) {
+      var poly = createPoly(col);
+      var path = poly.getPath();
+      path.push(prevLatLng);
+      path.push(latLng);
+
+      polyLinesForLap.push(poly);
+      prevLatLng = latLng;
+    } else {
+      var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];
+      if (polyPrev.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
+        var poly = createPoly(col);
+        var path = poly.getPath();
+        path.push(latLng);
+        polyLinesForLap.push(poly);
+      }
+
+      var pathPrev = polyPrev.getPath();
+      pathPrev.push(latLng);
+      prevLatLng = latLng;
+
+    }
+  }
+
+  transferPolys = function() {
+    for (i = 0; i < polyLinesForLap.length ; i++) {
+      var poly = polyLinesForLap[i];
+      var polyNew = createPoly(poly.strokeColor);
+      console.log(poly.getPath());
+      polyNew.setPath(poly.getPath());
+      polyNew.setMap(mapPrev);
+    }
+
+  }
 
 
-         function registerEndRun() {
-          if (registerRun) {
-            runName =  $("#run-name-input").val();
-            var startTime = new Date();
-            startTime = startTime.toLocaleString('en-US');
-            startTimer();
-            $.post(startRunEndPoint, { runname: runName, starttime: startTime});
-            runOngoing();
-            updateStopwatch();
+  // NOTE MARKING (for presentation purposes)
+  mapCur.addListener('dblclick', function(e) {
 
-          } else {
-            var endTime = new Date();
-            endTime = endTime.toLocaleString('en-US');
-            $.post(endRunEndPoint, {endtime: endTime});
-            $.post(endLapNoIDEndPoint, {endtime: endTime});
-            runNotOngoing();
-          }
+    var marker = new google.maps.Marker({
+      position: e.latLng,
+      map: mapCur,
+      icon: noteMarker,
+      title: "Note1",
+    });
+    latestNoteMarker = marker;
+  });
 
-        }
+  mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 
-        function lapQuery() {
-          var runID;
-          var lapNo;
-          var startTime = new Date();
-          startTime = startTime.toLocaleString('en-US');
+}
 
-          // get runID
-          $.get(runIDEndPoint).done(function(data) {
-            console.log(data.id);
-            runID = data.id;
+function triggerSelectPolys(startTime, endTime) {
+  // TODO:
+}
 
-            // get lapNo
-            $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
-              console.log(data);
+function fail(){
+  alert('navigator.geolocation failed, may not be supported');
+}
 
-              // end previous lap (if there's a previous lap)
-              if (!($.isEmptyObject(data))) {
-                $.post(endLapEndPoint, {runid: runID, lapno: data.lapno, endtime: startTime}).done(function(data) {
-                  console.log("started run");
-                  console.log(data);
-                });
-              }
-
-              // insert query for next lap
-              lapNo = ($.isEmptyObject(data)) ? 1 : data.lapno + 1;
-              console.log(lapNo);
-
-              $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
-                console.log("started run");
-                console.log(data);
-              });
-              
-            });
-
-          });
-
-        }
-
-        function addEndTimeInfo (endTime, runID) {
-
-        }
-
-        function startTimer() {
-
-        }
-
-        </script>
+function updateMap(value) {
+  var latLng_arr = value.split(",");
+  var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
+  mapCur.setCenter(latLng);
+  mapPrev.setCenter(latLng);
+  curPos.setPosition(latLng);
+  prevLatLng = latLng;
+}
 
 
 
-        <script>
-         // Input form div, for google maps note taking later on
-         var controlDiv = document.createElement('DIV');
-         controlDiv.id = "controls";
-         
-         var controlInput = document.createElement('input');
-         controlInput.id = "note";
-         controlInput.name = "note";
-         // controlInput.value = "Hi there!";
-         
-         var controlLabel = document.createElement('label');
-         controlLabel.innerHTML = 'Note';
-         controlLabel.setAttribute("for","note");
-         
-         var controlButton = document.createElement('button');
-         controlButton.innerHTML = 'Create note!';
-         controlButton.innerHTML = 'Send it!';
-         
-         controlButton.addEventListener ("click", function() {
-           if (latestNoteMarker != undefined) {
-             latestNoteMarker.setTitle($("#note").val());
-             controlInput.value = "";
-           }
-         })
-         
-         
-         controlDiv.appendChild(controlLabel);
-         controlDiv.appendChild(controlInput);
-         controlDiv.appendChild(controlButton);
-         
-         </script>
-         <script>
-         function componentToHex(c) {
-           var hex = c.toString(16);
-           return hex.length == 1 ? "0" + hex : hex;
-         }
-         
-         function rgbToHex(r, g, b) {
-           return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-         }
-         
-         function enforceBounds(x) {
-           if (x < 0) {
-             return 0;
-           } else if (x > 1){
-             return 1;
-           } else {
-             return x;
-           }
-         }
-         
-         function interpolateLinearly(x, values) {
-           // Split values into four lists
-           console.log(x);
-           var x_values = [];
-           var r_values = [];
-           var g_values = [];
-           var b_values = [];
-           for (i in values) {
-             x_values.push(values[i][0]);
-             r_values.push(values[i][1][0]);
-             g_values.push(values[i][1][1]);
-             b_values.push(values[i][1][2]);
-           }
-           var i = 1;
-           while (x_values[i] < x) {
-             i = i+1;
-           }
-           i = i-1;
-           var width = Math.abs(x_values[i] - x_values[i+1]);
-           var scaling_factor = (x - x_values[i]) / width;
-            // Get the new color values though interpolation
-            var r = r_values[i] + scaling_factor * (r_values[i+1] - r_values[i]);
-            var g = g_values[i] + scaling_factor * (g_values[i+1] - g_values[i]);
-            var b = b_values[i] + scaling_factor * (b_values[i+1] - b_values[i]);
-            r = Math.round(255*enforceBounds(r));
-            g = Math.round(255*enforceBounds(g));
-            b = Math.round(255*enforceBounds(b));
-            console.log(r + " " + g + " " + b);
-            return rgbToHex(r, g, b);
-          }
+</script>
 
-          
-          </script>
-          <script>
-         // Race Information 
-         var lap = 0;
-         var latestGPSTimeStamp;
-         var latestGPSCoordinates;
-         var idealSpeed = 40.0; // testing 
-         var prevLatLng;
-         
-         function valueToCol (ideal, value) {
-           console.log(ideal);
-           var col;
-           if (value/ideal > 1) {
-             col = interpolateLinearly((value/ideal)-1, Greens);
-           } else {
-             col = interpolateLinearly (1-(value/ideal), Reds);
-           }
-           console.log(col);
-           return col;
-         }
-         
-         function changeLastUpdatedStats(num) {
-           $('#lastUpdatedStats')[0].innerHTML = "" + num;
-         }
-         
-         function changeThrottleStats(num, lastUpdated) {
-           $('#throttleStats')[0].innerHTML = "" + num;
-           changeLastUpdatedStats(lastUpdated);
-         }
-         
-         function mockIdealSpeed(gps) {
-           if (!gps) return 40;
-           console.log(gps);
-           var latLng_arr = gps.split(",");
-           console.log(latLng_arr);
-           var lat = parseFloat(latLng_arr[0]);
-           var lng = parseFloat(latLng_arr[1]);
-           var l2 = Math.sqrt(lat*lat + lng*lng);
-           console.log(l2);
-           return 40+20*Math.sin(l2*1000);
-         }
-
-         function changeSpeedStats(num, lastUpdated) {
-           $('#speedStats')[0].innerHTML = "" + num;
-           console.log("here");
-           var idealSpeed = mockIdealSpeed(latestGPSCoordinates);
-           console.log("Ideal: "+idealSpeed);
-           var col = valueToCol (idealSpeed, num);
-           drawMap(prevLatLng, col);
-           changeLastUpdatedStats(lastUpdated);
-         }
-         
-         function faultBMS(bool) {
-           if (bool) {
-             $('#BMSFault')[0].style.background = "#E53838";
-           } else {
-             $('#BMSFault')[0].style.background = "#56BF56";
-           }
-         }
-         
-         function faultMC(bool) {
-           if (bool) {
-             $('#MCFault')[0].style.background = "#E53838";
-           } else {
-             $('#MCFault')[0].style.background = "#56BF56";
-           }
-         }
-         
-         function updateLap() {
-           if (lap == 8) {
-            // end lap request 
-             // TODO: send data back to Electron
-           } else {
-             $("#lapButton").text('Next Lap');
-             transferPolys();
-
-             // lapDataArr.push(new LapData());
-             lap ++;
-             $('#lapNumber')[0].innerHTML = "Lap # " + lap;
-             lapQuery();
-
-             var now = new Date();
-             var diff = (now - lapStart) - idealLapMillis;
-             var compText = millisToString(Math.abs(diff));
-             compText = (diff < 0 ? "-" : "+") + compText;
-             $("#lapTable tbody tr:first-child td:nth-child(2)").append("<br>("+compText+")");
-             $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
-             lapStart = now;
-           }
-         }
+<script>
 
 
-         
-         </script>
-         <script>
-         /* Charting JS */
-         'use strict';
-         
-         // ----------- SPEED ------------
-         var speedChart = realTimeChart()
-         .title(" ")
-         .yTitle("kmph")
-         .xTitle("time")
-         .border(true)
-         .width(800)
-         .height(290)
-         .barWidth(1)
-         .minY(0)
-         .maxY(100);
-         d3.select("#speedChart").append("div")
-         .attr("id", "chartDiv")
-         .call(speedChart);
-         
-         function pushSpeedChart(value, time) {
-           var dt = new Date(parseInt(time));
-           var obj = {
-             value: value,
-             time: dt,
-             color: "#0949b7", // TODO choose relevant color
-             ts: dt.getTime(),
-           };
-           speedChart.datum(obj);
-         }
-         
-         // ----------- THROTTLE ------------
-         var throttleChart = realTimeChart()
-         .title(" ")
-         .yTitle("on/off")
-         .xTitle("time")
-         .border(true)
-         .width(800)
-         .height(290)
-         .barWidth(1)
-         .minY(0)
-         .maxY(1);
-         d3.select("#throttleChart").append("div")
-         .attr("id", "chartDiv")
-         .call(throttleChart);
-         
-         function pushThrottleChart(value, time) {
-           var dt = new Date(parseInt(time));
-           if (value == 0) value = 0.1;
-           var obj = {
-             value: value,
-             time: dt,
-             color: "#0949b7", // TODO choose relevant color
-             ts: dt.getTime(),
-           };
-           throttleChart.datum(obj);
-         }
-         </script>
-         <script>
-         // Timing logic
-         var runStart = new Date();
-         var lapStart = runStart; // TODO fetch both from database
-         const interval = 10;
-         const idealLapMillis = 60000;
-         function updateStopwatch() {
-           var millisText = millisToString(new Date() - runStart);
-           $("#stopwatch").text(millisText);
-           var lapText = millisToString(new Date() - lapStart);
-           $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
-           setTimeout(function() {
-             updateStopwatch();
-           }, interval);
-         }
-         //updateStopwatch();
-         
-         function initLapTable() {
-           // TODO fetch from db
-           $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
-         }
-         initLapTable();
-         
-         function millisToString(m) {
-           var minutes = Math.floor(m / 60000);
-           m = m % 60000;
-           var seconds = Math.floor(m / 1000);
-           m = m % 1000;
-           var millis = m;
-           return pad(minutes, 2) + ":" + pad(seconds, 2) + "." + pad(millis, 3);
-         }
-         
-         function pad(quantity, nums) {
-           s = quantity + "";
-           if (s.length >= nums) {
-             return s;
-           }
-           return pad("0"+quantity, nums);
-         }
-         </script>
-         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init"></script>
-       </body>
-       </html>
+function registerEndRun() {
+  if (registerRun) {
+    runName =  $("#run-name-input").val();
+    var startTime = new Date();
+    startTime = startTime.toLocaleString('en-US');
+    startTimer();
+    $.post(startRunEndPoint, { runname: runName, starttime: startTime});
+    runOngoing();
+    updateStopwatch();
+
+  } else {
+    var endTime = new Date();
+    endTime = endTime.toLocaleString('en-US');
+    $.post(endRunEndPoint, {endtime: endTime});
+    $.post(endLapNoIDEndPoint, {endtime: endTime});
+    runNotOngoing();
+  }
+
+}
+
+function lapQuery() {
+  var runID;
+  var lapNo;
+  var startTime = new Date();
+  startTime = startTime.toLocaleString('en-US');
+
+  // get runID
+  $.get(runIDEndPoint).done(function(data) {
+    console.log(data.id);
+    runID = data.id;
+
+    // get lapNo
+    $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
+      console.log(data);
+
+      // end previous lap (if there's a previous lap)
+      if (!($.isEmptyObject(data))) {
+        $.post(endLapEndPoint, {runid: runID, lapno: data.lapno, endtime: startTime}).done(function(data) {
+          console.log("started run");
+          console.log(data);
+        });
+      }
+
+      // insert query for next lap
+      lapNo = ($.isEmptyObject(data)) ? 1 : data.lapno + 1;
+      console.log(lapNo);
+
+      $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
+        console.log("started run");
+        console.log(data);
+      });
+
+    });
+
+  });
+
+}
+
+function addEndTimeInfo (endTime, runID) {
+
+}
+
+function startTimer() {
+
+}
+
+</script>
+
+
+
+<script>
+// Input form div, for google maps note taking later on
+var controlDiv = document.createElement('DIV');
+controlDiv.id = "controls";
+
+var controlInput = document.createElement('input');
+controlInput.id = "note";
+controlInput.name = "note";
+// controlInput.value = "Hi there!";
+
+var controlLabel = document.createElement('label');
+controlLabel.innerHTML = 'Note';
+controlLabel.setAttribute("for","note");
+
+var controlButton = document.createElement('button');
+controlButton.innerHTML = 'Create note!';
+controlButton.innerHTML = 'Send it!';
+
+controlButton.addEventListener ("click", function() {
+  if (latestNoteMarker != undefined) {
+    latestNoteMarker.setTitle($("#note").val());
+    controlInput.value = "";
+  }
+})
+
+
+controlDiv.appendChild(controlLabel);
+controlDiv.appendChild(controlInput);
+controlDiv.appendChild(controlButton);
+
+</script>
+<script>
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function enforceBounds(x) {
+  if (x < 0) {
+    return 0;
+  } else if (x > 1){
+    return 1;
+  } else {
+    return x;
+  }
+}
+
+function interpolateLinearly(x, values) {
+  // Split values into four lists
+  console.log(x);
+  var x_values = [];
+  var r_values = [];
+  var g_values = [];
+  var b_values = [];
+  for (i in values) {
+    x_values.push(values[i][0]);
+    r_values.push(values[i][1][0]);
+    g_values.push(values[i][1][1]);
+    b_values.push(values[i][1][2]);
+  }
+  var i = 1;
+  while (x_values[i] < x) {
+    i = i+1;
+  }
+  i = i-1;
+  var width = Math.abs(x_values[i] - x_values[i+1]);
+  var scaling_factor = (x - x_values[i]) / width;
+  // Get the new color values though interpolation
+  var r = r_values[i] + scaling_factor * (r_values[i+1] - r_values[i]);
+  var g = g_values[i] + scaling_factor * (g_values[i+1] - g_values[i]);
+  var b = b_values[i] + scaling_factor * (b_values[i+1] - b_values[i]);
+  r = Math.round(255*enforceBounds(r));
+  g = Math.round(255*enforceBounds(g));
+  b = Math.round(255*enforceBounds(b));
+  console.log(r + " " + g + " " + b);
+  return rgbToHex(r, g, b);
+}
+
+
+</script>
+<script>
+// Race Information
+var lap = 0;
+var latestGPSTimeStamp;
+var latestGPSCoordinates;
+var idealSpeed = 40.0; // testing
+var prevLatLng;
+
+function valueToCol (ideal, value) {
+  console.log(ideal);
+  var col;
+  if (value/ideal > 1) {
+    col = interpolateLinearly((value/ideal)-1, Greens);
+  } else {
+    col = interpolateLinearly (1-(value/ideal), Reds);
+  }
+  console.log(col);
+  return col;
+}
+
+function changeLastUpdatedStats(num) {
+  $('#lastUpdatedStats')[0].innerHTML = "" + num;
+}
+
+function changeThrottleStats(num, lastUpdated) {
+  $('#throttleStats')[0].innerHTML = "" + num;
+  changeLastUpdatedStats(lastUpdated);
+}
+
+function mockIdealSpeed(gps) {
+  if (!gps) return 40;
+  console.log(gps);
+  var latLng_arr = gps.split(",");
+  console.log(latLng_arr);
+  var lat = parseFloat(latLng_arr[0]);
+  var lng = parseFloat(latLng_arr[1]);
+  var l2 = Math.sqrt(lat*lat + lng*lng);
+  console.log(l2);
+  return 40+20*Math.sin(l2*1000);
+}
+
+function changeSpeedStats(num, lastUpdated) {
+  $('#speedStats')[0].innerHTML = "" + num;
+  console.log("here");
+  var idealSpeed = mockIdealSpeed(latestGPSCoordinates);
+  console.log("Ideal: "+idealSpeed);
+  var col = valueToCol (idealSpeed, num);
+  drawMap(prevLatLng, col);
+  changeLastUpdatedStats(lastUpdated);
+}
+
+function faultBMS(bool) {
+  if (bool) {
+    $('#BMSFault')[0].style.background = "#E53838";
+  } else {
+    $('#BMSFault')[0].style.background = "#56BF56";
+  }
+}
+
+function faultMC(bool) {
+  if (bool) {
+    $('#MCFault')[0].style.background = "#E53838";
+  } else {
+    $('#MCFault')[0].style.background = "#56BF56";
+  }
+}
+
+function updateLap() {
+  if (lap == 8) {
+    // end lap request
+    // TODO: send data back to Electron
+  } else {
+    $("#lapButton").text('Next Lap');
+    transferPolys();
+
+    // lapDataArr.push(new LapData());
+    lap ++;
+    $('#lapNumber')[0].innerHTML = "Lap # " + lap;
+    lapQuery();
+
+    var now = new Date();
+    var diff = (now - lapStart) - idealLapMillis;
+    var compText = millisToString(Math.abs(diff));
+    compText = (diff < 0 ? "-" : "+") + compText;
+    $("#lapTable tbody tr:first-child td:nth-child(2)").append("<br>("+compText+")");
+    $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+    lapStart = now;
+  }
+}
+
+
+
+</script>
+<script>
+/* Charting JS */
+'use strict';
+
+// ----------- SPEED ------------
+var speedChart = realTimeChart()
+.title(" ")
+.yTitle("kmph")
+.xTitle("time")
+.border(true)
+.width(800)
+.height(290)
+.barWidth(1)
+.minY(0)
+.maxY(100);
+d3.select("#speedChart").append("div")
+.attr("id", "chartDiv")
+.call(speedChart);
+
+function pushSpeedChart(value, time) {
+  var dt = new Date(parseInt(time));
+  var obj = {
+    value: value,
+    time: dt,
+    color: "#0949b7", // TODO choose relevant color
+    ts: dt.getTime(),
+  };
+  speedChart.datum(obj);
+}
+
+// ----------- THROTTLE ------------
+var throttleChart = realTimeChart()
+.title(" ")
+.yTitle("on/off")
+.xTitle("time")
+.border(true)
+.width(800)
+.height(290)
+.barWidth(1)
+.minY(0)
+.maxY(1);
+d3.select("#throttleChart").append("div")
+.attr("id", "chartDiv")
+.call(throttleChart);
+
+function pushThrottleChart(value, time) {
+  var dt = new Date(parseInt(time));
+  if (value == 0) value = 0.1;
+  var obj = {
+    value: value,
+    time: dt,
+    color: "#0949b7", // TODO choose relevant color
+    ts: dt.getTime(),
+  };
+  throttleChart.datum(obj);
+}
+</script>
+<script>
+// Timing logic
+var runStart = new Date();
+var lapStart = runStart; // TODO fetch both from database
+const interval = 10;
+const idealLapMillis = 60000;
+function updateStopwatch() {
+  var millisText = millisToString(new Date() - runStart);
+  $("#stopwatch").text(millisText);
+  var lapText = millisToString(new Date() - lapStart);
+  $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
+  setTimeout(function() {
+    updateStopwatch();
+  }, interval);
+}
+//updateStopwatch();
+
+function initLapTable() {
+  // TODO fetch from db
+  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+}
+initLapTable();
+
+function millisToString(m) {
+  var minutes = Math.floor(m / 60000);
+  m = m % 60000;
+  var seconds = Math.floor(m / 1000);
+  m = m % 1000;
+  var millis = m;
+  return pad(minutes, 2) + ":" + pad(seconds, 2) + "." + pad(millis, 3);
+}
+
+function pad(quantity, nums) {
+  s = quantity + "";
+  if (s.length >= nums) {
+    return s;
+  }
+  return pad("0"+quantity, nums);
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init"></script>
+</body>
+</html>
