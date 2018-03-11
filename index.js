@@ -219,6 +219,12 @@ app.post('/addData', function (req, res) {
     });
   });
 
+  // get polylines
+  app.get('/getPolylines', function (req, res) {
+    console.log("in get lap polylines method" + req.query.lapid);
+    
+  });
+
   // Database: Get all results
   app.get('/db', function (req, res) {
     client.query('SELECT * FROM data', (err, rows) => {
