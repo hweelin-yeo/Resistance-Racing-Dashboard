@@ -87,23 +87,34 @@
 </div>
 
 <!-- Script to utilise the WebSocket -->
+<script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-  var socket = new WebSocket('ws://localhost:40510');
-  socket.onopen = function () {
-    console.log('websocket is connected ...');
-  }
-  // event emmited when receiving message 
-socket.onmessage = function(event) {
-  // var json = event.data;
-  // var obj = JSON.parse(json);
-  // switch (obj.messagetype)
-  console.log(event);
-  $('#lapNumber')[0].innerHTML = "Lap # " + event.data;
-};
+  var socket = io();
+  socket.on('connect', function() {
+    console.log("Socket Connected.");
+  })
 
-socket.onerror = function(error) {
-  console.log('WebSocket Error: ' + error);
-};                
+  socket.on('Lap Button Clicked', function (data) {
+    lap = data['lap']; // update local lap variable to the new lap number
+    $('#lapNumber')[0].innerHTML = "Lap # " + lap;
+  });
+//   var socket = new WebSocket('ws://localhost:40510');
+//   socket.onopen = function () {
+//     console.log('websocket is connected ...');
+//   }
+//   // event emmited when receiving message 
+// socket.onmessage = function(event) {
+//   // var json = event.data;
+//   // var obj = JSON.parse(json);
+//   // switch (obj.messagetype)
+//   console.log(event);
+//   $('#lapNumber')[0].innerHTML = "Lap # " + event.data;
+// socket.onerror = function(error) {
+//   console.log('WebSocket Error: ' + error);
+// }; 
+// };
+
+               
 
 </script>
 
@@ -119,7 +130,7 @@ function updateLap() {
 
              // lapDataArr.push(new LapData());
              lap ++;
-             socket.send(lap);
+             socket.emit('Lap Button Clicked', { lap: lap });
         
            }
          }

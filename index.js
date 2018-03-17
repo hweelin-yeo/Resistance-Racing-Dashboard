@@ -25,35 +25,48 @@ app.use('/user-test', express.static('control-speed.html'))
 app.use(express.static('static'))
 
 /** Server Information */
-app.listen(process.env.PORT || 5000, function() {
-  console.log("Listening on port " + (process.env.PORT || 5000));
-});
+// app.listen(process.env.PORT || 5000, function() {
+//   console.log("Listening on port " + (process.env.PORT || 5000));
+// });
 
 // WebSocket
-var WebSocket = require('ws');
-var WebSocketServer = require('ws').Server;
-wss = new WebSocketServer({port: 40510});
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
-// Broadcast to all.
-wss.broadcast = function broadcast(data) {
-  wss.clients.forEach(function each(client) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(data);
-    }
-  });
-};
-
-wss.on('connection', function (ws) {
-  ws.on('message', function (message) {
-    console.log('received: %s', message);
-    wss.broadcast(message);
-  })
-});
-
+ server.listen(process.env.PORT || 5000, function() {
+   console.log("Listening on port " + (process.env.PORT || 5000));
+ });
 
 app.get('/', function (req, res) {
-   res.sendfile(__dirname + '/ws.html');
+  res.sendfile(__dirname + '/index.html');
 });
+
+io.on('connection', function (socket) {
+
+  socket.on('Lap Button Clicked', function (data) {
+    io.sockets.emit('Lap Button Clicked', data);
+  });
+});
+// var WebSocket = require('ws');
+// var WebSocketServer = require('ws').Server;
+// wss = new WebSocketServer({port: 40510});
+
+// // Broadcast to all.
+// wss.broadcast = function broadcast(data) {
+//   wss.clients.forEach(function each(client) {
+//     if (client.readyState === WebSocket.OPEN) {
+//       client.send(data);
+//     }
+//   });
+// };
+
+// wss.on('connection', function (ws) {
+//   ws.on('message', function (message) {
+//     console.log('received: %s', message);
+//     wss.broadcast(message);
+//   })
+// });
+
 
 /** Particle Information */
 var Particle = require('particle-api-js');
