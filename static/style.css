@@ -33,3 +33,12 @@
   border-right: 100px solid #FFAE49;
   border-bottom: 50px solid transparent;
 }*/
+
+.prevBestLapButton {
+  padding:10px;
+  margin:10px 0;
+}
+
+.prevBestLapButton>h3{
+  font-weight: bold;
+}
