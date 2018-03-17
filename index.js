@@ -7,6 +7,7 @@ const client = new Client({
   ssl: false, 
 });
 
+
 client.connect((err) => { if (err) console.log("Postgres connection error: " + err)});
 
 var bodyparser = require('body-parser');
@@ -24,6 +25,23 @@ app.use(express.static('static'))
 /** Server Information */
 app.listen(process.env.PORT || 5000, function() {
   console.log("Listening on port " + (process.env.PORT || 5000));
+});
+
+// WebSocket
+var WebSocketServer = require('ws').Server;
+wss = new WebSocketServer({port: 40510});
+wss.on('connection', function (ws) {
+  ws.on('message', function (message) {
+    console.log('received: %s', message)
+  })
+  setInterval(
+    () => ws.send(`${new Date()}`),
+    1000
+  )
+});
+
+app.get('/', function (req, res) {
+   res.sendfile(__dirname + '/ws.html');
 });
 
 /** Particle Information */
