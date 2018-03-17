@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Live Timing Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script src="realTimeChart.js"></script>
+  <script src="js-colormaps.js"></script>
+  <script src="hashmap.js"></script>
+  <link rel="stylesheet" href="realTimeChart.css">
+  <style>    
+  footer {
+   background-color: #555;
+   color: white;
+   padding: 15px;
+ }
+ .circle {
+   width: 30px;
+   height: 30px;
+   background: #56BF56;
+   -moz-border-radius: 50px;
+   -webkit-border-radius: 50px;
+   border-radius: 50px;
+ }
+ .borderless-panel {
+   border-width: 0;
+   border-bottom-width: 0;
+ }
+ .well-white {
+   background-color: white;
+ }
+ .btn-higher {
+   top: 0;
+ }
+}
+</style>
+</head>
+<body>
+  <div class="container text-center">
+   <!-- <div class="col-sm-12">  -->   
+   <div class="row">
+    <!-- <div class="col-sm-12"> -->
+    <div class="panel panel-default text-left borderless-panel">
+     <div class="panel-body">
+      <div class = "col-sm-6">
+       <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+     </div>
+     <div class = "col-sm-3">
+       <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
+     </div>
+   </div>
+ </div>
+ <!-- </div> -->
+</div>
+<!-- </div> -->
+</div>
+<div class="container text-left">
+ <div class="row">
+
+  <div class = "col-sm-3">
+    <!-- <label class="sr-only" for="inlineFormInputGroup">Test Run </label> -->
+    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+      <div class="input-group-addon"> Run Name</div>
+      <input type="text" class="form-control" value = "" id="run-name-input" placeholder="Test Run">
+    </div>
+
+  </div>
+
+  <div class = "col-sm-7">
+    <button onClick = "registerEndRun()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
+  </div>
+
+
+  <!-- <div class="panel panel-default text-left borderless-panel"> -->
+  <!-- <div class="panel-body"> -->
+  <div class = "col-sm-1">
+   <p style = "font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
+ </div>
+ <div class = "col-sm-1">
+  <button onClick = "updateLap()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
+  <div> <br> </div>
+</div>
+
+<!-- Script to utilise the WebSocket -->
+<script type="text/javascript">
+  var socket = new WebSocket('ws://localhost:40510');
+  socket.onopen = function () {
+    console.log('websocket is connected ...');
+  }
+  // event emmited when receiving message 
+socket.onmessage = function(event) {
+  // var json = event.data;
+  // var obj = JSON.parse(json);
+  // switch (obj.messagetype)
+  console.log(event);
+  $('#lapNumber')[0].innerHTML = "Lap # " + event.data;
+};
+
+socket.onerror = function(error) {
+  console.log('WebSocket Error: ' + error);
+};                
+
+</script>
+
+
+<script>
+var lap = 0;
+function updateLap() {
+           if (lap == 8) {
+            // end lap request 
+             // TODO: send data back to Electron
+           } else {
+             $("#lapButton").text('Next Lap');
+
+             // lapDataArr.push(new LapData());
+             lap ++;
+             socket.send(lap);
+        
+           }
+         }
+
+
+</script>

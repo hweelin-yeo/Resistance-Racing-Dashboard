@@ -18,7 +18,9 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
 app.use('/live', express.static('live-timing.html'))
+app.use('/websocket-test', express.static('websocket-test.html'))
 app.use('/user-test', express.static('control-speed.html'))
 app.use(express.static('static'))
 
@@ -28,17 +30,26 @@ app.listen(process.env.PORT || 5000, function() {
 });
 
 // WebSocket
+var WebSocket = require('ws');
 var WebSocketServer = require('ws').Server;
 wss = new WebSocketServer({port: 40510});
+
+// Broadcast to all.
+wss.broadcast = function broadcast(data) {
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(data);
+    }
+  });
+};
+
 wss.on('connection', function (ws) {
   ws.on('message', function (message) {
-    console.log('received: %s', message)
+    console.log('received: %s', message);
+    wss.broadcast(message);
   })
-  setInterval(
-    () => ws.send(`${new Date()}`),
-    1000
-  )
 });
+
 
 app.get('/', function (req, res) {
    res.sendfile(__dirname + '/ws.html');
