@@ -14,9 +14,9 @@ var bodyparser = require('body-parser');
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 
 app.use('/live', express.static('live-timing.html'))
@@ -33,9 +33,9 @@ app.use(express.static('static'))
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
- server.listen(process.env.PORT || 5000, function() {
-   console.log("Listening on port " + (process.env.PORT || 5000));
- });
+server.listen(process.env.PORT || 5000, function() {
+ console.log("Listening on port " + (process.env.PORT || 5000));
+});
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
@@ -43,30 +43,48 @@ app.get('/', function (req, res) {
 
 io.on('connection', function (socket) {
 
+  // Lap Button
   socket.on('Lap Button Clicked', function (data) {
-    io.sockets.emit('Lap Button Clicked', data);
+    lapQuery(data['starttime']);
   });
+
+  // Run Button
+  socket.on('Start Run', function (data) {
+    console.log("server receives start run");
+    var runname = data['runname'];
+    var starttime = data['starttime'];
+    $.post(startRunEndPoint, { runname: runname, starttime: starttime}).done(function(data) {
+      io.sockets.emit('Run Button Click Back To Client');
+    });
+  });
+
+  socket.on('End Run', function (data) {
+    console.log("server receives end run");
+    var endtime = data['endtime'];
+    endRunData(endtime, function() {
+      endLapDataNoID(endtime, function(){
+        io.sockets.emit('Run Button Click Back To Client');
+      });
+    });
+  });
+
 });
-// var WebSocket = require('ws');
-// var WebSocketServer = require('ws').Server;
-// wss = new WebSocketServer({port: 40510});
 
-// // Broadcast to all.
-// wss.broadcast = function broadcast(data) {
-//   wss.clients.forEach(function each(client) {
-//     if (client.readyState === WebSocket.OPEN) {
-//       client.send(data);
-//     }
-//   });
-// };
+/** End Points */ 
+// Moved from client side to server side to centralise things,
+// though it defeats the purpose of having end points
 
-// wss.on('connection', function (ws) {
-//   ws.on('message', function (message) {
-//     console.log('received: %s', message);
-//     wss.broadcast(message);
-//   })
-// });
-
+var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
+var startRunEndPoint = endPointBaseURL + "startRunData";
+var endRunEndPoint = endPointBaseURL + "endRunData";
+var startLapEndPoint = endPointBaseURL + "startLapData";
+var endLapEndPoint = endPointBaseURL + "endLapData";
+var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
+var runIDEndPoint = endPointBaseURL + "getRunID";
+var lapNoEndPoint = endPointBaseURL + "getLapNo";
+var runNameEndPoint = endPointBaseURL + "getRunName";
+var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
+var stopwatchEndPoint = endPointBaseURL+"getLapTimingsByRun";
 
 /** Particle Information */
 var Particle = require('particle-api-js');
@@ -74,66 +92,77 @@ var particle = new Particle();
 var token;
 var device_ID = "34004a000251363131363432";
 
-/** Race Information */
-var lap = 1;
-
 function insertDataQuery(time, property, value, res) {
   client.query('INSERT INTO data (timestamp, property, value)' +
-       'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
-      if (err){
-        console.log(err.stack);
-      } else {
-        console.log(rows.rows[0]);
-      }
-      res.end("sent");
-      
-    });
+   'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+    }
+    res.end("sent");
+
+  });
 }
 
 function startLapDataQuery(runid, lapno, starttime, res) {
   client.query('INSERT INTO lapdata (runid, lapno, starttime)' +
-       'VALUES ($1, $2, $3)', [runid, lapno, starttime], (err, rows) => {
-      if (err){
-        console.log(err.stack);
-      } else {
-        console.log(rows.rows[0]);
-      }
-      res.end("sent");
-      
-    });
+   'VALUES ($1, $2, $3)', [runid, lapno, starttime], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+    }
+    res.end("sent");
+
+  });
 }
 
 function endLapDataQuery(runid, lapno, endtime, res) {
   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
-       [runid, lapno, endtime], (err, rows) => {
-      if (err){
-        console.log(err.stack);
-      } else {
-        console.log(rows.rows[0]);
-      }
-      res.end("sent");
-      
-    });
+   [runid, lapno, endtime], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+    }
+    res.end("sent");
+
+  });
 }
 
 function startRunDataQuery(runname, starttime, res) {
   console.log("START TIME IS "+ starttime);
   client.query('INSERT INTO rundata (runname, starttime)' +
-       'VALUES ($1, $2)', [runname, starttime], (err, rows) => {
+   'VALUES ($1, $2)', [runname, starttime], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+    }
+    res.end("sent");
+
+  });
+}
+/** Second version: has callback parameter*/
+function endRunData(endtime, callback) {
+  console.log("in endrundata function");
+  client.query('UPDATE rundata SET endtime = ($1)' +
+    'WHERE id IN( SELECT max(id) FROM rundata)', [endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
         console.log(rows.rows[0]);
       }
-      res.end("sent");
-      
+      callback();
     });
 }
 
+/** Original version: corresponds to end point*/
 function endRunDataQuery(endtime, res) {
   client.query('UPDATE rundata SET endtime = ($1)' +
     'WHERE id IN( SELECT max(id) FROM rundata)', 
-       [endtime], (err, rows) => {
+    [endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -143,19 +172,73 @@ function endRunDataQuery(endtime, res) {
     });
 }
 
-// Webhook from live-timing.html: Post LapData
-app.post('/startLapData', function (req, res) {
-  console.log("reached add lap data request function");
-  var runid = req.body.runid;
-  var lapno = req.body.lapno;
-  var starttime = req.body.starttime;
-  startLapDataQuery(runid, lapno, starttime, res);
-  
-});
+// Logic: 
+// Two cases: Last run in the run table has either ended, or is ongoing
+// Case 1: If run has ended, lap button is disabled. So this func wouldn't be called at all
+// Case 2: If run is ongoing, lap table either has no laps of the run (start lap hasn't been clicked) or has laps.
+// Case 2a: If lap table has no laps of the run, lap is 1. 
+// Case 2b: Else, it's latest lap no. + 1
 
-app.post('/endLapDataNoID', function (req, res) {
-  client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', 
-       [req.body.endtime], (err, rows) => {
+function lapQuery(startTime) {
+  var runID;
+  var lapNo;
+
+  // get runID
+  $.get(runIDEndPoint).done(function(data) {
+    console.log(data.id);
+    runID = data.id;
+
+    // get lapNo
+    $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
+      console.log(data);
+
+      // end previous lap (if there's a previous lap)
+      if (!($.isEmptyObject(data))) {
+        $.post(endLapEndPoint, {runid: runID, lapno: data.lapno, endtime: startTime}).done(function(data) {
+          console.log("started run");
+          console.log(data);
+        });
+      }
+
+      // insert query for next lap
+      lapNo = ($.isEmptyObject(data)) ? 1 : data.lapno + 1;
+      console.log(lapNo);
+
+      $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
+        console.log("started run");
+        console.log(data);
+        io.sockets.emit('Lap Button Clicked', {lap: lapNo});
+      });
+    });
+  });
+}
+
+  // Webhook from live-timing.html: Post LapData
+  app.post('/startLapData', function (req, res) {
+    console.log("reached add lap data request function");
+    var runid = req.body.runid;
+    var lapno = req.body.lapno;
+    var starttime = req.body.starttime;
+    startLapDataQuery(runid, lapno, starttime, res);
+    
+  });
+
+  function endLapDataNoID(endtime, callback) {
+    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', 
+     [endtime], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+      // res.end("sent"); 
+      callback();
+    });
+  }
+
+  app.post('/endLapDataNoID', function (req, res) {
+    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', 
+     [req.body.endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -163,51 +246,51 @@ app.post('/endLapDataNoID', function (req, res) {
       }
       res.end("sent"); 
     });
-  
-});
+    
+  });
 
-app.post('/endLapData', function (req, res) {
-  console.log("reached add lap data request function");
-  var runid = req.body.runid;
-  var lapno = req.body.lapno;
-  var endtime = req.body.endtime;
-  endLapDataQuery(runid, lapno, endtime, res);
-});
+  app.post('/endLapData', function (req, res) {
+    console.log("reached add lap data request function");
+    var runid = req.body.runid;
+    var lapno = req.body.lapno;
+    var endtime = req.body.endtime;
+    endLapDataQuery(runid, lapno, endtime, res);
+  });
 
-// Webhook from live-timing.html: Post RunData
-app.post('/startRunData', function (req, res) {
-  console.log("reached add run data request function");
-  var runname = req.body.runname;
-  var starttime = req.body.starttime;
-  startRunDataQuery(runname, starttime, res);
-  
-});
+  // Webhook from live-timing.html: Post RunData
+  app.post('/startRunData', function (req, res) {
+    console.log("reached add run data request function");
+    var runname = req.body.runname;
+    var starttime = req.body.starttime;
+    startRunDataQuery(runname, starttime, res);
+    
+  });
 
-app.post('/endRunData', function (req, res) {
-  console.log("reached end run data request function");
-  var endtime = req.body.endtime;
-  endRunDataQuery(endtime, res);
-});
+  app.post('/endRunData', function (req, res) {
+    console.log("reached end run data request function");
+    var endtime = req.body.endtime;
+    endRunDataQuery(endtime, res);
+  });
 
-// Webhook from Electron: Post Data
-app.post('/addData', function (req, res) {
-  console.log("reached add request function");
-  var data = req.body.data;
-  console.log(req.body.data);
+  // Webhook from Electron: Post Data
+  app.post('/addData', function (req, res) {
+    console.log("reached add request function");
+    var data = req.body.data;
+    console.log(req.body.data);
 
-  var data_arr = data.split("_");
-  for (var i in data_arr) {
+    var data_arr = data.split("_");
+    for (var i in data_arr) {
 
-    var data_i = data_arr[i];
-    var data_i_arr = data_i.split(";");
+      var data_i = data_arr[i];
+      var data_i_arr = data_i.split(";");
 
-    var property = data_i_arr[0];
-    var value = data_i_arr[1];
-    var time = data_i_arr[2];
-    console.log(value);
-    insertDataQuery(time, property, value, res);
-  }
-});
+      var property = data_i_arr[0];
+      var value = data_i_arr[1];
+      var time = data_i_arr[2];
+      console.log(value);
+      insertDataQuery(time, property, value, res);
+    }
+  });
 
 
   app.get('/getRunID', function (req, res) {
@@ -261,6 +344,21 @@ app.post('/addData', function (req, res) {
     });
   });
 
+  app.get('/getLapTimingsByRun', function (req, res) {
+    console.log("in get lap number and the run id is " + req.query.runid);
+    client.query('SELECT lapno, starttime, endtime FROM lapdata WHERE runid = ($1))', [req.query.runid], (err, rows) => {
+      // console.log(rows);
+      console.log(rows.rows);
+      // console.log(rows.rows[0]);
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log("no errors in " + rows.rows[0]);
+      }
+      res.send(rows.rows);
+    });
+  });
+
   // get polylines
   app.get('/getPolylines', function (req, res) {
     console.log("in get lap polylines method" + req.query.lapid);
@@ -278,37 +376,3 @@ app.post('/addData', function (req, res) {
       res.end("sent");
     });
   });
-
-/**
-  // Database: Post data
-  app.post('/add', function (req, res) {
-    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query('INSERT INTO data (timestamp, property, value)' +
-      'VALUES (NOW(), $1, $2)', [
-        req.body.property, req.body.value]); {
-        done();
-        console.log([
-          req.body.property, req.body.value]);
-        //res.redirect('/db');
-
-        if (err)
-         { console.error(err); res.send("Error " + err); }
-        else
-         {
-           console.log("RES.SEND sent response back")
-           res.send("sent response back")
-         }
-       };
-      });
-    });
-/** This is the event data sent from Particle:
-
-Event: [object Object] {
-  "data": "{property: \"lap\", value: 2}",
-  "ttl": 60,
-  "published_at": "2017-10-14T17:58:23.085Z",
-  "coreid": "api",
-  "name": "general"
-}
-
-Use json parser to get req.body.data.property, req.body.data.value **/

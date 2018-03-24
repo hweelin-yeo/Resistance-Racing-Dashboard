@@ -88,6 +88,20 @@
 
 <!-- Script to utilise the WebSocket -->
 <script src="/socket.io/socket.io.js"></script>
+<script>
+    var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
+    var startRunEndPoint = endPointBaseURL + "startRunData";
+    var endRunEndPoint = endPointBaseURL + "endRunData";
+    var startLapEndPoint = endPointBaseURL + "startLapData";
+    var endLapEndPoint = endPointBaseURL + "endLapData";
+    var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
+    var runIDEndPoint = endPointBaseURL + "getRunID";
+    var lapNoEndPoint = endPointBaseURL + "getLapNo";
+    var runNameEndPoint = endPointBaseURL + "getRunName";
+    var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
+
+    </script>
+
 <script type="text/javascript">
   var socket = io();
   socket.on('connect', function() {
@@ -98,42 +112,102 @@
     lap = data['lap']; // update local lap variable to the new lap number
     $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   });
-//   var socket = new WebSocket('ws://localhost:40510');
-//   socket.onopen = function () {
-//     console.log('websocket is connected ...');
-//   }
-//   // event emmited when receiving message 
-// socket.onmessage = function(event) {
-//   // var json = event.data;
-//   // var obj = JSON.parse(json);
-//   // switch (obj.messagetype)
-//   console.log(event);
-//   $('#lapNumber')[0].innerHTML = "Lap # " + event.data;
-// socket.onerror = function(error) {
-//   console.log('WebSocket Error: ' + error);
-// }; 
-// };
 
-               
+  socket.on('Run Button Click Back To Client', function() {
+    refreshRunLap();
+  }); 
 
 </script>
 
 
 <script>
-var lap = 0;
+// var lap = 0;
 function updateLap() {
-           if (lap == 8) {
-            // end lap request 
-             // TODO: send data back to Electron
-           } else {
-             $("#lapButton").text('Next Lap');
+  if (lap == 8) {
+  // TODO: end lap request, send data back to Electron
+  } else {
+    $("#lapButton").text('Next Lap');
+    // lapDataArr.push(new LapData());
+    // lap ++;
+    var startTime = (new Date()).toLocaleString('en-US');
+    socket.emit('Lap Button Clicked', {starttime: startTime});
+  }
+}
 
-             // lapDataArr.push(new LapData());
-             lap ++;
-             socket.emit('Lap Button Clicked', { lap: lap });
-        
-           }
-         }
+</script>
 
+<script>
+// TODO: Add in web sockets
+// When button is clicked, call endPoint
+var registerRun;
+
+function registerEndRun() {
+    if (registerRun) {
+      runName =  $("#run-name-input").val();
+      var startTime = new Date();
+      startTime = startTime.toLocaleString('en-US');
+      // startTimer();
+      // $.post(startRunEndPoint, { runname: runName, starttime: startTime});
+      // runOngoing();
+      // updateStopwatch();
+      socket.emit('Start Run', {runname: runName, starttime: startTime}); // THE ONLY EDIT
+
+    } else {
+      var endTime = new Date();
+      endTime = endTime.toLocaleString('en-US');
+      // $.post(endRunEndPoint, {endtime: endTime});
+      // $.post(endLapNoIDEndPoint, {endtime: endTime});
+      // runNotOngoing();
+      socket.emit('End Run', {endtime: endTime}); // THE ONLY EDIT
+    }
+
+  }
+
+  function refreshRunLap() {
+      $.get(isRunOnEndPoint).done(function(data) {
+        if (data.endtime == null) {
+          // if a run is ongoing: set runName and lap#
+          runOngoing();
+          $.get(runNameEndPoint).done(function(data) {
+            $('#run-name-input').val(data.runname);
+          });
+
+          $.get(runIDEndPoint).done(function(data) {
+            $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
+              if (data.lapno != undefined) {
+                $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
+                // lapButtonText(false);
+              } else {
+                // lapButtonText(true);
+              }
+            });
+          });
+
+        } else {
+          // if a run is not ongoing
+          runNotOngoing();
+        }
+      });
+    }
+
+  refreshRunLap();
+
+    function runOngoing() {
+      registerRun = false;
+      $("#run-name-input").attr("readonly", "readonly");
+      $("#lapButton").removeAttr("disabled");
+      $('#runButton').text('End Run');
+      $('#runButton').removeClass("btn-warning").addClass("btn-danger");
+    }
+
+    function runNotOngoing() {
+      registerRun = true;
+      $('#runButton').removeClass("btn-danger").addClass("btn-warning");
+      $('#run-name-input').val('');
+      $('#runButton').text('Register Run');
+      $("#run-name-input").removeAttr("readonly");
+      $("#lapButton").attr("disabled", "disabled");
+      $('#lapNumber')[0].innerHTML = "Lap # " + 0;
+    }
 
 </script>
