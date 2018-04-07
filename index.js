@@ -346,7 +346,7 @@ function lapQuery(startTime) {
 
   app.get('/getLapTimingsByRun', function (req, res) {
     console.log("in get lap number and the run id is " + req.query.runid);
-    client.query('SELECT lapno, starttime, endtime FROM lapdata WHERE runid = ($1))', [req.query.runid], (err, rows) => {
+    client.query('SELECT lapno, starttime, endtime FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
       // console.log(rows);
       console.log(rows.rows);
       // console.log(rows.rows[0]);
@@ -358,6 +358,22 @@ function lapQuery(startTime) {
       res.send(rows.rows);
     });
   });
+
+  app.get('/getRunNames', function (req, res) {
+    console.log("in get runnames");
+    client.query('SELECT runname FROM rundata WHERE runid = ($1))', [req.query.runid], (err, rows) => {
+      // console.log(rows);
+      console.log(rows.rows);
+      // console.log(rows.rows[0]);
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log("no errors in " + rows.rows[0]);
+      }
+      res.send(rows.rows);
+    });
+  });
+
 
   // get polylines
   app.get('/getPolylines', function (req, res) {
