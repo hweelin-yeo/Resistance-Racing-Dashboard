@@ -53,7 +53,7 @@ io.on('connection', function (socket) {
     console.log("server receives start run");
     var runname = data['runname'];
     var starttime = data['starttime'];
-    startRunDataQuery(runname, starttime, res);
+    startRunDataQuery(runname, starttime);
   });
 
   socket.on('End Run', function (data) {
@@ -76,7 +76,7 @@ var particle = new Particle();
 var token;
 var device_ID = "34004a000251363131363432";
 
-function insertDataQuery(time, property, value, res) {
+function insertDataQuery(time, property, value) {
   client.query('INSERT INTO data (timestamp, property, value)' +
    'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
     if (err){
@@ -84,12 +84,12 @@ function insertDataQuery(time, property, value, res) {
     } else {
       console.log(rows.rows[0]);
     }
-    res.end("sent");
+    // res.end("sent");
 
   });
 }
 
-function startLapDataQuery(runid, lapno, starttime, res) {
+function startLapDataQuery(runid, lapno, starttime) {
   client.query('INSERT INTO lapdata (runid, lapno, starttime)' +
    'VALUES ($1, $2, $3)', [runid, lapno, starttime], (err, rows) => {
     if (err){
@@ -98,12 +98,12 @@ function startLapDataQuery(runid, lapno, starttime, res) {
       console.log(rows.rows[0]);
     }
     io.sockets.emit('Lap Button Click Back To Client', { lap: lapno});
-    res.end("sent");
+    // res.end("sent");
 
   });
 }
 
-function endLapDataQuery(runid, lapno, endtime, res) {
+function endLapDataQuery(runid, lapno, endtime) {
   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
    [runid, lapno, endtime], (err, rows) => {
     if (err){
@@ -111,12 +111,12 @@ function endLapDataQuery(runid, lapno, endtime, res) {
     } else {
       console.log(rows.rows[0]);
     }
-    res.end("sent");
+    // res.end("sent");
 
   });
 }
 
-function startRunDataQuery(runname, starttime, res) {
+function startRunDataQuery(runname, starttime) {
   console.log("START TIME IS "+ starttime);
   client.query('INSERT INTO rundata (runname, starttime)' +
    'VALUES ($1, $2)', [runname, starttime], (err, rows) => {
@@ -126,7 +126,7 @@ function startRunDataQuery(runname, starttime, res) {
       console.log(rows.rows[0]);
     }
     io.sockets.emit('Run Button Click Back To Client');
-    res.end("sent");
+    // res.end("sent");
 
   });
 }
@@ -180,13 +180,13 @@ function lapQuery(startTime) {
         lapNo = rows.rows[0];
        // end previous lap (if there's a previous lap)
         if (lapNo) {
-          endLapDataQuery(runID, lapNo, startTime, res);
+          endLapDataQuery(runID, lapNo, startTime);
         }
 
         // insert query for next lap
         lapNo = (lapNo) ? lapNo + 1 : 1;
         console.log(lapNo);
-        startLapDataQuery(runID, lapNo, startTime, res)
+        startLapDataQuery(runID, lapNo, startTime)
     });
 
   });
