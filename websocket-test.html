@@ -37,6 +37,23 @@
  .btn-higher {
    top: 0;
  }
+
+ .prevBestLapButton {
+    padding:5px;
+    margin:10px 0;
+    font-size:18px;
+  }
+
+  .prevBestLapButton>h3{
+    font-weight: bold;
+    padding-bottom:10px;
+    border-bottom:1px solid white;
+  }
+
+  .prevBestLapButton>div>.eff{
+    font-weight: bold;
+    font-size:36px;
+  }
 }
 </style>
 </head>
@@ -85,6 +102,9 @@
   <button onClick = "updateLap()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
   <div> <br> </div>
 </div>
+
+
+
 
 <!-- Script to utilise the WebSocket -->
 <script src="/socket.io/socket.io.js"></script>
