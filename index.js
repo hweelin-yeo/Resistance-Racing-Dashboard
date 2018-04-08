@@ -53,9 +53,7 @@ io.on('connection', function (socket) {
     console.log("server receives start run");
     var runname = data['runname'];
     var starttime = data['starttime'];
-    $.post(startRunEndPoint, { runname: runname, starttime: starttime}).done(function(data) {
-      io.sockets.emit('Run Button Click Back To Client');
-    });
+    startRunDataQuery(runname, starttime, res);
   });
 
   socket.on('End Run', function (data) {
@@ -70,21 +68,7 @@ io.on('connection', function (socket) {
 
 });
 
-/** End Points */ 
-// Moved from client side to server side to centralise things,
-// though it defeats the purpose of having end points
 
-var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
-var startRunEndPoint = endPointBaseURL + "startRunData";
-var endRunEndPoint = endPointBaseURL + "endRunData";
-var startLapEndPoint = endPointBaseURL + "startLapData";
-var endLapEndPoint = endPointBaseURL + "endLapData";
-var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
-var runIDEndPoint = endPointBaseURL + "getRunID";
-var lapNoEndPoint = endPointBaseURL + "getLapNo";
-var runNameEndPoint = endPointBaseURL + "getRunName";
-var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
-var stopwatchEndPoint = endPointBaseURL+"getLapTimingsByRun";
 
 /** Particle Information */
 var Particle = require('particle-api-js');
@@ -113,6 +97,7 @@ function startLapDataQuery(runid, lapno, starttime, res) {
     } else {
       console.log(rows.rows[0]);
     }
+    io.sockets.emit('Lap Button Click Back To Client', { lap: lapno});
     res.end("sent");
 
   });
@@ -140,6 +125,7 @@ function startRunDataQuery(runname, starttime, res) {
     } else {
       console.log(rows.rows[0]);
     }
+    io.sockets.emit('Run Button Click Back To Client');
     res.end("sent");
 
   });
@@ -184,32 +170,25 @@ function lapQuery(startTime) {
   var lapNo;
 
   // get runID
-  $.get(runIDEndPoint).done(function(data) {
-    console.log(data.id);
-    runID = data.id;
 
-    // get lapNo
-    $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
-      console.log(data);
+  client.query('SELECT id FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
+      if (err) {console.log(err.stack);} else { console.log(rows.rows[0]);}
+      runID = rows.rows[0];
+      // get lapNo
+      client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [runID], (err, rows) => {
+        if (err) {console.log(err.stack);} else { console.log("no errors in " + rows.rows[0]);}
+        lapNo = rows.rows[0];
+       // end previous lap (if there's a previous lap)
+        if (lapNo) {
+          endLapDataQuery(runID, lapNo, startTime, res);
+        }
 
-      // end previous lap (if there's a previous lap)
-      if (!($.isEmptyObject(data))) {
-        $.post(endLapEndPoint, {runid: runID, lapno: data.lapno, endtime: startTime}).done(function(data) {
-          console.log("started run");
-          console.log(data);
-        });
-      }
-
-      // insert query for next lap
-      lapNo = ($.isEmptyObject(data)) ? 1 : data.lapno + 1;
-      console.log(lapNo);
-
-      $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
-        console.log("started run");
-        console.log(data);
-        io.sockets.emit('Lap Button Clicked', {lap: lapNo});
-      });
+        // insert query for next lap
+        lapNo = (lapNo) ? lapNo + 1 : 1;
+        console.log(lapNo);
+        startLapDataQuery(runID, lapNo, startTime, res)
     });
+
   });
 }
 

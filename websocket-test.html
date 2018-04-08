@@ -108,7 +108,7 @@
     console.log("Socket Connected.");
   })
 
-  socket.on('Lap Button Clicked', function (data) {
+  socket.on('Lap Button Click Back To Client', function (data) {
     lap = data['lap']; // update local lap variable to the new lap number
     $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   });
