@@ -174,8 +174,8 @@ function lapQuery(startTime) {
   client.query('SELECT id FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
       if (err) {console.log(err.stack); return;} else { 
         console.log(rows.rows[0]);
-        runID = rows.rows[0];
-        console.log(rows.rows[0]);
+        runID = (rows.rows[0])['id'];
+        console.log(rows.rows[0].id);
         console.log("Run ID is " + runID);
       }
       console.log("Outer loop: Run ID is " + runID);
@@ -184,7 +184,7 @@ function lapQuery(startTime) {
       client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [runID], (err, rows) => {
         if (err) {console.log(err.stack); return; } else { 
           console.log("no errors in " + rows.rows[0]);
-          lapNo = rows.rows[0];
+          lapNo = (rows.rows[0])['lapno'];
           console.log(rows.rows[0]);
           console.log("LapNo is " + lapNo);
         }
