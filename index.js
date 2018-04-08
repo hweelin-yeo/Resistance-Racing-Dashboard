@@ -182,10 +182,9 @@ function lapQuery(startTime) {
         if (lapNo) {
           endLapDataQuery(runID, lapNo, startTime);
         }
-
+        console.log(lapNo);
         // insert query for next lap
         lapNo = (lapNo) ? lapNo + 1 : 1;
-        console.log(lapNo);
         startLapDataQuery(runID, lapNo, startTime)
     });
 

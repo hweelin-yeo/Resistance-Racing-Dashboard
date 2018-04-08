@@ -123,15 +123,14 @@
 <script>
 // var lap = 0;
 function updateLap() {
-  if (lap == 8) {
-  // TODO: end lap request, send data back to Electron
-  } else {
+  // if (lap == 8) {
+  // // TODO: end lap request, send data back to Electron
+  // } else {
     $("#lapButton").text('Next Lap');
-    // lapDataArr.push(new LapData());
-    // lap ++;
+
     var startTime = (new Date()).toLocaleString('en-US');
     socket.emit('Lap Button Clicked', {starttime: startTime});
-  }
+  // }
 }
 
 </script>
