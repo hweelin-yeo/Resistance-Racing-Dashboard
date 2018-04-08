@@ -179,7 +179,9 @@ function lapQuery(startTime) {
       // get lapNo
       client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [runID], (err, rows) => {
         if (err) {console.log(err.stack); return; } else { 
-          lapNo = (rows.rows[0])['lapno'];
+          if (rows.rows[0]) {
+            lapNo = (rows.rows[0])['lapno'];
+          }
         }
        // end previous lap (if there's a previous lap)
         if (lapNo) {
