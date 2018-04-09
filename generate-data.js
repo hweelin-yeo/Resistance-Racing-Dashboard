@@ -36,8 +36,16 @@ const GPSSensor = new MockSensor("gps", 1500, function(epoch) {
 	waypointIndex+=1;
 	if (waypointIndex == waypoints.length) waypointIndex = 0;
 	return latlon;
-})
-const ConnectedSensors = [SpeedSensor, GPSSensor];
+});
+const VoltageSensor = new MockSensor("voltage", 1000, function(epoch) {
+	var relative = epoch - initEpoch;
+	return Math.round(1000*Math.max(40, 50 - 10*(relative/1800000.0)))/1000.0;
+});
+const CurrentSensor = new MockSensor("current", 1000, function(epoch) {
+	var r = Math.random();
+	return r > 0.8 ? 0.0: 20.0;
+});
+const ConnectedSensors = [GPSSensor, SpeedSensor, VoltageSensor, CurrentSensor];
 ConnectedSensors.forEach(function(sensor) {
 	sensor.connectSensor();
 });
