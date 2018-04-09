@@ -39,152 +39,165 @@
  }
 
  .prevBestLapButton {
-    padding:5px;
-    margin:10px 0;
-    font-size:18px;
-  }
+  padding:5px;
+  margin:10px 0;
+  font-size:18px;
+}
 
-  .prevBestLapButton>h3{
-    font-weight: bold;
-    padding-bottom:10px;
-    border-bottom:1px solid white;
-  }
+.prevBestLapButton>h3{
+  font-weight: bold;
+  padding-bottom:10px;
+  border-bottom:1px solid white;
+}
 
-  .prevBestLapButton>div>.eff{
-    font-weight: bold;
-    font-size:36px;
-  }
+.prevBestLapButton>div>.eff{
+  font-weight: bold;
+  font-size:36px;
+}
 }
 </style>
 </head>
 <body>
   <div class="container text-center">
    <!-- <div class="col-sm-12">  -->   
-   <div class="row">
-    <!-- <div class="col-sm-12"> -->
-    <div class="panel panel-default text-left borderless-panel">
-     <div class="panel-body">
-      <div class = "col-sm-6">
-       <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+     <div class="row">
+      <!-- <div class="col-sm-12"> -->
+        <div class="panel panel-default text-left borderless-panel">
+         <div class="panel-body">
+          <div class = "col-sm-6">
+           <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
+         </div>
+         <div class = "col-sm-3">
+           <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
+         </div>
+       </div>
      </div>
-     <div class = "col-sm-3">
-       <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
-     </div>
+     <!-- </div> -->
    </div>
+   <!-- </div> -->
  </div>
- <!-- </div> -->
-</div>
-<!-- </div> -->
-</div>
-<div class="container text-left">
- <div class="row">
+ <div class="container text-left">
+   <div class="row">
 
-  <div class = "col-sm-3">
-    <!-- <label class="sr-only" for="inlineFormInputGroup">Test Run </label> -->
-    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-      <div class="input-group-addon"> Run Name</div>
-      <input type="text" class="form-control" value = "" id="run-name-input" placeholder="Test Run">
+    <div class = "col-sm-3">
+      <!-- <label class="sr-only" for="inlineFormInputGroup">Test Run </label> -->
+      <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+        <div class="input-group-addon"> Run Name</div>
+        <input type="text" class="form-control" value = "" id="run-name-input" placeholder="Test Run">
+      </div>
+
     </div>
 
-  </div>
-
-  <div class = "col-sm-7">
-    <button onClick = "registerEndRun()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
-  </div>
+    <div class = "col-sm-7">
+      <button onClick = "runButtonClicked()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
+    </div>
 
 
-  <!-- <div class="panel panel-default text-left borderless-panel"> -->
-  <!-- <div class="panel-body"> -->
-  <div class = "col-sm-1">
-   <p style = "font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
- </div>
- <div class = "col-sm-1">
-  <button onClick = "updateLap()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
-  <div> <br> </div>
-</div>
+    <!-- <div class="panel panel-default text-left borderless-panel"> -->
+      <!-- <div class="panel-body"> -->
+        <div class = "col-sm-1">
+         <p style = "font-size:130%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
+       </div>
+       <div class = "col-sm-1">
+        <button onClick = "lapButtonClicked()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
+        <div> <br> </div>
+      </div>
 
 
 
 
-<!-- Script to utilise the WebSocket -->
-<script src="/socket.io/socket.io.js"></script>
-<script>
-    var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
-    var startRunEndPoint = endPointBaseURL + "startRunData";
-    var endRunEndPoint = endPointBaseURL + "endRunData";
-    var startLapEndPoint = endPointBaseURL + "startLapData";
-    var endLapEndPoint = endPointBaseURL + "endLapData";
-    var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
-    var runIDEndPoint = endPointBaseURL + "getRunID";
-    var lapNoEndPoint = endPointBaseURL + "getLapNo";
-    var runNameEndPoint = endPointBaseURL + "getRunName";
-    var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
+      <!-- Script to utilise the WebSocket -->
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
+        var startRunEndPoint = endPointBaseURL + "startRunData";
+        var endRunEndPoint = endPointBaseURL + "endRunData";
+        var startLapEndPoint = endPointBaseURL + "startLapData";
+        var endLapEndPoint = endPointBaseURL + "endLapData";
+        var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
+        var runIDEndPoint = endPointBaseURL + "getRunID";
+        var lapNoEndPoint = endPointBaseURL + "getLapNo";
+        var runNameEndPoint = endPointBaseURL + "getRunName";
+        var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
 
-    </script>
+      </script>
 
-<script type="text/javascript">
-  var socket = io();
-  socket.on('connect', function() {
-    console.log("Socket Connected.");
-  })
+      <script type="text/javascript">
+        var socket = io();
+        socket.on('connect', function() {
+          console.log("Socket Connected.");
+        })
 
-  socket.on('Lap Button Click Back To Client', function (data) {
-    lap = data['lap']; // update local lap variable to the new lap number
-    $('#lapNumber')[0].innerHTML = "Lap # " + lap;
-  });
+        socket.on('Lap Started', function (data) {
+          var lap = data['lapno']; 
+          var time = data['time']; // TODO: update stopwatch
+          $('#lapNumber')[0].innerHTML = "Lap # " + lap;
+          $("#lapButton").text("Next Lap");
+        });
 
-  socket.on('Run Button Click Back To Client', function() {
-    refreshRunLap();
-  }); 
+        socket.on('Lap Ended', function (data) {
+          var lap = data['lapno']; 
+          var time = data['time']; // TODO: update stopwatch
+          var energy = data['energy'];
+        });
+
+        socket.on('Run Started', function(data) {
+          var runname = data['runname'];
+          var time = data['time']; // TODO: check if really needed
+          runOngoing();
+          $('#run-name-input').val(runname); 
+        });
+
+        socket.on('Run Ended', function(data) {
+          var time = data['time'];
+          runNotOngoing();
+        });
+
+        socket.on('New Data', function(data) {
+          // TODO: Implement
+          var property = data['property'];
+          var value = data['value'];
+          var time = data['time'];
+        }); 
+
+      
+
+
+  </script>
+
+
+  <script>
+  function lapButtonClicked() {
+   // TODO: if last lap, end lap request, send data back to Electron
+   $("#lapButton").text('Next Lap');
+   var time = (new Date()).toLocaleString('en-US');
+   socket.emit('Next Lap', {time: time}); 
+  }
 
 </script>
 
-
 <script>
-// var lap = 0;
-function updateLap() {
-  // if (lap == 8) {
-  // // TODO: end lap request, send data back to Electron
-  // } else {
-    $("#lapButton").text('Next Lap');
+var registerRun; // initialised at init, refreshed by websockets
 
-    var startTime = (new Date()).toLocaleString('en-US');
-    socket.emit('Lap Button Clicked', {starttime: startTime});
-  // }
-}
-
-</script>
-
-<script>
-// TODO: Add in web sockets
-// When button is clicked, call endPoint
-var registerRun;
-
-function registerEndRun() {
-    if (registerRun) {
-      runName =  $("#run-name-input").val();
-      var startTime = new Date();
-      startTime = startTime.toLocaleString('en-US');
-      // startTimer();
-      // $.post(startRunEndPoint, { runname: runName, starttime: startTime});
-      // runOngoing();
+function runButtonClicked() {
+  if (registerRun) {
+    runName =  $("#run-name-input").val();
+    var time = new Date();
+    time = time.toLocaleString('en-US');
       // updateStopwatch();
-      socket.emit('Start Run', {runname: runName, starttime: startTime}); // THE ONLY EDIT
+      socket.emit('Start Run', {runname: runName, time: time});  
 
     } else {
-      var endTime = new Date();
-      endTime = endTime.toLocaleString('en-US');
-      // $.post(endRunEndPoint, {endtime: endTime});
-      // $.post(endLapNoIDEndPoint, {endtime: endTime});
-      // runNotOngoing();
-      socket.emit('End Run', {endtime: endTime}); // THE ONLY EDIT
+      var time = new Date();
+      time = time.toLocaleString('en-US');
+      socket.emit('End Run', {time: time}); 
     }
 
   }
 
-  function refreshRunLap() {
-      $.get(isRunOnEndPoint).done(function(data) {
-        if (data.endtime == null) {
+  function init() {
+    $.get(isRunOnEndPoint).done(function(data) {
+      if (data.endtime == null) {
           // if a run is ongoing: set runName and lap#
           runOngoing();
           $.get(runNameEndPoint).done(function(data) {
@@ -195,38 +208,37 @@ function registerEndRun() {
             $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
               if (data.lapno != undefined) {
                 $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
-                // lapButtonText(false);
+                $("#lapButton").text("Next Lap");
               } else {
-                // lapButtonText(true);
+                $("#lapButton").text("Start Lap");
               }
             });
           });
 
         } else {
-          // if a run is not ongoing
           runNotOngoing();
         }
       });
-    }
+  }
 
-  refreshRunLap();
+  init();
 
-    function runOngoing() {
-      registerRun = false;
-      $("#run-name-input").attr("readonly", "readonly");
-      $("#lapButton").removeAttr("disabled");
-      $('#runButton').text('End Run');
-      $('#runButton').removeClass("btn-warning").addClass("btn-danger");
-    }
+  function runOngoing() {
+    registerRun = false;
+    $("#run-name-input").attr("readonly", "readonly");
+    $("#lapButton").removeAttr("disabled");
+    $('#runButton').text('End Run');
+    $('#runButton').removeClass("btn-warning").addClass("btn-danger");
+  }
 
-    function runNotOngoing() {
-      registerRun = true;
-      $('#runButton').removeClass("btn-danger").addClass("btn-warning");
-      $('#run-name-input').val('');
-      $('#runButton').text('Register Run');
-      $("#run-name-input").removeAttr("readonly");
-      $("#lapButton").attr("disabled", "disabled");
-      $('#lapNumber')[0].innerHTML = "Lap # " + 0;
-    }
+  function runNotOngoing() {
+    registerRun = true;
+    $('#runButton').removeClass("btn-danger").addClass("btn-warning");
+    $('#run-name-input').val('');
+    $('#runButton').text('Register Run');
+    $("#run-name-input").removeAttr("readonly");
+    $("#lapButton").attr("disabled", "disabled");
+    $('#lapNumber')[0].innerHTML = "Lap # " + 0;
+  }
 
 </script>

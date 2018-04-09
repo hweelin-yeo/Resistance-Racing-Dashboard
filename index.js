@@ -44,24 +44,23 @@ app.get('/', function (req, res) {
 io.on('connection', function (socket) {
 
   // Lap Button
-  socket.on('Lap Button Clicked', function (data) {
-    lapQuery(data['starttime']);
+  socket.on('Next Lap', function (data) {
+    lapQuery(data['time']);
   });
 
   // Run Button
   socket.on('Start Run', function (data) {
-    console.log("server receives start run");
     var runname = data['runname'];
-    var starttime = data['starttime'];
-    startRunDataQuery(runname, starttime);
+    var time = data['time'];
+    startRunDataQuery(runname, time);
   });
 
   socket.on('End Run', function (data) {
     console.log("server receives end run");
-    var endtime = data['endtime'];
-    endRunData(endtime, function() {
-      endLapDataNoID(endtime, function(){
-        io.sockets.emit('Run Button Click Back To Client');
+    var time = data['time'];
+    endRunData(time, function() {
+      endLapDataNoID(time, function(){
+        io.sockets.emit('Run Ended', {time: time}); 
       });
     });
   });
@@ -89,21 +88,43 @@ function insertDataQuery(time, property, value) {
   });
 }
 
-function startLapDataQuery(runid, lapno, starttime) {
+function startLapDataQuery(runid, lapno, time) {
   client.query('INSERT INTO lapdata (runid, lapno, starttime)' +
-   'VALUES ($1, $2, $3)', [runid, lapno, starttime], (err, rows) => {
+   'VALUES ($1, $2, $3)', [runid, lapno, time], (err, rows) => {
     if (err){
       console.log(err.stack);
     } else {
       console.log(rows.rows[0]);
     }
-    io.sockets.emit('Lap Button Click Back To Client', { lap: lapno});
-    // res.end("sent");
-
+    io.sockets.emit('Lap Started', {lapno: lapno, time: time}); 
   });
 }
 
-function endLapDataQuery(runid, lapno, endtime) {
+function endLapDataQuery(runid, lapno, time) {
+  updateTime(runid, lapno, time, function() {
+    getEnergy(runid, lapno, function(res) {
+      updateEnergy(runid, lapno, res);
+      io.sockets.emit('Lap Ended', {lapno: lapno, time: time, energy: res}); 
+  })
+}
+/** Original version of endLapDataQuery*/
+// function endLapDataQuery(runid, lapno, endtime) {
+//   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+//    [runid, lapno, endtime], (err, rows) => {
+//     if (err){
+//       console.log(err.stack);
+//     } else {
+//       console.log(rows.rows[0]);
+//     }
+
+//     calculateEnergy(, function(res) {
+//       // TODO: update total energy column
+//       io.sockets.emit('Lap Ended', {lapno: lapno, time: time, totalenergy: res}); 
+//     })
+//   });
+// }
+
+function updateTime(runid, lapno, endtime, callback) {
   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
    [runid, lapno, endtime], (err, rows) => {
     if (err){
@@ -111,21 +132,66 @@ function endLapDataQuery(runid, lapno, endtime) {
     } else {
       console.log(rows.rows[0]);
     }
-    // res.end("sent");
-
+    callback();
   });
 }
 
-function startRunDataQuery(runname, starttime) {
-  console.log("START TIME IS "+ starttime);
+
+function updateEnergy(runid, lapno, energy) {
+  client.query('UPDATE lapdata SET energy = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+    [runid, lapno, energy], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+    });
+}
+
+
+
+function getEnergy(runid, lapno, callback) {
+  console.log("in get all volt and time function");
+  client.query('SELECT value, time FROM data WHERE runid = ($1) AND lapno = ($2) AND property = ($3)', 
+    [runid, lapno, 'voltage'], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows);
+    }
+  // TODO: if rows.rows is empty
+  var voltArr = (rows.rows[0])['value']; // TODO: verify
+  var timeArr = (rows.rows[0])['time'];  // TODO: verify
+  callback(calculateEnergy(voltArr, timeArr));
+}
+
+function calculateEnergy(voltArr, timeArr) {  // TODO: get formula again
+  if (voltArr.length == 1) {
+    return -1;
+  }
+
+  var totalEnergy = 0;
+
+  for (var index = 1; index < voltArr.length; index++) {
+    var energyDiff = voltArr[index] - voltArr[index-1];
+    var timeDiff = timeArr[index] - timeArr[index-1]; // TODO: use library to find the difference
+    totalEnergy += energyDiff / timeDiff;
+  } 
+  console.log("total energy is " + totalEnergy);
+  return totalEnergy;
+}
+
+
+function startRunDataQuery(runname, time, callback) {
+  console.log("START TIME IS "+ time);
   client.query('INSERT INTO rundata (runname, starttime)' +
-   'VALUES ($1, $2)', [runname, starttime], (err, rows) => {
+   'VALUES ($1, $2)', [runname, time], (err, rows) => {
     if (err){
       console.log(err.stack);
     } else {
       console.log(rows.rows[0]);
     }
-    io.sockets.emit('Run Button Click Back To Client');
+    io.sockets.emit('Run Started', {runname: runname, time: time}); 
     // res.end("sent");
 
   });
@@ -170,7 +236,6 @@ function lapQuery(startTime) {
   var lapNo;
 
   // get runID
-
   client.query('SELECT id FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
       if (err) {console.log(err.stack); return;} else { 
         runID = (rows.rows[0])['id'];
@@ -186,6 +251,7 @@ function lapQuery(startTime) {
        // end previous lap (if there's a previous lap)
         if (lapNo) {
           endLapDataQuery(runID, lapNo, startTime);
+          // TODO: calculate cumulative energy
         }
         // insert query for next lap
         lapNo = (lapNo) ? lapNo + 1 : 1;
@@ -335,7 +401,7 @@ function lapQuery(startTime) {
       if (err){
         console.log(err.stack);
       } else {
-        console.log("no errors in " + rows.rows[0]);
+        console.log("no errors in " + rows.rows);
       }
       res.send(rows.rows);
     });
@@ -358,3 +424,48 @@ function lapQuery(startTime) {
       res.end("sent");
     });
   });
+
+
+/** Particle */
+
+    var particle = new Particle();
+    var token;
+    // Login
+    particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+      function(data) {
+        console.log('LOGGED IN.');
+        token = data.body.access_token;
+        console.log(token);
+        getEventStream();
+      },
+      function (err) {
+        console.log('Could not log in.', err);
+      }
+    );
+
+    // Get event stream
+    function getEventStream() {
+      console.log('Begin event stream.');
+      particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+        stream.on('event', function(json) {
+          console.log(JSON.stringify(json, null, 4));
+          // parseDataBeta (json.data); //TODO: implement this
+        });
+      });
+    }
+
+    // Parse live data
+    function parseDataBeta (data) {
+      // Parse live data
+      var dataArr = data.split("_");
+
+      for (var i in dataArr) {
+        var dataI = dataArr[i];
+        var dataType = dataI.substring(0,1);
+        switch (dataType) {
+          case (g) :
+          case (b) :
+          case (o) :
+        }
+      }
+    }
