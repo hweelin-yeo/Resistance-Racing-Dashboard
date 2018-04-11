@@ -44,47 +44,30 @@ app.get('/', function (req, res) {
 io.on('connection', function (socket) {
 
   // Lap Button
-  socket.on('Lap Button Clicked', function (data) {
-    lapQuery(data['starttime']);
+  socket.on('Next Lap', function (data) {
+    lapQuery(data['time']);
   });
 
   // Run Button
   socket.on('Start Run', function (data) {
-    console.log("server receives start run");
     var runname = data['runname'];
-    var starttime = data['starttime'];
-    $.post(startRunEndPoint, { runname: runname, starttime: starttime}).done(function(data) {
-      io.sockets.emit('Run Button Click Back To Client');
-    });
+    var time = data['time'];
+    startRunDataQuery(runname, time);
   });
 
   socket.on('End Run', function (data) {
     console.log("server receives end run");
-    var endtime = data['endtime'];
-    endRunData(endtime, function() {
-      endLapDataNoID(endtime, function(){
-        io.sockets.emit('Run Button Click Back To Client');
+    var time = data['time'];
+    endRunData(time, function() {
+      endLapDataNoID(time, function(){
+        io.sockets.emit('Run Ended', {time: time}); 
       });
     });
   });
 
 });
 
-/** End Points */ 
-// Moved from client side to server side to centralise things,
-// though it defeats the purpose of having end points
 
-var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
-var startRunEndPoint = endPointBaseURL + "startRunData";
-var endRunEndPoint = endPointBaseURL + "endRunData";
-var startLapEndPoint = endPointBaseURL + "startLapData";
-var endLapEndPoint = endPointBaseURL + "endLapData";
-var endLapNoIDEndPoint = endPointBaseURL + "endLapDataNoID";
-var runIDEndPoint = endPointBaseURL + "getRunID";
-var lapNoEndPoint = endPointBaseURL + "getLapNo";
-var runNameEndPoint = endPointBaseURL + "getRunName";
-var isRunOnEndPoint = endPointBaseURL + "isRunOngoing";
-var stopwatchEndPoint = endPointBaseURL+"getLapTimingsByRun";
 
 /** Particle Information */
 var Particle = require('particle-api-js');
@@ -92,7 +75,7 @@ var particle = new Particle();
 var token;
 var device_ID = "34004a000251363131363432";
 
-function insertDataQuery(time, property, value, res) {
+function insertDataQuery(time, property, value) {
   client.query('INSERT INTO data (timestamp, property, value)' +
    'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
     if (err){
@@ -100,25 +83,48 @@ function insertDataQuery(time, property, value, res) {
     } else {
       console.log(rows.rows[0]);
     }
-    res.end("sent");
+    // res.end("sent");
 
   });
 }
 
-function startLapDataQuery(runid, lapno, starttime, res) {
+function startLapDataQuery(runid, lapno, time) {
   client.query('INSERT INTO lapdata (runid, lapno, starttime)' +
-   'VALUES ($1, $2, $3)', [runid, lapno, starttime], (err, rows) => {
+   'VALUES ($1, $2, $3)', [runid, lapno, time], (err, rows) => {
     if (err){
       console.log(err.stack);
     } else {
       console.log(rows.rows[0]);
     }
-    res.end("sent");
-
+    io.sockets.emit('Lap Started', {lapno: lapno, time: time}); 
   });
 }
 
-function endLapDataQuery(runid, lapno, endtime, res) {
+function endLapDataQuery(runid, lapno, time) {
+  updateTime(runid, lapno, time, function() {
+    getEnergy(runid, lapno, function(res) {
+      updateEnergy(runid, lapno, res);
+      io.sockets.emit('Lap Ended', {lapno: lapno, time: time, energy: res}); 
+  })
+}
+/** Original version of endLapDataQuery*/
+// function endLapDataQuery(runid, lapno, endtime) {
+//   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+//    [runid, lapno, endtime], (err, rows) => {
+//     if (err){
+//       console.log(err.stack);
+//     } else {
+//       console.log(rows.rows[0]);
+//     }
+
+//     calculateEnergy(, function(res) {
+//       // TODO: update total energy column
+//       io.sockets.emit('Lap Ended', {lapno: lapno, time: time, totalenergy: res}); 
+//     })
+//   });
+// }
+
+function updateTime(runid, lapno, endtime, callback) {
   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
    [runid, lapno, endtime], (err, rows) => {
     if (err){
@@ -126,21 +132,67 @@ function endLapDataQuery(runid, lapno, endtime, res) {
     } else {
       console.log(rows.rows[0]);
     }
-    res.end("sent");
-
+    callback();
   });
 }
 
-function startRunDataQuery(runname, starttime, res) {
-  console.log("START TIME IS "+ starttime);
+
+function updateEnergy(runid, lapno, energy) {
+  client.query('UPDATE lapdata SET energy = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+    [runid, lapno, energy], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows[0]);
+      }
+    });
+}
+
+
+
+function getEnergy(runid, lapno, callback) {
+  console.log("in get all volt and time function");
+  client.query('SELECT value, time FROM data WHERE runid = ($1) AND lapno = ($2) AND property = ($3)', 
+    [runid, lapno, 'voltage'], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows);
+    }
+  // TODO: if rows.rows is empty
+  var voltArr = (rows.rows[0])['value']; // TODO: verify
+  var timeArr = (rows.rows[0])['time'];  // TODO: verify
+  callback(calculateEnergy(voltArr, timeArr));
+}
+
+function calculateEnergy(voltArr, timeArr) {  // TODO: get formula again
+  if (voltArr.length == 1) {
+    return -1;
+  }
+
+  var totalEnergy = 0;
+
+  for (var index = 1; index < voltArr.length; index++) {
+    var energyDiff = voltArr[index] - voltArr[index-1];
+    var timeDiff = timeArr[index] - timeArr[index-1]; // TODO: use library to find the difference
+    totalEnergy += energyDiff / timeDiff;
+  } 
+  console.log("total energy is " + totalEnergy);
+  return totalEnergy;
+}
+
+
+function startRunDataQuery(runname, time, callback) {
+  console.log("START TIME IS "+ time);
   client.query('INSERT INTO rundata (runname, starttime)' +
-   'VALUES ($1, $2)', [runname, starttime], (err, rows) => {
+   'VALUES ($1, $2)', [runname, time], (err, rows) => {
     if (err){
       console.log(err.stack);
     } else {
       console.log(rows.rows[0]);
     }
-    res.end("sent");
+    io.sockets.emit('Run Started', {runname: runname, time: time}); 
+    // res.end("sent");
 
   });
 }
@@ -184,32 +236,28 @@ function lapQuery(startTime) {
   var lapNo;
 
   // get runID
-  $.get(runIDEndPoint).done(function(data) {
-    console.log(data.id);
-    runID = data.id;
-
-    // get lapNo
-    $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
-      console.log(data);
-
-      // end previous lap (if there's a previous lap)
-      if (!($.isEmptyObject(data))) {
-        $.post(endLapEndPoint, {runid: runID, lapno: data.lapno, endtime: startTime}).done(function(data) {
-          console.log("started run");
-          console.log(data);
-        });
+  client.query('SELECT id FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
+      if (err) {console.log(err.stack); return;} else { 
+        runID = (rows.rows[0])['id'];
       }
-
-      // insert query for next lap
-      lapNo = ($.isEmptyObject(data)) ? 1 : data.lapno + 1;
-      console.log(lapNo);
-
-      $.post(startLapEndPoint, {runid: runID, lapno: lapNo, starttime: startTime}).done(function(data) {
-        console.log("started run");
-        console.log(data);
-        io.sockets.emit('Lap Button Clicked', {lap: lapNo});
-      });
+      
+      // get lapNo
+      client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [runID], (err, rows) => {
+        if (err) {console.log(err.stack); return; } else { 
+          if (rows.rows[0]) {
+            lapNo = (rows.rows[0])['lapno'];
+          }
+        }
+       // end previous lap (if there's a previous lap)
+        if (lapNo) {
+          endLapDataQuery(runID, lapNo, startTime);
+          // TODO: calculate cumulative energy
+        }
+        // insert query for next lap
+        lapNo = (lapNo) ? lapNo + 1 : 1;
+        startLapDataQuery(runID, lapNo, startTime)
     });
+
   });
 }
 
@@ -353,7 +401,7 @@ function lapQuery(startTime) {
       if (err){
         console.log(err.stack);
       } else {
-        console.log("no errors in " + rows.rows[0]);
+        console.log("no errors in " + rows.rows);
       }
       res.send(rows.rows);
     });
@@ -392,3 +440,48 @@ function lapQuery(startTime) {
       res.end("sent");
     });
   });
+
+
+/** Particle */
+
+    var particle = new Particle();
+    var token;
+    // Login
+    particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+      function(data) {
+        console.log('LOGGED IN.');
+        token = data.body.access_token;
+        console.log(token);
+        getEventStream();
+      },
+      function (err) {
+        console.log('Could not log in.', err);
+      }
+    );
+
+    // Get event stream
+    function getEventStream() {
+      console.log('Begin event stream.');
+      particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+        stream.on('event', function(json) {
+          console.log(JSON.stringify(json, null, 4));
+          // parseDataBeta (json.data); //TODO: implement this
+        });
+      });
+    }
+
+    // Parse live data
+    function parseDataBeta (data) {
+      // Parse live data
+      var dataArr = data.split("_");
+
+      for (var i in dataArr) {
+        var dataI = dataArr[i];
+        var dataType = dataI.substring(0,1);
+        switch (dataType) {
+          case (g) :
+          case (b) :
+          case (o) :
+        }
+      }
+    }
