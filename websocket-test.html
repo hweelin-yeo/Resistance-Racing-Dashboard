@@ -137,8 +137,8 @@
 
         socket.on('Lap Ended', function (data) {
           var lap = data['lapno']; 
-          var time = data['time']; // TODO: update stopwatch
-          var energy = data['energy'];
+          var time = data['totaltime']; // TODO: update stopwatch
+          var energy = data['totalenergy'];
         });
 
         socket.on('Run Started', function(data) {

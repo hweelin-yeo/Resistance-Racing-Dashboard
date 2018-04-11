@@ -104,7 +104,7 @@ function endLapDataQuery(runid, lapno, time) {
   updateTime(runid, lapno, time, function() {
     getEnergy(runid, lapno, function(res) {
       updateEnergy(runid, lapno, res);
-      io.sockets.emit('Lap Ended', {lapno: lapno, time: time, energy: res}); 
+      io.sockets.emit('Lap Ended', {lapno: lapno, totaltime: time, totalenergy: res}); 
   })
 }
 /** Original version of endLapDataQuery*/
