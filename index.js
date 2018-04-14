@@ -103,7 +103,19 @@ function startLapDataQuery(runid, lapno, time) {
 function endLapDataQuery(runid, lapno, endtime) {
   updateEndTime(runid, lapno, endtime, function() {
     // updateEnergy(runid, lapno, res);
-    io.sockets.emit('Lap Ended', {lapno: lapno, totaltime: time, totalenergy: 0}); // TODO: discuss how to get this 
+    io.sockets.emit('Lap Ended', {lapno: lapno, totaltime: 0, totalenergy: 0}); // TODO: discuss with karun to get methods
+  });
+}
+
+function getStartTime(runid, lapno, callback) {
+  client.query('SELECT starttime FROM lapdata WHERE runid = ($1) AND lapno = ($2)', 
+    [runid, lapno], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+      callback(rows.rows[0]);
+    }
   });
 }
 
