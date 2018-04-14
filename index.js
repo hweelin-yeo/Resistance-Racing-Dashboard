@@ -102,26 +102,10 @@ function startLapDataQuery(runid, lapno, time) {
 
 function endLapDataQuery(runid, lapno, endtime) {
   updateEndTime(runid, lapno, endtime, function() {
-    getStartTime(runid, lapno, function(starttime) {
-      getEnergy(starttime, endtime, function(res) { // energy is also calculated
-        updateEnergy(runid, lapno, res);
-          io.sockets.emit('Lap Ended', {lapno: lapno, totaltime: time, totalenergy: res}); 
-      })
-    })
-  })
-}
-
-// untested
-function getStartTime(runid, lapno, callback) {
-  client.query('SELECT starttime FROM lapdata WHERE runid = ($1) AND lapno = ($2)', 
-    [runid, lapno], (err, rows) => {
-    if (err){
-      console.log(err.stack);
-    } else {
-      console.log(rows.rows[0]);
-    }
-    callback(rows.rows[0]);
+    // updateEnergy(runid, lapno, res);
+    io.sockets.emit('Lap Ended', {lapno: lapno, totaltime: time, totalenergy: 0}); // TODO: discuss how to get this 
   });
+}
 
 /** Original version of endLapDataQuery*/
 // function endLapDataQuery(runid, lapno, endtime) {
@@ -152,7 +136,6 @@ function updateEndTime(runid, lapno, endtime, callback) {
   });
 }
 
-
 function updateEnergy(runid, lapno, energy) {
   client.query('UPDATE lapdata SET energy = ($3) WHERE runid = ($1) AND lapno = ($2)', 
     [runid, lapno, energy], (err, rows) => {
@@ -163,44 +146,6 @@ function updateEnergy(runid, lapno, energy) {
       }
     });
 }
-
-
-
-function getEnergy(starttime, endtime, callback) {
-  console.log("in get all volt and time function");
-  client.query('SELECT value, time FROM data WHERE property = ($1) AND timestamp >= ($2) AND timestamp <= ($3)', 
-    ['volt', starttime, endtime], (err, rows) => {
-    if (err){
-      console.log(err.stack);
-    } else {
-      console.log(rows.rows);
-    }
-
-  if (rows.rows) {
-    var voltArr = (rows.rows)['value']; // TODO: verify
-    var timeArr = (rows.rows)['time'];  // TODO: verify
-    var energyUsed = calculateEnergy(voltArr, timeArr);
-    callback(energyUsed);
-  } 
-  });
-}
-
-function calculateEnergy(voltArr, timeArr) {  // TODO: get formula again
-  if (voltArr.length == 1) {
-    return -1;
-  }
-
-  var totalEnergy = 0;
-
-  for (var index = 1; index < voltArr.length; index++) { // delta p = delta v * inst i
-    var energyDiff = voltArr[index] - voltArr[index-1];
-    var timeDiff = timeArr[index] - timeArr[index-1]; // TODO: use library to find the difference
-    totalEnergy += energyDiff / timeDiff;
-  } 
-  console.log("total energy is " + totalEnergy);
-  return totalEnergy;
-}
-
 
 function startRunDataQuery(runname, time, callback) {
   console.log("START TIME IS "+ time);
@@ -462,41 +407,41 @@ function lapQuery(startTime) {
   });
 
 
-// /** Particle */
+/** Particle */
 
-//     var particle = new Particle();
-//     var token;
-//     // Login
-//     particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
-//       function(data) {
-//         console.log('LOGGED IN.');
-//         token = data.body.access_token;
-//         console.log(token);
-//         getEventStream();
-//       },
-//       function (err) {
-//         console.log('Could not log in.', err);
-//       }
-//       );
+    var particle = new Particle();
+    var token;
+    // Login
+    particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+      function(data) {
+        console.log('LOGGED IN.');
+        token = data.body.access_token;
+        console.log(token);
+        getEventStream();
+      },
+      function (err) {
+        console.log('Could not log in.', err);
+      }
+      );
 
-//     // Get event stream
-//     function getEventStream() {
-//       console.log('Begin event stream.');
-//       particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-//         stream.on('event', function(json) {
-//           console.log(JSON.stringify(json, null, 4));
-//           // parseDataBeta (json.data); //TODO: implement this
-//         });
-//       });
-//     }
+    // Get event stream
+    function getEventStream() {
+      console.log('Begin event stream.');
+      particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+        stream.on('event', function(json) {
+          console.log(JSON.stringify(json, null, 4));
+          // parseDataBeta (json.data); //TODO: implement this
+        });
+      });
+    }
 
-//     // Parse live data
-//     function parseDataBeta (data) {
-//       // Parse live data
-//       var dataArr = data.split("_");
+    // Parse live data
+    function parseDataBeta (data) {
+      // Parse live data
+      var dataArr = data.split("_");
 
-//       for (var i in dataArr) {
-//         var dataI = dataArr[i];
-//         var dataType = dataI.substring(0,1);
-//         }
-//     }
+      for (var i in dataArr) {
+        var dataI = dataArr[i];
+        var dataType = dataI.substring(0,1);
+        }
+    }
