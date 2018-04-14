@@ -181,10 +181,8 @@ function getEnergy(starttime, endtime, callback) {
     var timeArr = (rows.rows)['time'];  // TODO: verify
     var energyUsed = calculateEnergy(voltArr, timeArr);
     callback(energyUsed);
-  } else {
-    // for no energy 
-  }
-  })
+  } 
+  });
 }
 
 function calculateEnergy(voltArr, timeArr) {  // TODO: get formula again
@@ -464,41 +462,41 @@ function lapQuery(startTime) {
   });
 
 
-/** Particle */
+// /** Particle */
 
-    var particle = new Particle();
-    var token;
-    // Login
-    particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
-      function(data) {
-        console.log('LOGGED IN.');
-        token = data.body.access_token;
-        console.log(token);
-        getEventStream();
-      },
-      function (err) {
-        console.log('Could not log in.', err);
-      }
-      );
+//     var particle = new Particle();
+//     var token;
+//     // Login
+//     particle.login({username: 'cornellresistance@gmail.com', password: 'clifford'}).then(
+//       function(data) {
+//         console.log('LOGGED IN.');
+//         token = data.body.access_token;
+//         console.log(token);
+//         getEventStream();
+//       },
+//       function (err) {
+//         console.log('Could not log in.', err);
+//       }
+//       );
 
-    // Get event stream
-    function getEventStream() {
-      console.log('Begin event stream.');
-      particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
-        stream.on('event', function(json) {
-          console.log(JSON.stringify(json, null, 4));
-          // parseDataBeta (json.data); //TODO: implement this
-        });
-      });
-    }
+//     // Get event stream
+//     function getEventStream() {
+//       console.log('Begin event stream.');
+//       particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
+//         stream.on('event', function(json) {
+//           console.log(JSON.stringify(json, null, 4));
+//           // parseDataBeta (json.data); //TODO: implement this
+//         });
+//       });
+//     }
 
-    // Parse live data
-    function parseDataBeta (data) {
-      // Parse live data
-      var dataArr = data.split("_");
+//     // Parse live data
+//     function parseDataBeta (data) {
+//       // Parse live data
+//       var dataArr = data.split("_");
 
-      for (var i in dataArr) {
-        var dataI = dataArr[i];
-        var dataType = dataI.substring(0,1);
-        }
-    }
+//       for (var i in dataArr) {
+//         var dataI = dataArr[i];
+//         var dataType = dataI.substring(0,1);
+//         }
+//     }
