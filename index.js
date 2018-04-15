@@ -442,18 +442,136 @@ function lapQuery(startTime) {
       particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
         stream.on('event', function(json) {
           console.log(JSON.stringify(json, null, 4));
-          // parseDataBeta (json.data); //TODO: implement this
+          parseDataBeta (json.data); //TODO: implement this
         });
       });
     }
 
     // Parse live data
     function parseDataBeta (data) {
-      // Parse live data
-      var dataArr = data.split("_");
+      var dataArr = data.split("_"); // split batched data
 
       for (var i in dataArr) {
         var dataI = dataArr[i];
-        var dataType = dataI.substring(0,1);
+        var posSemicolon = dataI.indexOf(';');
+
+        if (posSemicolon != -1) {
+          if (dataI.length <= posSemicolon + 1) {return;} // invalid data
+          var dataType = dataI.substring(0,posSemicolon);
+          
+          switch (dataType) {
+            case (b):
+              parseBMS(dataI.substring(posSemicolon+1, dataI.length));  
+              break;
+            case (gps):
+              parseGPS(dataI.substring(posSemicolon+1, dataI.length));
+              break;
+            case (mc):
+              parseMC(dataI.substring(posSemicolon+1, dataI.length));
+              break;
+            default:
+              break; // discard data
+          }
         }
+      }
     }
+
+    function parseBMS(data) {
+      // initial validity check: length should be 48 before ;time. discard if invalid
+      var posSemicolon = dataI.indexOf(';');
+      if (posSemicolon == -1) { return; }
+      if (data.substring(0,posSemicolon).length != 48) { return; }
+
+      // verify headers: if one header is wrong, discard data immediately 
+      // else if we may run into situation where we log faults into database, then 
+      // realise other headers are corrupted. discard if invalid
+
+      if (data.substring(0,1) != "F") { return;} // verify F
+      if (data.substring(5,6) != "C") { return;} // verify C
+      if (data.substring(11,12) != "V") { return;} // verify V
+      if (data.substring(27,28) != "T") { return;} // verify T
+      if (data.length <= 50) { return; }
+
+      var time = data.substring(49, data.length);
+      parseBMSFaults(data.substring(1, 5), time);
+      parseBMSCurrent(data.substring(6, 11), time);
+      parseBMSVolt(data.substring(11, 27), time);
+      parseBMSTemp(data.substring(28, 48), time);
+    }
+
+
+    function parseBMSFaults(faults, time) {
+      var tempFault = (faults.substring(0,1) == '1') ? 1 : 0;
+      var curFault = (faults.substring(1,2) == '1') ? 1 : 0;
+      var voltFault = (faults.substring(2,3) == '1') ? 1 : 0;
+      var emergFault = (faults.substring(3,4) == '1') ? 1 : 0;
+
+      // store into database
+      // websocket update
+      io.sockets.emit('New Data', {property: faults, value: 1010, time: time}); 
+    }
+
+    function parseBMSCurrent(cur, time) {
+      var cur = parseInt(cur);
+
+      // store into database
+      // websocket update
+    }
+
+    function parseBMSVolt(volt, time) {
+      var voltMax = parseInt(volt.substring(0,5));
+      var voltMin = parseInt(volt.substring(5,10));
+      var voltAve = parseInt(volt.substring(10,15));
+      voltMax = voltMax/ (65535/5);
+      voltMin = voltMin/ (65535/5);
+      voltAve = voltAve/ (65535/5);
+
+      // store into database
+      // websocket update
+    }
+
+    function parseBMSTemp(temp, time) {
+      var temp1 = parseInt(volt.substring(0,5));
+      // int temp2 = parseInt(volt.substring(5,10));
+      // int temp3 = parseInt(volt.substring(10,15));
+      // int temp4 = parseInt(volt.substring(15,20));
+      var maxTemp = temp1;
+      for (var i = 1; i < 4; i++) {
+        var temp = parseInt(volt.substring(i * 5, i * 5 + 5));
+        if (temp > maxTemp) {
+          maxTemp = temp;
+        }
+      }
+
+      // store into database
+    }
+
+    function parseGPS(data) {
+      // int latSep = dataI.indexOf(',');
+      // if (latSep == -1 || data.length <= latSep + 1) { return; }
+      // int longSep = dataI.indexOf(',', latSep);
+      // if (longSep == -1 || data.length <= longSep + 1) { return; }
+      var altSep = dataI.indexOf(';');
+      if (altSep == -1 || data.length <= altSepalt + 1) { return; }
+
+      var latLngAlt = data.substring(0, altSep);
+      var time = data.substring(altSep + 1, data.length);
+
+      // store into database
+      // websocket update
+      io.sockets.emit('New Data', {property: gps, value: latLngAlt, time: time}); 
+
+    }
+
+    function parseMC(data) {
+     var sep = dataI.indexOf(';');
+     if (sep == -1 || data.length <= sep + 1) { return; }
+     var value = parseFloat(data.substring(0, sep));
+     var time = data.substring(sep + 1, data.length);
+
+     // store into database
+     // websocket update
+      io.sockets.emit('New Data', {property: speed, value: value, time: time}); 
+    }
+
+
