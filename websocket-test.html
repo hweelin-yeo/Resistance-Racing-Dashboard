@@ -128,38 +128,56 @@
           console.log("Socket Connected.");
         })
 
-        socket.on('Lap Started', function (data) {
-          var lap = data['lapno']; 
-          var time = data['time']; // TODO: update stopwatch
+        socket.on('Lap Started', function (res) {
+          var lap = res['lapno']; 
+          var time = res['time']; // TODO: update stopwatch
           $('#lapNumber')[0].innerHTML = "Lap # " + lap;
           $("#lapButton").text("Next Lap");
         });
 
-        socket.on('Lap Ended', function (data) {
-          var lap = data['lapno']; 
-          var time = data['totaltime']; // TODO: update stopwatch
-          var energy = data['totalenergy'];
+        socket.on('Lap Ended', function (res) {
+          var lap = res['lapno']; 
+          var time = res['totaltime']; // TODO: update stopwatch
+          var energy = res['totalenergy'];
         });
 
-        socket.on('Run Started', function(data) {
-          var runname = data['runname'];
-          var time = data['time']; // TODO: check if really needed
+        socket.on('Run Started', function(res) {
+          var runname = res['runname'];
+          var time = res['time']; // TODO: check if really needed
           runOngoing();
           $('#run-name-input').val(runname); 
         });
 
-        socket.on('Run Ended', function(data) {
-          var time = data['time'];
+        socket.on('Run Ended', function(res) {
+          var time = res['time'];
           runNotOngoing();
         });
 
-        socket.on('New Data', function(data) {
+        socket.on('New Data_BMS', function(res) {
           // TODO: Implement
-          var property = data['property'];
-          var value = data['value'];
-          var time = data['time'];
+          var tempFault = res['data']['tempFault'];
+          var curFault = res['data']['curFault'];
+          var voltFault = res['data']['voltFault'];
+          var emergFault = res['data']['emergFault'];
+          var current = res['data']['current'];
+          var voltAve = res['data']['voltAve'];
+          var tempMax = res['data']['tempMax'];
+          var time = res['data']['time'];
         }); 
 
+        socket.on('New Data_GPS', function(res) {
+          // TODO: Implement
+          var lat = res['data']['lat'];
+          var lng = res['data']['lng'];
+          var alt = res['data']['lng'];
+          var time = res['time'];
+        }); 
+
+        socket.on('New Data_MC', function(res) {
+          // TODO: Implement
+          var value = res['data']['value'];
+          var time = res['time'];
+        }); 
       
 
 
@@ -242,3 +260,7 @@ function runButtonClicked() {
   }
 
 </script>
+
+
+
+

@@ -625,13 +625,13 @@ function lapQuery(startTime) {
           switch (outputArr[i]['dataType']) {
             case ("BMS"):
               console.log(outputArr['data']);
-              io.sockets.emit('New Data_BMS', outputArr[i]['data']);
+              io.sockets.emit('New Data_BMS', {data: outputArr[i]['data'], time: outputArr[i]['time']});
               break;
             case ("GPS"):
-              io.sockets.emit('New Data_GPS', outputArr[i]['data']);
+              io.sockets.emit('New Data_GPS', {data: outputArr[i]['data'], time: outputArr[i]['time']});
               break;
             case ("MC"):
-              io.sockets.emit('New Data_Speed', outputArr[i]['data']);
+              io.sockets.emit('New Data_MC', {data: outputArr[i]['data'], time:outputArr[i]['time']});
               break;
             default:
               break; // discard data
