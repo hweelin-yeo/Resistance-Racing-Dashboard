@@ -1,5 +1,9 @@
 /** Framework Setup */
 var express = require('express');
+var lap = require('./static/lap.js');
+var abc = new lap.Lap(1,1,1,1,null, null);
+console.log(lap);
+console.log(abc.getRunId());
 var app = express();
 const { Client } = require('pg'); // database
 const client = new Client({
@@ -102,8 +106,15 @@ function startLapDataQuery(runid, lapno, time) {
 
 function endLapDataQuery(runid, lapno, endtime) {
   updateEndTime(runid, lapno, endtime, function() {
-    // updateEnergy(runid, lapno, res);
-    io.sockets.emit('Lap Ended', {lapno: lapno, totaltime: 0, totalenergy: 0}); // TODO: discuss with karun to get methods
+    getStartTime(runid, lapno, function (starttime) {
+      getAllDataForLap(starttime, endtime, function(data) {
+        var curLap = new lap.Lap(null, runid, lapno, starttime, endtime, null);
+        curLap.addData(data);
+        var totalTime = curLap.getTotalTime();
+        var totalEnergy = curLap.computeEnergyUsed();
+        io.sockets.emit('Lap Ended', {lapno: lapno, totaltime: totalTime, totalenergy: totalEnergy});
+      })
+    })
   });
 }
 
@@ -302,19 +313,8 @@ function lapQuery(startTime) {
     console.log("reached add request function");
     var data = req.body.data;
     console.log(req.body.data);
-
-    var data_arr = data.split("_");
-    for (var i in data_arr) {
-
-      var data_i = data_arr[i];
-      var data_i_arr = data_i.split(";");
-
-      var property = data_i_arr[0];
-      var value = data_i_arr[1];
-      var time = data_i_arr[2];
-      console.log(value);
-      insertDataQuery(time, property, value, res);
-    }
+    var outputArr = parseDataBeta (data);
+    pushToDatabase(outputArr);
   });
 
 
@@ -399,6 +399,17 @@ function lapQuery(startTime) {
     });
   });
 
+  function getAllDataForLap(startTime, endTime, callback) {
+    client.query('SELECT * FROM data WHERE timestamp >= ($1) AND timestamp <= ($2)', [startTime, endTime], (err, rows) => {
+      if (err) {
+        console.log(err.stack);
+      } else {
+        console.log(rows.rows);
+        callback(rows.rows);
+      }
+    })
+  }
+
 
   // get polylines
   app.get('/getPolylines', function (req, res) {
@@ -442,7 +453,7 @@ function lapQuery(startTime) {
       particle.getEventStream({ deviceId: 'mine', auth: token }).then(function(stream) {
         stream.on('event', function(json) {
           console.log(JSON.stringify(json, null, 4));
-          parseDataBeta (json.data); //TODO: implement this
+          emitWebsocket(parseDataBeta (json.data));
         });
       });
     }
@@ -451,34 +462,31 @@ function lapQuery(startTime) {
     function parseDataBeta (data) {
       var dataArr = data.split("_"); // split batched data
 
-      for (var i in dataArr) {
-        var dataI = dataArr[i];
+      var dataOutput = dataArr.map((dataI) => {
         var posSemicolon = dataI.indexOf(';');
-
         if (posSemicolon != -1) {
-          if (dataI.length <= posSemicolon + 1) {return;} // invalid data
+          if (dataI.length <= posSemicolon + 1) {return null;} // invalid data
           var dataType = dataI.substring(0,posSemicolon);
           
           switch (dataType) {
-            case (b):
-              parseBMS(dataI.substring(posSemicolon+1, dataI.length));  
-              break;
-            case (gps):
-              parseGPS(dataI.substring(posSemicolon+1, dataI.length));
-              break;
-            case (mc):
-              parseMC(dataI.substring(posSemicolon+1, dataI.length));
-              break;
+            case ("b"):
+              return parseBMS(dataI.substring(posSemicolon+1, dataI.length));  
+            case ("gps"):
+              return parseGPS(dataI.substring(posSemicolon+1, dataI.length));
+            case ("mc"):
+              return parseMC(dataI.substring(posSemicolon+1, dataI.length));
             default:
+              return null;
               break; // discard data
           }
         }
-      }
+      });
+      return dataOutput;
     }
 
     function parseBMS(data) {
       // initial validity check: length should be 48 before ;time. discard if invalid
-      var posSemicolon = dataI.indexOf(';');
+      var posSemicolon = data.indexOf(';');
       if (posSemicolon == -1) { return; }
       if (data.substring(0,posSemicolon).length != 48) { return; }
 
@@ -492,33 +500,37 @@ function lapQuery(startTime) {
       if (data.substring(27,28) != "T") { return;} // verify T
       if (data.length <= 50) { return; }
 
-      var time = data.substring(49, data.length);
-      parseBMSFaults(data.substring(1, 5), time);
-      parseBMSCurrent(data.substring(6, 11), time);
-      parseBMSVolt(data.substring(11, 27), time);
-      parseBMSTemp(data.substring(28, 48), time);
+      var time = (new Date(data.substring(49, data.length))).toLocaleString();
+      var faults = parseBMSFaults(data.substring(1, 5));
+      var cur = parseBMSCurrent(data.substring(6, 11));
+      var volt = parseBMSVolt(data.substring(12, 27));
+      var temp = parseBMSTemp(data.substring(28, 48));
+
+      return {dataType: 'BMS', data: {tempFault: faults[0] ,curFault: faults[1], voltFault: faults[2], emergFault: faults[3],
+        current: cur, voltAve: volt, tempMax: temp}, time: time};
+      // io.sockets.emit('New Data_BMS', {tempFault: faults[0] ,curFault: faults[1], voltFault: faults[2], emergFault: faults[3],
+      //                                  current: cur, voltAve: volt, tempMax: temp, time: time}); 
     }
 
 
-    function parseBMSFaults(faults, time) {
-      var tempFault = (faults.substring(0,1) == '1') ? 1 : 0;
-      var curFault = (faults.substring(1,2) == '1') ? 1 : 0;
-      var voltFault = (faults.substring(2,3) == '1') ? 1 : 0;
-      var emergFault = (faults.substring(3,4) == '1') ? 1 : 0;
-
-      // store into database
-      // websocket update
-      io.sockets.emit('New Data', {property: faults, value: 1010, time: time}); 
+    function parseBMSFaults(faults) {
+      var tempFault = (faults.substring(0,1) == '1');
+      var curFault = (faults.substring(1,2) == '1');
+      var voltFault = (faults.substring(2,3) == '1');
+      var emergFault = (faults.substring(3,4) == '1');
+      // TODO: store into database
+      return [tempFault, curFault, voltFault, emergFault];
+       
     }
 
-    function parseBMSCurrent(cur, time) {
+    function parseBMSCurrent(cur) {
       var cur = parseInt(cur);
 
-      // store into database
-      // websocket update
+      // TODO: store into database
+      return cur;
     }
 
-    function parseBMSVolt(volt, time) {
+    function parseBMSVolt(volt) {
       var voltMax = parseInt(volt.substring(0,5));
       var voltMin = parseInt(volt.substring(5,10));
       var voltAve = parseInt(volt.substring(10,15));
@@ -526,52 +538,107 @@ function lapQuery(startTime) {
       voltMin = voltMin/ (65535/5);
       voltAve = voltAve/ (65535/5);
 
-      // store into database
-      // websocket update
+      // TODO: store into database
+
+      return voltAve;
     }
 
-    function parseBMSTemp(temp, time) {
-      var temp1 = parseInt(volt.substring(0,5));
+    function parseBMSTemp(temp) {
+      var temp1 = parseInt(temp.substring(0,5));
       // int temp2 = parseInt(volt.substring(5,10));
       // int temp3 = parseInt(volt.substring(10,15));
       // int temp4 = parseInt(volt.substring(15,20));
       var maxTemp = temp1;
       for (var i = 1; i < 4; i++) {
-        var temp = parseInt(volt.substring(i * 5, i * 5 + 5));
-        if (temp > maxTemp) {
-          maxTemp = temp;
+        var tempI = parseInt(temp.substring(i * 5, i * 5 + 5));
+        if (tempI > maxTemp) {
+          maxTemp = tempI;
         }
       }
+      return maxTemp;
 
-      // store into database
+      // TODO: store into database
     }
 
     function parseGPS(data) {
-      // int latSep = dataI.indexOf(',');
-      // if (latSep == -1 || data.length <= latSep + 1) { return; }
-      // int longSep = dataI.indexOf(',', latSep);
-      // if (longSep == -1 || data.length <= longSep + 1) { return; }
-      var altSep = dataI.indexOf(';');
-      if (altSep == -1 || data.length <= altSepalt + 1) { return; }
+      var latSep = data.indexOf(',');
+      if (latSep == -1 || data.length <= latSep + 1) { return; }
+      var longSep = data.indexOf(',', latSep + 1);
+      if (longSep == -1 || data.length <= longSep + 1) { return; }
+      var altSep = data.indexOf(';');
+      if (altSep == -1 || data.length <= altSep + 1) { return; }
 
+      var lat = data.substring(0, latSep);
+      var lng = data.substring(latSep + 1, longSep);
+      var alt = data.substring(longSep + 1, altSep);
       var latLngAlt = data.substring(0, altSep);
       var time = data.substring(altSep + 1, data.length);
 
+      return {dataType: 'GPS' , data: {lat: lat, lng: lng, alt: alt}, time: time};
+
       // store into database
       // websocket update
-      io.sockets.emit('New Data', {property: gps, value: latLngAlt, time: time}); 
-
+      // io.sockets.emit('New Data_GPS', {lat: lat, lng: lng, alt: alt, time: time});
     }
 
     function parseMC(data) {
-     var sep = dataI.indexOf(';');
+     var sep = data.indexOf(';');
      if (sep == -1 || data.length <= sep + 1) { return; }
      var value = parseFloat(data.substring(0, sep));
      var time = data.substring(sep + 1, data.length);
 
+     return {dataType: 'MC', data: {value: value}, time: time};
      // store into database
      // websocket update
-      io.sockets.emit('New Data', {property: speed, value: value, time: time}); 
+     // io.sockets.emit('New Data_Speed', {value: value, time: time});
     }
+
+    function pushToDatabase(outputArr) {
+      for (var i = 0; i < outputArr.length; i++) {
+        if (outputArr[i] != null || outputArr[i] != undefined) {
+          switch (outputArr[i]['dataType']) {
+            case ("BMS"):
+              insertDataQuery(outputArr[i]['time'], 'tempFault' , outputArr[i]['data']['tempFault']);
+              insertDataQuery(outputArr[i]['time'], 'curFault' , outputArr[i]['data']['curFault']);
+              insertDataQuery(outputArr[i]['time'], 'emergFault' , outputArr[i]['data']['emergFault']);
+              insertDataQuery(outputArr[i]['time'], 'current' , outputArr[i]['data']['current']);
+              insertDataQuery(outputArr[i]['time'], 'curFault' , outputArr[i]['data']['curFault']);
+              insertDataQuery(outputArr[i]['time'], 'voltAve' , outputArr[i]['data']['voltAve']);
+
+              break;
+            case ("GPS"):
+              insertDataQuery(outputArr[i]['time'], 'GPS' , outputArr[i]['data']);
+              
+              break;
+            case ("MC"):
+               insertDataQuery(outputArr[i]['time'], 'MC' , outputArr[i]['data']);
+              break;
+            default:
+              break; // discard data
+            }
+      }
+    }
+    }
+
+    function emitWebsocket(outputArr) {
+      for (var i = 0; i < outputArr.length; i++) {
+        if (outputArr[i] != null || outputArr[i] != undefined) {
+          switch (outputArr[i]['dataType']) {
+            case ("BMS"):
+              console.log(outputArr['data']);
+              io.sockets.emit('New Data_BMS', outputArr[i]['data']);
+              break;
+            case ("GPS"):
+              io.sockets.emit('New Data_GPS', outputArr[i]['data']);
+              break;
+            case ("MC"):
+              io.sockets.emit('New Data_Speed', outputArr[i]['data']);
+              break;
+            default:
+              break; // discard data
+            }
+      }
+    }
+  }
 
 
