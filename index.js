@@ -412,6 +412,18 @@ function lapQuery(startTime) {
     })
   }
 
+  app.get('/getLapHistoryForRun', function(req, res) {
+    client.query('SELECT * FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
+      if (err) {
+        console.log(err.stack);
+        res.status(500).send('Something broke!');
+      } else {
+        console.log(rows.rows);
+        res.send(rows.rows);
+      }
+    });
+  })
+
 
   // get polylines
   app.get('/getPolylines', function (req, res) {
