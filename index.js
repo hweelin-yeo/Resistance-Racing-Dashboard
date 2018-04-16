@@ -4,7 +4,7 @@ var app = express();
 const { Client } = require('pg'); // database
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
-  ssl: false, 
+  ssl: false,
 });
 
 
@@ -22,6 +22,8 @@ app.use(function(req, res, next) {
 app.use('/live', express.static('live-timing.html'))
 app.use('/websocket-test', express.static('websocket-test.html'))
 app.use('/user-test', express.static('control-speed.html'))
+app.use('/runs', express.static('run-history.html'))
+app.use('/laps', express.static('lap-history.html'))
 app.use(express.static('static'))
 
 /** Server Information */
@@ -60,7 +62,7 @@ io.on('connection', function (socket) {
     var time = data['time'];
     endRunData(time, function() {
       endLapDataNoID(time, function(){
-        io.sockets.emit('Run Ended', {time: time}); 
+        io.sockets.emit('Run Ended', {time: time});
       });
     });
   });
@@ -96,7 +98,7 @@ function startLapDataQuery(runid, lapno, time) {
     } else {
       console.log(rows.rows[0]);
     }
-    io.sockets.emit('Lap Started', {lapno: lapno, time: time}); 
+    io.sockets.emit('Lap Started', {lapno: lapno, time: time});
   });
 }
 
@@ -108,7 +110,7 @@ function endLapDataQuery(runid, lapno, endtime) {
 }
 
 function getStartTime(runid, lapno, callback) {
-  client.query('SELECT starttime FROM lapdata WHERE runid = ($1) AND lapno = ($2)', 
+  client.query('SELECT starttime FROM lapdata WHERE runid = ($1) AND lapno = ($2)',
     [runid, lapno], (err, rows) => {
     if (err){
       console.log(err.stack);
@@ -121,7 +123,7 @@ function getStartTime(runid, lapno, callback) {
 
 /** Original version of endLapDataQuery*/
 // function endLapDataQuery(runid, lapno, endtime) {
-//   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+//   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)',
 //    [runid, lapno, endtime], (err, rows) => {
 //     if (err){
 //       console.log(err.stack);
@@ -131,13 +133,13 @@ function getStartTime(runid, lapno, callback) {
 
 //     calculateEnergy(, function(res) {
 //       // TODO: update total energy column
-//       io.sockets.emit('Lap Ended', {lapno: lapno, time: time, totalenergy: res}); 
+//       io.sockets.emit('Lap Ended', {lapno: lapno, time: time, totalenergy: res});
 //     })
 //   });
 // }
 
 function updateEndTime(runid, lapno, endtime, callback) {
-  client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+  client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)',
    [runid, lapno, endtime], (err, rows) => {
     if (err){
       console.log(err.stack);
@@ -149,7 +151,7 @@ function updateEndTime(runid, lapno, endtime, callback) {
 }
 
 function updateEnergy(runid, lapno, energy) {
-  client.query('UPDATE lapdata SET energy = ($3) WHERE runid = ($1) AND lapno = ($2)', 
+  client.query('UPDATE lapdata SET energy = ($3) WHERE runid = ($1) AND lapno = ($2)',
     [runid, lapno, energy], (err, rows) => {
       if (err){
         console.log(err.stack);
@@ -168,7 +170,7 @@ function startRunDataQuery(runname, time, callback) {
     } else {
       console.log(rows.rows[0]);
     }
-    io.sockets.emit('Run Started', {runname: runname, time: time}); 
+    io.sockets.emit('Run Started', {runname: runname, time: time});
     // res.end("sent");
 
   });
@@ -190,7 +192,7 @@ function endRunData(endtime, callback) {
 /** Original version: corresponds to end point*/
 function endRunDataQuery(endtime, res) {
   client.query('UPDATE rundata SET endtime = ($1)' +
-    'WHERE id IN( SELECT max(id) FROM rundata)', 
+    'WHERE id IN( SELECT max(id) FROM rundata)',
     [endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
@@ -201,11 +203,11 @@ function endRunDataQuery(endtime, res) {
     });
 }
 
-// Logic: 
+// Logic:
 // Two cases: Last run in the run table has either ended, or is ongoing
 // Case 1: If run has ended, lap button is disabled. So this func wouldn't be called at all
 // Case 2: If run is ongoing, lap table either has no laps of the run (start lap hasn't been clicked) or has laps.
-// Case 2a: If lap table has no laps of the run, lap is 1. 
+// Case 2a: If lap table has no laps of the run, lap is 1.
 // Case 2b: Else, it's latest lap no. + 1
 
 function lapQuery(startTime) {
@@ -214,13 +216,13 @@ function lapQuery(startTime) {
 
   // get runID
   client.query('SELECT id FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
-      if (err) {console.log(err.stack); return;} else { 
+      if (err) {console.log(err.stack); return;} else {
         runID = (rows.rows[0])['id'];
       }
-      
+
       // get lapNo
       client.query('SELECT lapno FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', [runID], (err, rows) => {
-        if (err) {console.log(err.stack); return; } else { 
+        if (err) {console.log(err.stack); return; } else {
           if (rows.rows[0]) {
             lapNo = (rows.rows[0])['lapno'];
           }
@@ -245,33 +247,33 @@ function lapQuery(startTime) {
     var lapno = req.body.lapno;
     var starttime = req.body.starttime;
     startLapDataQuery(runid, lapno, starttime, res);
-    
+
   });
 
   function endLapDataNoID(endtime, callback) {
-    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', 
+    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)',
      [endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
         console.log(rows.rows[0]);
       }
-      // res.end("sent"); 
+      // res.end("sent");
       callback();
     });
   }
 
   app.post('/endLapDataNoID', function (req, res) {
-    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', 
+    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)',
      [req.body.endtime], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
         console.log(rows.rows[0]);
       }
-      res.end("sent"); 
+      res.end("sent");
     });
-    
+
   });
 
   app.post('/endLapData', function (req, res) {
@@ -288,7 +290,7 @@ function lapQuery(startTime) {
     var runname = req.body.runname;
     var starttime = req.body.starttime;
     startRunDataQuery(runname, starttime, res);
-    
+
   });
 
   app.post('/endRunData', function (req, res) {
@@ -403,7 +405,7 @@ function lapQuery(startTime) {
   // get polylines
   app.get('/getPolylines', function (req, res) {
     console.log("in get lap polylines method" + req.query.lapid);
-    
+
   });
 
   // Database: Get all results
@@ -458,10 +460,10 @@ function lapQuery(startTime) {
         if (posSemicolon != -1) {
           if (dataI.length <= posSemicolon + 1) {return;} // invalid data
           var dataType = dataI.substring(0,posSemicolon);
-          
+
           switch (dataType) {
             case (b):
-              parseBMS(dataI.substring(posSemicolon+1, dataI.length));  
+              parseBMS(dataI.substring(posSemicolon+1, dataI.length));
               break;
             case (gps):
               parseGPS(dataI.substring(posSemicolon+1, dataI.length));
@@ -482,8 +484,8 @@ function lapQuery(startTime) {
       if (posSemicolon == -1) { return; }
       if (data.substring(0,posSemicolon).length != 48) { return; }
 
-      // verify headers: if one header is wrong, discard data immediately 
-      // else if we may run into situation where we log faults into database, then 
+      // verify headers: if one header is wrong, discard data immediately
+      // else if we may run into situation where we log faults into database, then
       // realise other headers are corrupted. discard if invalid
 
       if (data.substring(0,1) != "F") { return;} // verify F
@@ -508,7 +510,7 @@ function lapQuery(startTime) {
 
       // store into database
       // websocket update
-      io.sockets.emit('New Data', {property: faults, value: 1010, time: time}); 
+      io.sockets.emit('New Data', {property: faults, value: 1010, time: time});
     }
 
     function parseBMSCurrent(cur, time) {
@@ -559,7 +561,7 @@ function lapQuery(startTime) {
 
       // store into database
       // websocket update
-      io.sockets.emit('New Data', {property: gps, value: latLngAlt, time: time}); 
+      io.sockets.emit('New Data', {property: gps, value: latLngAlt, time: time});
 
     }
 
@@ -571,7 +573,5 @@ function lapQuery(startTime) {
 
      // store into database
      // websocket update
-      io.sockets.emit('New Data', {property: speed, value: value, time: time}); 
+      io.sockets.emit('New Data', {property: speed, value: value, time: time});
     }
-
-
