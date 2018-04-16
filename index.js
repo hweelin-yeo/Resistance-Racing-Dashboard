@@ -1,9 +1,6 @@
 /** Framework Setup */
 var express = require('express');
 var lap = require('./static/lap.js');
-var abc = new lap.Lap(1,1,1,1,null, null);
-console.log(lap);
-console.log(abc.getRunId());
 var app = express();
 const { Client } = require('pg'); // database
 const client = new Client({
