@@ -407,6 +407,20 @@ function lapQuery(startTime) {
     });
   });
 
+  app.get('/getAllRuns', function (req, res) {
+    client.query('SELECT runname, starttime, endtime FROM rundata', (err, rows) => {
+      // console.log(rows);
+      console.log(rows.rows);
+      // console.log(rows.rows[0]);
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log("no errors in " + rows.rows);
+      }
+      res.send(rows.rows);
+    });
+  });
+
   app.get('/getLapTimingsByRun', function (req, res) {
     console.log("in get lap number and the run id is " + req.query.runid);
     client.query('SELECT lapno, starttime, endtime FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
