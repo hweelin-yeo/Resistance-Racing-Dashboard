@@ -77,8 +77,9 @@ var token;
 var device_ID = "34004a000251363131363432";
 
 function insertDataQuery(time, property, value) {
+  // to_timestamp(time, 'MM/DD/YYYY, HH12:MI:MS')
   client.query('INSERT INTO data (timestamp, property, value)' +
-   'VALUES ($1, $2, $3)', [to_timestamp(time, 'MM/DD/YYYY, HH12:MI:MS'), property, value], (err, rows) => {
+   'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
     if (err){
       console.log(err.stack);
     } else {
@@ -126,6 +127,30 @@ function getStartTime(runid, lapno, callback) {
     }
   });
 }
+
+app.get('/getRunStartTime', function (req, res) {
+  client.query('SELECT starttime FROM rundata WHERE id IN(SELECT max(id) FROM rundata) ', 
+    [runid, lapno], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+    }
+    res.send(rows.rows[0]);
+  });
+});
+
+app.get('/getLapStartTime', function (req, res) {
+  client.query('SELECT starttime FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', 
+    [req.query.runid], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]); 
+    }
+    res.send(rows.rows[0]);
+  });
+});
 
 /** Original version of endLapDataQuery*/
 // function endLapDataQuery(runid, lapno, endtime) {
@@ -497,7 +522,7 @@ function lapQuery(startTime) {
       if (data.substring(27,28) != "T") { return;} // verify T
       if (data.length <= 50) { return; }
 
-      var time = (new Date(parseInt(data.substring(49, data.length)))).toLocaleString();
+      var time = data.substring(49, data.length);// (new Date(parseInt(data.substring(49, data.length)))).toLocaleString();
       var faults = parseBMSFaults(data.substring(1, 5));
       var cur = parseBMSCurrent(data.substring(6, 11));
       var volt = parseBMSVolt(data.substring(12, 27));
@@ -569,7 +594,7 @@ function lapQuery(startTime) {
       var lng = data.substring(latSep + 1, longSep);
       var alt = data.substring(longSep + 1, altSep);
       var latLngAlt = data.substring(0, altSep);
-      var time = (new Date(parseInt(data.substring(altSep + 1, data.length)))).toLocaleString();
+      var time = data.substring(altSep + 1, data.length); //(new Date(parseInt(data.substring(altSep + 1, data.length)))).toLocaleString();
 
       return {dataType: 'GPS' , data: {lat: lat, lng: lng, alt: alt}, time: time};
 
@@ -582,7 +607,7 @@ function lapQuery(startTime) {
      var sep = data.indexOf(';');
      if (sep == -1 || data.length <= sep + 1) { return; }
      var value = parseFloat(data.substring(0, sep));
-     var time = (new Date(parseInt(data.substring(sep + 1, data.length)))).toLocaleString();
+     var time = data.substring(sep + 1, data.length); // (new Date(parseInt(data.substring(sep + 1, data.length)))).toLocaleString();
      return {dataType: 'MC', data: {value: value}, time: time};
      // store into database
      // websocket update

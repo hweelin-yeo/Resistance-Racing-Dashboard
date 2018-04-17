@@ -1,0 +1,228 @@
+
+console.log("in map-init.js");
+    var blueDot = 'http://www.robotwoods.com/dev/misc/bluecircle.png';
+    var noteMarker ='https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'; // 'clifford.jpg'
+    var curPos;
+    var mapCur;
+    var mapPrev;
+    var polyCur;
+    var change = 0;
+    var colorCur = 'green';
+    var drawMap;
+    var latestNoteMarker;
+    var polyLinesForLap = [];
+    var transferPolys;
+
+    function init() {
+      var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+      prevLatLng = initLatLng;
+
+      var mapOptions = {
+        zoom: 17,
+        center: initLatLng,
+        mapTypeId: google.maps.MapTypeId.TERRAIN,
+        disableDoubleClickZoom: true
+      };
+
+      mapCur = new google.maps.Map(document.getElementById('map_canvas_current'),
+      mapOptions);
+
+      curPos = new google.maps.Marker({
+        position: initLatLng,
+        map: mapCur,
+        icon: blueDot
+      });
+
+      mapPrev = new google.maps.Map(document.getElementById('map_canvas_prev'),
+      mapOptions);
+
+      polyCur = new google.maps.Polyline({
+        strokeColor: colorCur,
+        strokeOpacity: 1,
+        strokeWeight: 5,
+        map: mapCur
+      });
+
+
+      polyCur.addListener('dblclick', function(e) {
+        // var lapData = lapDataArr[lap - 1];
+        // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+        // if (selBool) {
+        //  this.setOptions({strokeOpacity: 1});
+        // } else {
+        this.setOptions({strokeOpacity: 0.5});
+        // }
+      });
+
+      polyCur.addListener('click', function(e) {
+        // var lapData = lapDataArr[lap - 1];
+        // var selBool = lapData.selectPolys.get(this); // selBool is true if polyline is already selected
+        // if (selBool) {
+        //  this.setOptions({strokeOpacity: 1});
+        // } else {
+        this.setOptions({strokeOpacity: 0.5});
+        // TODO: trigger selection
+        // var startTime;
+        // var endTime;
+        // triggerSelectPolys(startTime, endTime);
+        // }
+      });
+
+      var createPoly = function (col) {
+        var poly = new google.maps.Polyline({
+          strokeColor: col,
+          strokeOpacity: 1,
+          strokeWeight: 5,
+          map: mapCur
+        });
+
+        poly.addListener('dblclick', function(e) {
+          this.setOptions({strokeOpacity: 0.5});
+        });
+
+        poly.addListener('click', function(e) {
+          this.setOptions({strokeOpacity: 0.5});
+        });
+
+        return poly;
+      }
+
+      // ROUTE DRAWING
+      drawMap = function(latLng, col) {
+
+        if (polyLinesForLap.length == 0) {
+          var poly = createPoly(col);
+          var path = poly.getPath();
+          path.push(prevLatLng);
+          path.push(latLng);
+
+          polyLinesForLap.push(poly);
+          prevLatLng = latLng;
+        } else {
+          var polyPrev = polyLinesForLap[polyLinesForLap.length - 1];
+          if (polyPrev.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
+            var poly = createPoly(col);
+            var path = poly.getPath();
+            path.push(latLng);
+            polyLinesForLap.push(poly);
+          }
+
+          var pathPrev = polyPrev.getPath();
+          pathPrev.push(latLng);
+          prevLatLng = latLng;
+
+        }
+      }
+
+      transferPolys = function() {
+        for (i = 0; i < polyLinesForLap.length ; i++) {
+          var poly = polyLinesForLap[i];
+          var polyNew = createPoly(poly.strokeColor);
+          console.log(poly.getPath());
+          polyNew.setPath(poly.getPath());
+          polyNew.setMap(mapPrev);
+        }
+
+      }
+
+
+      // NOTE MARKING (for presentation purposes)
+      mapCur.addListener('dblclick', function(e) {
+
+        var marker = new google.maps.Marker({
+          position: e.latLng,
+          map: mapCur,
+          icon: noteMarker,
+          title: "Note1",
+        });
+        latestNoteMarker = marker;
+      });
+
+      mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+
+    }
+
+    function triggerSelectPolys(startTime, endTime) {
+      // TODO:
+    }
+
+    function fail(){
+      alert('navigator.geolocation failed, may not be supported');
+    }
+
+    function updateMap(value) {
+      var latLng_arr = value.split(",");
+      var latLng = new google.maps.LatLng(parseFloat(latLng_arr[0]), parseFloat(latLng_arr[1]));
+      mapCur.setCenter(latLng);
+      mapPrev.setCenter(latLng);
+      curPos.setPosition(latLng);
+      prevLatLng = latLng;
+    }
+
+var lap = 0;
+var latestGPSTimeStamp;
+var latestGPSCoordinates;
+var idealSpeed = 40.0; // testing
+var prevLatLng;
+
+function valueToCol (ideal, value) {
+  console.log(ideal);
+  var col;
+  if (value/ideal > 1) {
+    col = interpolateLinearly((value/ideal)-1, Greens);
+  } else {
+    col = interpolateLinearly (1-(value/ideal), Reds);
+  }
+  console.log(col);
+  return col;
+}
+
+function mockIdealSpeed(gps) {
+  if (!gps) return 40;
+  console.log(gps);
+  var latLng_arr = gps.split(",");
+  console.log(latLng_arr);
+  var lat = parseFloat(latLng_arr[0]);
+  var lng = parseFloat(latLng_arr[1]);
+  var l2 = Math.sqrt(lat*lat + lng*lng);
+  console.log(l2);
+  return 40+20*Math.sin(l2*1000);
+}
+
+
+
+
+
+
+/** Note taking Function*/
+
+// Input form div, for google maps note taking later on
+var controlDiv = document.createElement('DIV');
+controlDiv.id = "controls";
+
+var controlInput = document.createElement('input');
+controlInput.id = "note";
+controlInput.name = "note";
+// controlInput.value = "Hi there!";
+
+var controlLabel = document.createElement('label');
+controlLabel.innerHTML = 'Note';
+controlLabel.setAttribute("for","note");
+
+var controlButton = document.createElement('button');
+controlButton.innerHTML = 'Create note!';
+controlButton.innerHTML = 'Send it!';
+
+controlButton.addEventListener ("click", function() {
+  if (latestNoteMarker != undefined) {
+    latestNoteMarker.setTitle($("#note").val());
+    controlInput.value = "";
+  }
+})
+
+
+controlDiv.appendChild(controlLabel);
+controlDiv.appendChild(controlInput);
+controlDiv.appendChild(controlButton);
+
+init();
