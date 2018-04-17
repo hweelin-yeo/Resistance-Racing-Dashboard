@@ -159,7 +159,7 @@ console.log("in map-init.js");
       prevLatLng = latLng;
     }
 
-var lap = 0;
+// var lap = 0;
 var latestGPSTimeStamp;
 var latestGPSCoordinates;
 var idealSpeed = 40.0; // testing

@@ -8,6 +8,7 @@ function lapButtonClicked() {
  var registerRun; // initialised at init, refreshed by websockets
  var runStart;
  var lapStart;
+ var lapNo;
 
 function runButtonClicked() {
   if (registerRun) {
@@ -41,6 +42,8 @@ function runButtonClicked() {
           $.get(runIDEndPoint).done(function(data) {
             $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
               if (data.lapno != undefined) {
+                lapNo = data.lapno;
+                initLapTable();
                 $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
                 $("#lapButton").text("Next Lap");
               } else {

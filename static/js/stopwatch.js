@@ -16,9 +16,8 @@ function updateStopwatch() {
 
 function initLapTable() {
   // TODO fetch from db
-  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+  $("#lapTable tbody").prepend("<tr><td>"+lapNo+"</td><td>00:00.000</td></tr>");
 }
-initLapTable();
 
 function millisToString(m) {
   var minutes = Math.floor(m / 60000);
