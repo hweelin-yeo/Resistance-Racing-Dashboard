@@ -129,14 +129,14 @@ function getStartTime(runid, lapno, callback) {
 }
 
 app.get('/getRunStartTime', function (req, res) {
-  client.query('SELECT starttime FROM rundata WHERE id IN(SELECT max(id) FROM rundata) ', 
-    [runid, lapno], (err, rows) => {
+  client.query('SELECT starttime FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
     if (err){
       console.log(err.stack);
     } else {
       console.log(rows.rows[0]);
+      res.send(rows.rows[0]);
     }
-    res.send(rows.rows[0]);
+    // res.send(rows.rows[0]);
   });
 });
 
@@ -146,9 +146,10 @@ app.get('/getLapStartTime', function (req, res) {
     if (err){
       console.log(err.stack);
     } else {
-      console.log(rows.rows[0]); 
+      console.log(rows.rows[0]);
+      res.send(rows.rows[0]); 
     }
-    res.send(rows.rows[0]);
+    
   });
 });
 
