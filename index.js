@@ -75,6 +75,7 @@ io.on('connection', function(socket) {
         });
     });
 
+
     socket.on('Post Note', function(data) {
         var note = data['note'];
         var position = data['position'];
@@ -83,10 +84,10 @@ io.on('connection', function(socket) {
             note: note,
             position: position
         });
-        insertDataQuery(time, 'note', {
-            note: note,
-            position: position
-        });
+        // insertDataQuery(time, 'note', {
+        //     note: note,
+        //     position: position
+        // });
 
     });
 

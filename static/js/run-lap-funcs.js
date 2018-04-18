@@ -26,6 +26,16 @@ function runButtonClicked() {
 
   }
 
+  function submitBestLapID() {
+    lapID =  $("#best-lap-id-input").val();
+    $.get(getLapForLapId, {lapid: lapID}).done(function(data) {
+      console.log(data);
+      
+      console.log("submitted best lap");
+    });
+
+  }
+
   function init() {
     $.get(isRunOnEndPoint).done(function(data) {
       if (data.endtime == null) {

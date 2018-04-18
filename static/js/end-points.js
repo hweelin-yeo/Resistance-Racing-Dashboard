@@ -10,3 +10,4 @@ var endPointBaseURL = "https://intense-dawn-73114.herokuapp.com/";
         var runStartTime = endPointBaseURL + "getRunStartTime";
         var lapStartTime = endPointBaseURL + "getLapStartTime";
         var getAllLapsInfoByRun = endPointBaseURL + "getAllLapsInfoByRun";
+        var getLapForLapId = endPointBaseURL + "getLapForLapId";
