@@ -574,7 +574,7 @@ function lapQuery(startTime) {
       var cur = parseBMSCurrent(data.substring(6, 11));
       var volt = parseBMSVolt(data.substring(12, 27));
       var temp = parseBMSTemp(data.substring(28, 48));
-
+      console.log(temp + " " + volt + " " + time);
       return {dataType: 'BMS', data: {tempFault: faults[0] ,curFault: faults[1], voltFault: faults[2], emergFault: faults[3],
         current: cur, voltAve: volt, tempMax: temp}, time: time};
       // io.sockets.emit('New Data_BMS', {tempFault: faults[0] ,curFault: faults[1], voltFault: faults[2], emergFault: faults[3],
