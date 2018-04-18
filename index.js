@@ -674,10 +674,10 @@ function parseBMS(data) {
 
 
 function parseBMSFaults(faults) {
-    var tempFault = (faults.substring(0, 1) == '1');
-    var curFault = (faults.substring(1, 2) == '1');
-    var voltFault = (faults.substring(2, 3) == '1');
-    var emergFault = (faults.substring(3, 4) == '1');
+    var tempFault = (faults.substring(0, 1) == '1') ? 1 : 0;
+    var curFault = (faults.substring(1, 2) == '1') ? 1 : 0;
+    var voltFault = (faults.substring(2, 3) == '1') ? 1 : 0;
+    var emergFault = (faults.substring(3, 4) == '1') ? 1 : 0;
     // TODO: store into database
     return [tempFault, curFault, voltFault, emergFault];
 
