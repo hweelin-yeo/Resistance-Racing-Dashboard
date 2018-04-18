@@ -40,10 +40,11 @@ function runButtonClicked() {
           });
 
           $.get(runIDEndPoint).done(function(data) {
-            $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
+            var runID = data.id;
+            $.get(lapNoEndPoint, {runid: runID}).done(function(data) {
               if (data.lapno != undefined) {
                 lapNo = data.lapno;
-                initLapTable(data.id);
+                initLapTable(runID);
                 $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
                 $("#lapButton").text("Next Lap");
               } else {
