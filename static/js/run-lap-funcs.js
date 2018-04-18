@@ -26,6 +26,10 @@ function runButtonClicked() {
 
   }
 
+  function submitBestLapID() {
+    // TODO:
+  }
+
   function init() {
     $.get(isRunOnEndPoint).done(function(data) {
       if (data.endtime == null) {
