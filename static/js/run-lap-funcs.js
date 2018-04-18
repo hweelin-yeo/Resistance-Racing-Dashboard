@@ -36,7 +36,7 @@ function runButtonClicked() {
           });
 
           $.get(runStartTime).done(function (data) { // TODO: Verify with Karun that we can initialise runStart here
-            runStart = data.starttime;
+            runStart = new Date(data.starttime);
           });
 
           $.get(runIDEndPoint).done(function(data) {
@@ -53,7 +53,7 @@ function runButtonClicked() {
             });
 
             $.get(lapStartTime, {runid: data.id}).done(function(data) { // TODO: Verify with Karun that we can initialise lapStart here
-              lapStart = data.starttime;
+              lapStart = new Date(data.starttime);
             });
           });
 

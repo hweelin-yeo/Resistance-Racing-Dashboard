@@ -5,9 +5,9 @@ const interval = 10;
 const idealLapMillis = 60000;
 function updateStopwatch() {
   var millisText = millisToString(new Date() - runStart);
-  $("#stopwatch").text(millisText);
+  if (runStart != null) $("#stopwatch").text(millisText);
   var lapText = millisToString(new Date() - lapStart);
-  $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
+  if (lapStart != null) $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
   setTimeout(function() {
     updateStopwatch();
   }, interval);

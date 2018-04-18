@@ -10,7 +10,8 @@ socket.on('Lap Started', function (res) {
   $("#lapButton").text("Next Lap");
 
   /** TODO: Verify with Karun if we can set lapStart here*/
-  lapStart = time;  
+  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+  lapStart = new Date(time);  
 });
 
 socket.on('Lap Ended', function (res) {
@@ -20,21 +21,18 @@ socket.on('Lap Ended', function (res) {
   transferPolys();
 
   /** TODO: Verify Stopwatch stuff*/
-  var now = new Date();
-  var diff = (now - lapStart) - idealLapMillis;
-  var compText = millisToString(Math.abs(diff));
-  compText = (diff < 0 ? "-" : "+") + compText;
-  $("#lapTable tbody tr:first-child td:nth-child(2)").append("<br>("+compText+")");
-  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
-  lapStart = now;
-
+  //var diff = (time - lapStart) - idealLapMillis;
+  //var compText = millisToString(Math.abs(diff));
+  //compText = (diff < 0 ? "-" : "+") + compText;
+  $("#lapTable tbody tr:first-child td:nth-child(2)").text(millisToString(time));
+  lapStart = null;
 });
 
 socket.on('Run Started', function(res) {
   var runname = res['runname'];
   var time = res['time']; 
   /** TODO: Verify with Karun if we can set runStart here*/
-  runStart = time;
+  runStart = new Date(time);
   runOngoing();
   $('#run-name-input').val(runname); 
 });
@@ -42,6 +40,7 @@ socket.on('Run Started', function(res) {
 socket.on('Run Ended', function(res) {
   var time = res['time'];
   runNotOngoing();
+  runStart = null;
 });
 
 socket.on('New Data_BMS', function(res) {
