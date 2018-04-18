@@ -394,7 +394,7 @@ function lapQuery(startTime) {
 
   app.get('/getAllLapsInfoByRun', function (req, res) {
     console.log("in get lap number and the run id is " + req.query.runid);
-    client.query('SELECT lapno, starttime, endtime, totalenergy, totaldistance FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
+    client.query('SELECT id, lapno, starttime, endtime, totalenergy, totaldistance FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
       // console.log(rows);
       console.log(rows.rows);
       // console.log(rows.rows[0]);
