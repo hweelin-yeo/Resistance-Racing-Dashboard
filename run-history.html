@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Run History</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="static/history.css" />
+</head>
+<body>
+  <table id="run-table" class="table table-dark">
+    <thead>
+      <tr>
+        <th>Run Name</th>
+        <th>Run ID</th>
+        <th>Started at</th>
+        <th>Ended at</th>
+        <th>Timing</th>
+        <th>Number of laps</th>
+        <th>Distance</th>
+        <th>Average speed</th>
+        <th>Energy used</th>
+        <th>Efficiency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <!--<th scope="row">Saturday morning</th>
+        <td>32</td>
+        <td>4/21, 11:19:02</td>
+        <td>4/21, 11:28:34</td>
+        <td>09:32.719</td>
+        <td>3</td>
+        <td>3.12 km</td>
+        <td>15 kmph</td>
+        <td>0.3 kWh</td>
+        <td>10.4 km/kWh</td>-->
+      </tr>
+    </tbody>
+
+  </table>
+  <script>
+    const ENDPOINT = "http://intense-dawn-73114.herokuapp.com/getAllRuns";
+    var QUERY_URL = ENDPOINT;
+    $.get(QUERY_URL, function(data, status){
+        console.log("Data: " + data + "\nStatus: " + status);
+        data.forEach((v) => {
+          v.endtime = new Date(v.endtime);
+          v.starttime = new Date(v.starttime);
+          v.totaltime = new Date(v.endtime - v.starttime);
+          if (v.endtime.getTime() == 0) {
+            v.totaltime = new Date(new Date() - v.starttime);
+          }
+          $('#run-table > tbody:last-child').append('<tr>'+
+          '<th scope="row">' + v.runname + '</th>'+
+          '<td>' + v.runid + '</td>' +
+          '<td>' + v.starttime.toLocaleString() + '</td>' +
+          '<td>' + (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString()) + '</td>' +
+          '<td>' + millisToString(v.totaltime.getTime()) + '</td>' +
+          '<td>' + v.numlaps + '</td>' +
+          '<td>' + roundToXDecimals(v.totaldistance, 2) + ' km</td>' +
+          '<td>' + roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph</td>' +
+          '<td>' + roundToXDecimals(v.totalenergy, 2) + ' kWh</td>' +
+          '<td>' + roundToXDecimals(v.totaldistance / v.totalenergy, 2) + ' km/kWh</td>' +
+          '</tr>');
+        });
+    });
+  </script>
+  <script>
+    /* Utility functions */
+    // TODO FACTOR THIS OUT
+    function roundToXDecimals(num, x) {
+      return Math.round(num * Math.pow(10, x)) / Math.pow(10, x);
+    }
+
+    function millisToString(m) {
+      var minutes = Math.floor(m / 60000);
+      m = m % 60000;
+      var seconds = Math.floor(m / 1000);
+      m = m % 1000;
+      var millis = m;
+      return pad(minutes, 2) + ":" + pad(seconds, 2) + "." + pad(millis, 3);
+    }
+
+    function pad(quantity, nums) {
+      s = quantity + "";
+      if (s.length >= nums) {
+        return s;
+      }
+      return pad("0"+quantity, nums);
+    }
+  </script>
+</body>
+</html>
