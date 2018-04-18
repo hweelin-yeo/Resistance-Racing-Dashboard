@@ -492,15 +492,14 @@ app.get('/getLapForLapId', function(req, res) {
     }
     var data = rows.rows[0];
     var lapObject = new lap.Lap(data.id, data.runid, data.lapno, data.starttime, data.endtime, data.totalenergy, data.totaldistance);
-    var upperLimit = data.endtime.getTime() / 1000.0;
+    var upperLimit = data.endtime;
     if (data.endtime == null) {
       upperLimit = new Date();
-      upperLimit = upperLimit.getTime() / 1000.0;
       console.log("Upper limit: "+upperLimit);
     }
     console.log("Starttime: "+data.starttime);
     console.log("Final upper limit: "+upperLimit);
-    client.query('SELECT * FROM data WHERE timestamp >= to_timestamp($1) AND timestamp <= to_timestamp($2)', [data.starttime.getTime() / 1000.0, upperLimit], (err, rows) => {
+    client.query('SELECT * FROM data WHERE timestamp >= to_timestamp($1) AND timestamp <= to_timestamp($2)', [data.starttime.getTime() / 1000.0, upperLimit.getTime() / 1000.0], (err, rows) => {
       if (err) {
         console.log(err.stack);
         return;
