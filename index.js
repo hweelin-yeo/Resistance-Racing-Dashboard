@@ -72,7 +72,7 @@ socket.on('Post Note', function (data) {
     var position = data['position'];
     var time = data['time'];
     socket.broadcast.emit('Note Posted', {note: note, position: position});
-    insertDataQuery(time, 'note', {note: note, position: position});
+    // insertDataQuery(time, 'note', {note: note, position: position});
  
   });
 
@@ -527,6 +527,7 @@ function lapQuery(startTime) {
 
     // Parse live data
     function parseDataBeta (data) {
+      console.log("in parse data function");
       var dataArr = data.split("_"); // split batched data
 
       var dataOutput = dataArr.map((dataI) => {
@@ -552,6 +553,7 @@ function lapQuery(startTime) {
     }
 
     function parseBMS(data) {
+      console.log("in parse BMS");
       // initial validity check: length should be 48 before ;time. discard if invalid
       var posSemicolon = data.indexOf(';');
       if (posSemicolon == -1) { return; }
