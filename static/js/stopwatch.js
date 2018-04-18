@@ -14,9 +14,18 @@ function updateStopwatch() {
 }
 //updateStopwatch();
 
-function initLapTable() {
+function initLapTable(runID) {
   // TODO fetch from db
-  $("#lapTable tbody").prepend("<tr><td>"+lapNo+"</td><td>00:00.000</td></tr>");
+  $.get(getAllLapsByRun, {runid: runID}).done(function(data) {
+    data.forEach((v) => {
+      lapNo = v.lapno;
+      v.endtime = new Date(v.endtime);
+      v.starttime = new Date(v.starttime);
+      v.totaltime = new Date(v.endtime - v.starttime);
+      $("#lapTable tbody").prepend("<tr><td>"+lapNo+"</td><td>"+ millisToString(v.totaltime.getTime()) +"/td></tr>");
+    })
+  }
+  
 }
 
 function millisToString(m) {

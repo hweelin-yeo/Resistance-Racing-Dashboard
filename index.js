@@ -459,6 +459,19 @@ function lapQuery(startTime) {
     })
   }
 
+  // push into data for notes
+
+app.post('/postNotes', function (req, res) {
+  //TODO: incomplete
+    var lat = req.body.lat;
+    var lng = req.body.lng;
+    var ele = req.body.ele;
+    var lat = req.body.lat;
+    var note = req.body.note;
+    insertDataQuery(runid, lapno, endtime, res);
+  });
+
+
 
   // get polylines
   app.get('/getPolylines', function (req, res) {

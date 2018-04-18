@@ -43,7 +43,7 @@ function runButtonClicked() {
             $.get(lapNoEndPoint, {runid: data.id}).done(function(data) {
               if (data.lapno != undefined) {
                 lapNo = data.lapno;
-                initLapTable();
+                initLapTable(data.id);
                 $('#lapNumber')[0].innerHTML = "Lap # " + data.lapno;
                 $("#lapButton").text("Next Lap");
               } else {
