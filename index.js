@@ -102,9 +102,10 @@ var token;
 var device_ID = "34004a000251363131363432";
 
 function insertDataQuery(time, property, value) {
+    console.log("Inserting..." + time + ", " + property + ", " + value);
     // to_timestamp(time, 'MM/DD/YYYY, HH12:MI:MS')
     client.query('INSERT INTO data (timestamp, property, value)' +
-        'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
+        'VALUES (to_timestamp($1), $2, $3)', [time, property, value], (err, rows) => { //TODO CAN WE GET
             if (err) {
                 console.log(err.stack);
             } else {
@@ -372,7 +373,9 @@ app.post('/addData', function(req, res) {
     var data = req.body.data;
     console.log(req.body.data);
     var outputArr = parseDataBeta(data);
+    console.log(outputArr);
     pushToDatabase(outputArr);
+    res.send(outputArr.toJSON());
 });
 
 
