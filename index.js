@@ -1,9 +1,6 @@
 /** Framework Setup */
 var express = require('express');
 var lap = require('./static/lap.js');
-var abc = new lap.Lap(1,1,1,1,null, null);
-console.log(lap);
-console.log(abc.getRunId());
 var app = express();
 const { Client } = require('pg'); // database
 const client = new Client({
@@ -82,6 +79,7 @@ var token;
 var device_ID = "34004a000251363131363432";
 
 function insertDataQuery(time, property, value) {
+  // to_timestamp(time, 'MM/DD/YYYY, HH12:MI:MS')
   client.query('INSERT INTO data (timestamp, property, value)' +
    'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
     if (err){
@@ -131,6 +129,31 @@ function getStartTime(runid, lapno, callback) {
     }
   });
 }
+
+app.get('/getRunStartTime', function (req, res) {
+  client.query('SELECT starttime FROM rundata WHERE id IN(SELECT max(id) FROM rundata)', (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+      res.send(rows.rows[0]);
+    }
+    // res.send(rows.rows[0]);
+  });
+});
+
+app.get('/getLapStartTime', function (req, res) {
+  client.query('SELECT starttime FROM lapdata WHERE runid = ($1) AND id IN(SELECT max(id) FROM lapdata)', 
+    [req.query.runid], (err, rows) => {
+    if (err){
+      console.log(err.stack);
+    } else {
+      console.log(rows.rows[0]);
+      res.send(rows.rows[0]); 
+    }
+    
+  });
+});
 
 /** Original version of endLapDataQuery*/
 // function endLapDataQuery(runid, lapno, endtime) {
@@ -371,6 +394,32 @@ function lapQuery(startTime) {
     });
   });
 
+  app.get('/getAllLapsInfoByRun', function (req, res) {
+    console.log("in get lap number and the run id is " + req.query.runid);
+    client.query('SELECT id, lapno, starttime, endtime, totalenergy, totaldistance FROM lapdata WHERE runid = ($1) ORDER BY id', [req.query.runid], (err, rows) => {
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log("no errors in " + rows.rows);
+      }
+      res.send(rows.rows);
+    });
+  });
+
+  app.get('/getAllRuns', function (req, res) {
+    client.query('SELECT runid, runname, starttime, endtime, numlaps, totalenergy, totaldistance FROM (SELECT COUNT(*) AS numlaps, SUM(totalenergy) as totalenergy, SUM(totaldistance) as totaldistance, runid FROM lapdata GROUP BY runid) A, rundata B WHERE A.runid = B.id ORDER BY runid', (err, rows) => {
+      // console.log(rows);
+      console.log(rows.rows);
+      // console.log(rows.rows[0]);
+      if (err){
+        console.log(err.stack);
+      } else {
+        console.log("no errors in " + rows.rows);
+      }
+      res.send(rows.rows);
+    });
+  });
+
   app.get('/getLapTimingsByRun', function (req, res) {
     console.log("in get lap number and the run id is " + req.query.runid);
     client.query('SELECT lapno, starttime, endtime FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
@@ -411,18 +460,17 @@ function lapQuery(startTime) {
       }
     })
   }
-
-  app.get('/getLapHistoryForRun', function(req, res) {
-    client.query('SELECT * FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
-      if (err) {
-        console.log(err.stack);
-        res.status(500).send('Something broke!');
-      } else {
-        console.log(rows.rows);
-        res.send(rows.rows);
-      }
-    });
-  })
+  
+  // push into data for notes
+  app.post('/postNotes', function (req, res) {
+    // TODO: incomplete
+    var lat = req.body.lat;
+    var lng = req.body.lng;
+    var ele = req.body.ele;
+    var lat = req.body.lat;
+    var note = req.body.note;
+    insertDataQuery(runid, lapno, endtime, res);
+  });
 
 
   // get polylines
@@ -514,7 +562,7 @@ function lapQuery(startTime) {
       if (data.substring(27,28) != "T") { return;} // verify T
       if (data.length <= 50) { return; }
 
-      var time = (new Date(data.substring(49, data.length))).toLocaleString();
+      var time = data.substring(49, data.length);// (new Date(parseInt(data.substring(49, data.length)))).toLocaleString();
       var faults = parseBMSFaults(data.substring(1, 5));
       var cur = parseBMSCurrent(data.substring(6, 11));
       var volt = parseBMSVolt(data.substring(12, 27));
@@ -586,7 +634,7 @@ function lapQuery(startTime) {
       var lng = data.substring(latSep + 1, longSep);
       var alt = data.substring(longSep + 1, altSep);
       var latLngAlt = data.substring(0, altSep);
-      var time = data.substring(altSep + 1, data.length);
+      var time = data.substring(altSep + 1, data.length); //(new Date(parseInt(data.substring(altSep + 1, data.length)))).toLocaleString();
 
       return {dataType: 'GPS' , data: {lat: lat, lng: lng, alt: alt}, time: time};
 
@@ -599,8 +647,7 @@ function lapQuery(startTime) {
      var sep = data.indexOf(';');
      if (sep == -1 || data.length <= sep + 1) { return; }
      var value = parseFloat(data.substring(0, sep));
-     var time = data.substring(sep + 1, data.length);
-
+     var time = data.substring(sep + 1, data.length); // (new Date(parseInt(data.substring(sep + 1, data.length)))).toLocaleString();
      return {dataType: 'MC', data: {value: value}, time: time};
      // store into database
      // websocket update
@@ -640,13 +687,13 @@ function lapQuery(startTime) {
           switch (outputArr[i]['dataType']) {
             case ("BMS"):
               console.log(outputArr['data']);
-              io.sockets.emit('New Data_BMS', outputArr[i]['data']);
+              io.sockets.emit('New Data_BMS', {data: outputArr[i]['data'], time: outputArr[i]['time']});
               break;
             case ("GPS"):
-              io.sockets.emit('New Data_GPS', outputArr[i]['data']);
+              io.sockets.emit('New Data_GPS', {data: outputArr[i]['data'], time: outputArr[i]['time']});
               break;
             case ("MC"):
-              io.sockets.emit('New Data_Speed', outputArr[i]['data']);
+              io.sockets.emit('New Data_MC', {data: outputArr[i]['data'], time:outputArr[i]['time']});
               break;
             default:
               break; // discard data
