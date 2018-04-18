@@ -12,7 +12,7 @@ function updateStopwatch() {
     updateStopwatch();
   }, interval);
 }
-//updateStopwatch();
+updateStopwatch();
 
 function initLapTable(runID) {
   console.log("variable is " + getAllLapsInfoByRun);
