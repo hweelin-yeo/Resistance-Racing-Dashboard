@@ -394,7 +394,7 @@ function lapQuery(startTime) {
 
   app.get('/getAllLapsInfoByRun', function (req, res) {
     console.log("in get lap number and the run id is " + req.query.runid);
-    client.query('SELECT id, lapno, starttime, endtime, totalenergy, totaldistance FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
+    client.query('SELECT id, lapno, starttime, endtime, totalenergy, totaldistance FROM lapdata WHERE runid = ($1) ORDER BY id', [req.query.runid], (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
@@ -405,7 +405,7 @@ function lapQuery(startTime) {
   });
 
   app.get('/getAllRuns', function (req, res) {
-    client.query('SELECT runid, runname, starttime, endtime, numlaps, totalenergy, totaldistance FROM (SELECT COUNT(*) AS numlaps, SUM(totalenergy) as totalenergy, SUM(totaldistance) as totaldistance, runid FROM lapdata GROUP BY runid) A, rundata B WHERE A.runid = B.id', (err, rows) => {
+    client.query('SELECT runid, runname, starttime, endtime, numlaps, totalenergy, totaldistance FROM (SELECT COUNT(*) AS numlaps, SUM(totalenergy) as totalenergy, SUM(totaldistance) as totaldistance, runid FROM lapdata GROUP BY runid) A, rundata B WHERE A.runid = B.id ORDER BY runid', (err, rows) => {
       // console.log(rows);
       console.log(rows.rows);
       // console.log(rows.rows[0]);
