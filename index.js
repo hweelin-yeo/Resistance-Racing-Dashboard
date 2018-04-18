@@ -495,7 +495,7 @@ app.get('/getLapForLapId', function(req, res) {
     var upperLimit = data.endtime;
     if (data.endtime == null) {
       upperLimit = new Date();
-      upperLimit = upperLimit.getTime();
+      upperLimit = upperLimit.getTime() / 1000.0;
       console.log("Upper limit: "+upperLimit);
     }
     console.log("Starttime: "+data.starttime);
