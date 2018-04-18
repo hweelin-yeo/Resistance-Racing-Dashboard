@@ -375,7 +375,7 @@ app.post('/addData', function(req, res) {
     var outputArr = parseDataBeta(data);
     console.log(outputArr);
     pushToDatabase(outputArr);
-    res.send(outputArr.toJSON());
+    res.send("");
 });
 
 
@@ -588,8 +588,8 @@ function getEventStream() {
 
 // Parse live data
 function parseDataBeta(data) {
+    console.log(data);
     var dataArr = data.split("_"); // split batched data
-
     var dataOutput = dataArr.map((dataI) => {
         var posSemicolon = dataI.indexOf(';');
         if (posSemicolon != -1) {
@@ -597,7 +597,7 @@ function parseDataBeta(data) {
                 return null;
             } // invalid data
             var dataType = dataI.substring(0, posSemicolon);
-
+            console.log(dataType);
             switch (dataType) {
                 case ("b"):
                     return parseBMS(dataI.substring(posSemicolon + 1, dataI.length));
@@ -611,6 +611,7 @@ function parseDataBeta(data) {
             }
         }
     });
+    console.log(dataOutput);
     return dataOutput;
 }
 
@@ -643,6 +644,8 @@ function parseBMS(data) {
     if (data.length <= 50) {
         return;
     }
+
+
 
     var time = data.substring(49, data.length); // (new Date(parseInt(data.substring(49, data.length)))).toLocaleString();
     var faults = parseBMSFaults(data.substring(1, 5));
