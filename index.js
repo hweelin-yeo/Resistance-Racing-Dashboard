@@ -614,8 +614,10 @@ function parseDataBeta(data) {
     console.log(dataOutput);
     return dataOutput;
 }
-
+parseDataBeta("b;FzzzzC12345V543219876012345T12345678901234567890;1523943292")
 function parseBMS(data) {
+    console.log("parse bms");
+    console.log(data);
     // initial validity check: length should be 48 before ;time. discard if invalid
     var posSemicolon = data.indexOf(';');
     if (posSemicolon == -1) {
@@ -624,7 +626,7 @@ function parseBMS(data) {
     if (data.substring(0, posSemicolon).length != 48) {
         return;
     }
-
+    console.log("HELLO")
     // verify headers: if one header is wrong, discard data immediately
     // else if we may run into situation where we log faults into database, then
     // realise other headers are corrupted. discard if invalid
@@ -645,7 +647,7 @@ function parseBMS(data) {
         return;
     }
 
-
+    console.log("HI");
 
     var time = data.substring(49, data.length); // (new Date(parseInt(data.substring(49, data.length)))).toLocaleString();
     var faults = parseBMSFaults(data.substring(1, 5));
