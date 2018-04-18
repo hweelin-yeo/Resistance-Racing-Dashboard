@@ -1,289 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title> Live Timing Dashboard</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-  <script src="realTimeChart.js"></script>
-  <script src="js-colormaps.js"></script>
-  <script src="hashmap.js"></script>
-  <link rel="stylesheet" href="realTimeChart.css">
-  <style>    
-  footer {
-   background-color: #555;
-   color: white;
-   padding: 15px;
- }
- .circle {
-   width: 30px;
-   height: 30px;
-   background: #56BF56;
-   -moz-border-radius: 50px;
-   -webkit-border-radius: 50px;
-   border-radius: 50px;
- }
- .borderless-panel {
-   border-width: 0;
-   border-bottom-width: 0;
- }
- .well-white {
-   background-color: white;
- }
- .btn-higher {
-   top: 0;
- }
+	<title>Live Timing Dashboard</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+	</script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
+	</script>
+	<script src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js">
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js">
+	</script>
+	<script src="realTimeChart.js">
+	</script>
+	<script src="js-colormaps.js">
+	</script>
+	<script src="hashmap.js">
+	</script>
+	<link href="realTimeChart.css" rel="stylesheet">
+	<style>
+	 footer {
+	  background-color: #555;
+	  color: white;
+	  padding: 15px;
+	}
+	.circle {
+	  width: 30px;
+	  height: 30px;
+	  background: #56BF56;
+	  -moz-border-radius: 50px;
+	  -webkit-border-radius: 50px;
+	  border-radius: 50px;
+	}
+	.borderless-panel {
+	  border-width: 0;
+	  border-bottom-width: 0;
+	}
+	.well-white {
+	  background-color: white;
+	}
+	.btn-higher {
+	  top: 0;
+	}
 
- .prevBestLapButton {
-  padding:5px;
-  margin:10px 0;
-  font-size:18px;
-}
+	.prevBestLapButton {
+	 padding:5px;
+	 margin:10px 0;
+	 font-size:18px;
+	}
 
-.prevBestLapButton>h3{
-  font-weight: bold;
-  padding-bottom:10px;
-  border-bottom:1px solid white;
-}
+	.prevBestLapButton>h3{
+	 font-weight: bold;
+	 padding-bottom:10px;
+	 border-bottom:1px solid white;
+	}
 
-.prevBestLapButton>div>.eff{
-  font-weight: bold;
-  font-size:36px;
-}
-}
-</style>
+	.prevBestLapButton>div>.eff{
+	 font-weight: bold;
+	 font-size:36px;
+	}
+	}
+	</style>
 </head>
 <body>
-  <div class="container text-center">
-   <!-- <div class="col-sm-12">  -->   
-     <div class="row">
-      <!-- <div class="col-sm-12"> -->
-        <div class="panel panel-default text-left borderless-panel">
-         <div class="panel-body">
-          <div class = "col-sm-6">
-           <h1 style = "color: #4A4A4A"> <strong> Resistance Racing: Dashboard </strong> </h1>
-         </div>
-         <div class = "col-sm-3">
-           <img src = "RRLogoMain.png" alt = "Resistance Racing Logo" width = "300" height = "100" align = "left">
-         </div>
-       </div>
-     </div>
-     <!-- </div> -->
-   </div>
-   <!-- </div> -->
- </div>
- <div class="container text-left">
-   <div class="row">
-
-    <div class = "col-sm-3">
-      <!-- <label class="sr-only" for="inlineFormInputGroup">Test Run </label> -->
-      <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-        <div class="input-group-addon"> Run Name</div>
-        <input type="text" class="form-control" value = "" id="run-name-input" placeholder="Test Run">
-      </div>
-
-    </div>
-
-    <div class = "col-sm-6">
-      <button onClick = "runButtonClicked()" id = "runButton" type="button" class="btn btn-warning">Register Run</button>
-    </div>
-
-
-    <!-- <div class="panel panel-default text-left borderless-panel"> -->
-      <!-- <div class="panel-body"> -->
-        <div class = "col-sm-1">
-         <p style = "font-size:110%; color: #4A4A4A" id = "lapNumber"> Lap # 0 </p>
-       </div>
-       <div class = "col-sm-1">
-        <button onClick = "lapButtonClicked()" id = "lapButton" type="button" class="btn btn-danger btn-higher">Start Lap</button>
-        <div> <br> </div>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-      <div class="container text-center">
-    <div class="row">
-      <div class="col-sm-2 well well-white">
-        <p> <strong> BMS Status </strong> </p>
-        <div class="well well-white">
-
-          <div class="row">
-            <div class="col-sm-3">
-              <div class="circle" id = "TempFault"></div>
-            </div>
-            <div class="col-sm-9">
-              <p>Temp</p>
-            </div>
-          </div><br>
-
-          <div class="row">
-            <div class="col-sm-3">
-              <div class="circle" id = "CurFault"></div>
-            </div>
-            <div class="col-sm-9">
-              <p>Current </p>
-            </div>
-          </div><br>
-
-          <div class="row">
-            <div class="col-sm-3">
-              <div class="circle" id = "VoltFault"></div>
-            </div>
-            <div class="col-sm-9">
-              <p>Voltage</p>
-            </div>
-          </div><br>
-
-          <div class="row">
-            <div class="col-sm-3">
-              <div class="circle" id = "EmergFault"></div>
-            </div>
-            <div class="col-sm-9">
-              <p align="center">Emerg.</p>
-            </div>
-          </div>
-
-
-        </div>
-        
-      </div>
-      <div class="col-sm-5">
-        <div class="col-sm-12">
-          <div class="panel panel-default text-left">
-            <div class="panel-body">
-
-              <p style = "font-weight:bold">Current</p>
-              <p align = "center"> Double click on the map to add a note. </p>
-              <div id="map_canvas_current" style="height:300px"></div>
-
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-2">
-        <div class="panel panel-default text-left">
-          <div class="panel-body">
-            <div class="col-sm-12" style="opacity:0.5; margin-bottom:20px;">
-              <p align = "center">Current Speed: </p>
-              <p id = "speedStats" align = "center" style="font-size:2vw;"> 0 kmph</p>
-            </div>
-
-            <div class="col-sm-12">
-
-
-              <p align = "center">In 10 seconds: </p>
-              <p id = "in10seconds" align = "center" style="font-size:2vw; color: #006400"> 0 kmph</p>
-            </div>
-
-
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col-sm-3 well">
-        <div class="well">
-          <h4>Total Time</h4>
-          <h3 id="stopwatch" style="font-size:1.2vw">00:00.000</h3>
-        </div>
-        <div class="well">
-          <table class="table" id="lapTable">
-            <thead>
-              <tr>
-                <th style="text-align:center;">Lap</th>
-                <th style="text-align:center;">Time</th>
-                <th style="text-align:center;">Energy</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
+	<div class="container text-center">
+		<!-- <div class="col-sm-12">  -->
+		<div class="row">
+			<!-- <div class="col-sm-12"> -->
+			<div class="panel panel-default text-left borderless-panel">
+				<div class="panel-body">
+					<div class="col-sm-6">
+						<h1 style="color: #4A4A4A"><strong>Resistance Racing: Dashboard</strong></h1>
+					</div>
+					<div class="col-sm-3"><img align="left" alt="Resistance Racing Logo" height="100" src="RRLogoMain.png" width="300"></div>
+				</div>
+			</div><!-- </div> -->
+		</div><!-- </div> -->
+	</div>
+	<div class="container text-left">
+		<div class="row">
+			<div class="col-sm-3">
+				<!-- <label class="sr-only" for="inlineFormInputGroup">Test Run </label> -->
+				<div class="input-group mb-2 mr-sm-2 mb-sm-0">
+					<div class="input-group-addon">
+						Run Name
+					</div><input class="form-control" id="run-name-input" placeholder="Test Run" type="text" value="">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<button class="btn btn-warning" id="runButton" onclick="runButtonClicked()" type="button">Register Run</button>
+			</div><!-- <div class="panel panel-default text-left borderless-panel"> -->
+			<!-- <div class="panel-body"> -->
+			<div class="col-sm-1">
+				<p id="lapNumber" style="font-size:110%; color: #4A4A4A">Lap # 0</p>
+			</div>
+			<div class="col-sm-1">
+				<button class="btn btn-danger btn-higher" id="lapButton" onclick="lapButtonClicked()" type="button">Start Lap</button>
+				<div>
+					<br>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container text-center">
+		<div class="row">
+      <div class="col-sm-9">
+			<div class="col-sm-3 well well-white">
+				<p><strong>BMS Status</strong></p>
+				<div class="well well-white">
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="circle" id="TempFault"></div>
+						</div>
+						<div class="col-sm-9">
+							<p>Temp</p>
+						</div>
+					</div><br>
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="circle" id="CurFault"></div>
+						</div>
+						<div class="col-sm-9">
+							<p>Current</p>
+						</div>
+					</div><br>
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="circle" id="VoltFault"></div>
+						</div>
+						<div class="col-sm-9">
+							<p>Voltage</p>
+						</div>
+					</div><br>
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="circle" id="EmergFault"></div>
+						</div>
+						<div class="col-sm-9">
+							<p align="center">Emerg.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="col-sm-12">
+					<div class="panel panel-default text-left">
+						<div class="panel-body">
+							<p style="font-weight:bold">Current</p>
+							<p align="center">Double click on the map to add a note.</p>
+							<div id="map_canvas_current" style="height:300px"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-3">
+				<div class="panel panel-default text-left">
+					<div class="panel-body">
+						<div class="col-sm-12" style="opacity:0.5; margin-bottom:20px;">
+							<p align="center">Current Speed:</p>
+							<p align="center" id="speedStats" style="font-size:2vw;">0 kmph</p>
+						</div>
+						<div class="col-sm-12">
+							<p align="center">In 10 seconds:</p>
+							<p align="center" id="in10seconds" style="font-size:2vw; color: #006400">0 kmph</p>
+						</div>
+					</div>
+				</div>
+			</div>
       <div class="row">
-        <div class="col-sm-5">
-          <div class="well">
-            <p style = "font-weight:bold">Previous</p>
-            <div id="map_canvas_prev" style="height:300px"></div>
-          </div>
-        </div>
-        <div class="col-sm-4">
-          <div class="prevBestLapButton btn btn-primary col-sm-12">
-            <h3>Previous Lap</h3>
-            <div class="col-sm-6">
-              <h5>Efficiency</h5>
-              <span class="eff">83%</span>
-            </div>
-            <div class="col-sm-6">
-              <h5>Timing</h5>
-              06:22:121<br>(+0:30.004)
-            </div>
-          </div>
-          <div class="prevBestLapButton btn btn-info col-sm-12" style="background:#219653;">
-            <h3>Best Lap</h3>
-            <div class="col-sm-6">
-              <h5>Efficiency</h5>
-              <span class="eff">94%</span>
-            </div>
-            <div class="col-sm-6">
-              <h5>Timing</h5>
-              06:02:121<br>(+0:10.004)
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="chartCollapsor">
-            Speed <a href="#speedChart" data-toggle="collapse"><span class="caret"></span></a>
-          </div>
-          <div id="speedChart" class="collapse in chartContent"></div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="chartCollapsor">
-            Throttle <a href="#throttleChart" data-toggle="collapse"><span class="caret"></span></a>
-          </div>
-          <div id="throttleChart" class="collapse in chartContent"></div>
-        </div>
-      </div>
+				<div class="col-sm-7">
+					<div class="well">
+						<p style="font-weight:bold">Previous</p>
+						<div id="map_canvas_prev" style="height:300px"></div>
+					</div>
+				</div>
+				<div class="col-sm-5">
+					<div class="prevBestLapButton btn btn-primary col-sm-12">
+						<h3>Previous Lap</h3>
+						<div class="col-sm-6">
+							<h5>Efficiency</h5><span class="eff">83%</span>
+						</div>
+						<div class="col-sm-6">
+							<h5>Timing</h5>06:22:121<br>
+							(+0:30.004)
+						</div>
+					</div>
+					<div class="prevBestLapButton btn btn-info col-sm-12" style="background:#219653;">
+						<h3>Best Lap</h3>
+						<div class="col-sm-6">
+							<h5>Efficiency</h5><span class="eff">94%</span>
+						</div>
+						<div class="col-sm-6">
+							<h5>Timing</h5>06:02:121<br>
+							(+0:10.004)
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="chartCollapsor">
+						Speed <a data-toggle="collapse" href="#speedChart"><span class="caret"></span></a>
+					</div>
+					<div class="collapse in chartContent" id="speedChart"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="chartCollapsor">
+						Throttle <a data-toggle="collapse" href="#throttleChart"><span class="caret"></span></a>
+					</div>
+					<div class="collapse in chartContent" id="throttleChart"></div>
+				</div>
+			</div>
     </div>
-    <footer class="container-fluid text-center">
-      <p>Footer Text</p>
-    </footer>
+			<div class="col-sm-3 well">
+				<div class="well">
+					<h4>Total Time</h4>
+					<h3 id="stopwatch" style="font-size:1.2vw">00:00.000</h3>
+				</div>
+				<div class="well">
+					<table class="table" id="lapTable">
+						<thead>
+							<tr>
+								<th style="text-align:center;">Lap</th>
+								<th style="text-align:center;">Time</th>
+								<th style="text-align:center;">Energy</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
 
-    
-      <script src="/socket.io/socket.io.js"></script>
-      <script src = "js/end-points.js"> </script>
-
-      <script src = "js/run-lap-funcs.js"> </script>
-      <script src = "js/map-funcs.js"></script>
-      <script src = "js/stopwatch.js"> </script>
-      <script src = "js/new-data-update.js"> </script>
-      <script src = "js/charts.js"> </script>
-      <script src = "js/colors-for-map.js"> </script>
-      
-      <script src = "js/websockets.js"> </script>
-      
-      
-      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init"></script>
-
-    
-
-
-
-
+		</div>
+		<footer class="container-fluid text-center">
+			<p>Footer Text</p>
+		</footer>
+		<script src="/socket.io/socket.io.js">
+		</script>
+		<script src="js/end-points.js">
+		</script>
+		<script src="js/run-lap-funcs.js">
+		</script>
+		<script src="js/map-funcs.js">
+		</script>
+		<script src="js/stopwatch.js">
+		</script>
+		<script src="js/new-data-update.js">
+		</script>
+		<script src="js/charts.js">
+		</script>
+		<script src="js/colors-for-map.js">
+		</script>
+		<script src="js/websockets.js">
+		</script>
+		<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=init">
+		</script>
+	</div>
+</body>
+</html>
