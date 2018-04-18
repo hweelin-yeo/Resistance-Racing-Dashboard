@@ -485,6 +485,10 @@ app.get('/getRunNames', function(req, res) {
 app.get('/getLapForLapId', function(req, res) {
   console.log("in getLapForLapId");
   client.query('SELECT * FROM lapdata WHERE id = ($1)', [req.query.lapid], (err, rows) => {
+    if (err) {
+      console.log(err.stack);
+      return;
+    }
     var data = rows.rows[0];
     var lapObject = new lap.Lap(data.id, data.runid, data.lapno, data.starttime, data.endtime, data.totalenergy, data.totaldistance);
     var upperLimit = data.endtime;
@@ -493,6 +497,10 @@ app.get('/getLapForLapId', function(req, res) {
       upperLimit = upperLimit.getTime();
     }
     client.query('SELECT * FROM data WHERE timestamp >= ($1) AND timestamp <= ($2)', [data.starttime, upperLimit], (err, rows) => {
+      if (err) {
+        console.log(err.stack);
+        return;
+      }
       lapObject.addData(rows.rows);
       res.send(JSON.stringify(lapObject));
     });
