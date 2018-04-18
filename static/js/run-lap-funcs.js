@@ -9,6 +9,9 @@ function lapButtonClicked() {
  var runStart;
  var lapStart;
  var lapNo;
+ var idealLap;
+ var currentLap; // TODO: Initialise, update 
+ var previousLap; // TODO: Initialise, update  
 
 function runButtonClicked() {
   if (registerRun) {
@@ -30,7 +33,12 @@ function runButtonClicked() {
     lapID =  $("#best-lap-id-input").val();
     $.get(getLapForLapId, {lapid: lapID}).done(function(data) {
       console.log(data);
-      
+      var parsed = JSON.parse(data);
+      console.log(parsed);
+      var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
+      newLap.setData(parsed.data);
+      idealLap = newLap;
+      console.log(newLap);
       console.log("submitted best lap");
     });
 
