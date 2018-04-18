@@ -60,8 +60,9 @@ io.on('connection', function (socket) {
     console.log("server receives end run");
     var time = data['time'];
     endRunData(time, function() {
-      endLapDataNoID(time, function(){
-        io.sockets.emit('Run Ended', {time: time}); 
+      io.sockets.emit('Run Ended', {time: time}); 
+        endLapDataNoID(time, function(){
+        
       });
     });
   });
@@ -283,12 +284,12 @@ function lapQuery(startTime) {
   });
 
   function endLapDataNoID(endtime, callback) {
-    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', 
-     [endtime], (err, rows) => {
+    client.query('SELECT lapno, runid FROM lapdata WHERE id IN(SELECT max(id) FROM lapdata)', (err, rows) => {
       if (err){
         console.log(err.stack);
       } else {
-        console.log(rows.rows[0]);
+        console.log(rows.rows);
+        endLapDataQuery(rows.rows[0].runid, rows.rows[0].lapno, endtime);
       }
       // res.end("sent"); 
       callback();
