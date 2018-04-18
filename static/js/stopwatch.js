@@ -15,8 +15,9 @@ function updateStopwatch() {
 //updateStopwatch();
 
 function initLapTable(runID) {
+  console.log("variable is " + getAllLapsInfoByRun);
   // TODO fetch from db
-  $.get(getAllLapsByRun, {runid: runID}).done(function(data) {
+  $.get(getAllLapsInfoByRun, {runid: runID}).done(function(data) {
     console.log(data);
     data.forEach((v) => {
       lapNo = v.lapno;
