@@ -125,17 +125,20 @@ console.log("in map-init.js");
 
       }
 
-
-      // NOTE MARKING (for presentation purposes)
-      mapCur.addListener('dblclick', function(e) {
-
+       addMarker = function (e, data) {
+        var note = (data == null) ? "Note1" : data;
         var marker = new google.maps.Marker({
           position: e.latLng,
           map: mapCur,
           icon: noteMarker,
-          title: "Note1",
+          title: note,
         });
         latestNoteMarker = marker;
+       }
+
+      // NOTE MARKING (for presentation purposes)
+      mapCur.addListener('dblclick', function(e) {
+        addMarker(e, null);
       });
 
       mapCur.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
@@ -216,6 +219,7 @@ controlButton.innerHTML = 'Send it!';
 controlButton.addEventListener ("click", function() {
   if (latestNoteMarker != undefined) {
     latestNoteMarker.setTitle($("#note").val());
+    socket.emit('Post Note', {note: ($("#note").val()), position: position, time: (new Date().toLocaleString('en-US'))}); 
     controlInput.value = "";
   }
 })

@@ -77,3 +77,10 @@ socket.on('New Data_MC', function(res) {
   changeSpeedStats(value, time);
   pushSpeedChart(value, time);
 }); 
+
+
+socket.on('Note Posted', function (res) {
+  var note = res['note']; 
+  var position = res['position'];
+  addMarker(position, note);
+});

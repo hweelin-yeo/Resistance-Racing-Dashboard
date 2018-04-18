@@ -67,6 +67,15 @@ io.on('connection', function (socket) {
     });
   });
 
+socket.on('Post Note', function (data) {
+    var note = data['note'];
+    var position = data['position'];
+    var time = data['time'];
+    socket.broadcast.emit('Note Posted', {note: note, position: position});
+    insertDataQuery(time, 'note', {note: note, position: position});
+ 
+  });
+
 });
 
 
@@ -461,14 +470,11 @@ function lapQuery(startTime) {
   }
   
   // push into data for notes
-  app.post('/postNotes', function (req, res) {
+  app.post('/postNote', function (req, res) {
     // TODO: incomplete
-    var lat = req.body.lat;
-    var lng = req.body.lng;
-    var ele = req.body.ele;
-    var lat = req.body.lat;
+    var time = req.body.time;
     var note = req.body.note;
-    insertDataQuery(runid, lapno, endtime, res);
+    insertDataQuery(time, 'note', note);
   });
 
 
