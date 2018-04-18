@@ -24,7 +24,7 @@ function initLapTable(runID) {
       v.totaltime = new Date(v.endtime - v.starttime);
       $("#lapTable tbody").prepend("<tr><td>"+lapNo+"</td><td>"+ millisToString(v.totaltime.getTime()) +"/td></tr>");
     })
-  }
+  });
   
 }
 
