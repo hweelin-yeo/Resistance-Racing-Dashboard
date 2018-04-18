@@ -102,9 +102,10 @@ var token;
 var device_ID = "34004a000251363131363432";
 
 function insertDataQuery(time, property, value) {
+    console.log("Inserting..." + time + ", " + property + ", " + value);
     // to_timestamp(time, 'MM/DD/YYYY, HH12:MI:MS')
     client.query('INSERT INTO data (timestamp, property, value)' +
-        'VALUES ($1, $2, $3)', [time, property, value], (err, rows) => {
+        'VALUES (to_timestamp($1), $2, $3)', [time, property, value], (err, rows) => { //TODO CAN WE GET
             if (err) {
                 console.log(err.stack);
             } else {
@@ -372,7 +373,9 @@ app.post('/addData', function(req, res) {
     var data = req.body.data;
     console.log(req.body.data);
     var outputArr = parseDataBeta(data);
+    console.log(outputArr);
     pushToDatabase(outputArr);
+    res.send("");
 });
 
 
@@ -486,14 +489,24 @@ app.get('/getRunNames', function(req, res) {
 app.get('/getLapForLapId', function(req, res) {
   console.log("in getLapForLapId");
   client.query('SELECT * FROM lapdata WHERE id = ($1)', [req.query.lapid], (err, rows) => {
+    if (err) {
+      console.log(err.stack);
+      return;
+    }
     var data = rows.rows[0];
     var lapObject = new lap.Lap(data.id, data.runid, data.lapno, data.starttime, data.endtime, data.totalenergy, data.totaldistance);
     var upperLimit = data.endtime;
     if (data.endtime == null) {
       upperLimit = new Date();
-      upperLimit = upperLimit.getTime();
+      console.log("Upper limit: "+upperLimit);
     }
-    client.query('SELECT * FROM data WHERE timestamp >= ($1) AND timestamp <= ($2)', [data.starttime, upperLimit], (err, rows) => {
+    console.log("Starttime: "+data.starttime);
+    console.log("Final upper limit: "+upperLimit);
+    client.query('SELECT * FROM data WHERE timestamp >= to_timestamp($1) AND timestamp <= to_timestamp($2)', [data.starttime.getTime() / 1000.0, upperLimit.getTime() / 1000.0], (err, rows) => {
+      if (err) {
+        console.log(err.stack);
+        return;
+      }
       lapObject.addData(rows.rows);
       res.send(JSON.stringify(lapObject));
     });
@@ -575,8 +588,8 @@ function getEventStream() {
 
 // Parse live data
 function parseDataBeta(data) {
+    console.log(data);
     var dataArr = data.split("_"); // split batched data
-
     var dataOutput = dataArr.map((dataI) => {
         var posSemicolon = dataI.indexOf(';');
         if (posSemicolon != -1) {
@@ -584,7 +597,7 @@ function parseDataBeta(data) {
                 return null;
             } // invalid data
             var dataType = dataI.substring(0, posSemicolon);
-
+            console.log(dataType);
             switch (dataType) {
                 case ("b"):
                     return parseBMS(dataI.substring(posSemicolon + 1, dataI.length));
@@ -598,10 +611,13 @@ function parseDataBeta(data) {
             }
         }
     });
+    console.log(dataOutput);
     return dataOutput;
 }
-
+parseDataBeta("b;FzzzzC12345V543219876012345T12345678901234567890;1523943292")
 function parseBMS(data) {
+    console.log("parse bms");
+    console.log(data);
     // initial validity check: length should be 48 before ;time. discard if invalid
     var posSemicolon = data.indexOf(';');
     if (posSemicolon == -1) {
@@ -610,7 +626,7 @@ function parseBMS(data) {
     if (data.substring(0, posSemicolon).length != 48) {
         return;
     }
-
+    console.log("HELLO")
     // verify headers: if one header is wrong, discard data immediately
     // else if we may run into situation where we log faults into database, then
     // realise other headers are corrupted. discard if invalid
@@ -630,6 +646,8 @@ function parseBMS(data) {
     if (data.length <= 50) {
         return;
     }
+
+    console.log("HI");
 
     var time = data.substring(49, data.length); // (new Date(parseInt(data.substring(49, data.length)))).toLocaleString();
     var faults = parseBMSFaults(data.substring(1, 5));
@@ -656,10 +674,10 @@ function parseBMS(data) {
 
 
 function parseBMSFaults(faults) {
-    var tempFault = (faults.substring(0, 1) == '1');
-    var curFault = (faults.substring(1, 2) == '1');
-    var voltFault = (faults.substring(2, 3) == '1');
-    var emergFault = (faults.substring(3, 4) == '1');
+    var tempFault = (faults.substring(0, 1) == '1') ? 1 : 0;
+    var curFault = (faults.substring(1, 2) == '1') ? 1 : 0;
+    var voltFault = (faults.substring(2, 3) == '1') ? 1 : 0;
+    var emergFault = (faults.substring(3, 4) == '1') ? 1 : 0;
     // TODO: store into database
     return [tempFault, curFault, voltFault, emergFault];
 
