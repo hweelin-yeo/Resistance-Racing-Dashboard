@@ -408,7 +408,9 @@ function lapQuery(startTime) {
   });
 
   app.get('/getAllRuns', function (req, res) {
-    client.query('SELECT runname, starttime, endtime FROM rundata', (err, rows) => {
+    client.query('SELECT runid, runname, starttime, endtime, numlaps, totalenergy, totaldistance FROM
+(SELECT COUNT(*) AS numlaps, SUM(totalenergy) as totalenergy, SUM(totaldistance) as totaldistance, runid
+FROM lapdata GROUP BY runid) A, rundata B WHERE A.runid = B.id;', (err, rows) => {
       // console.log(rows);
       console.log(rows.rows);
       // console.log(rows.rows[0]);
