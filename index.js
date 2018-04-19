@@ -456,6 +456,20 @@ app.get('/getAllRuns', function(req, res) {
     });
 });
 
+app.get('/getOneRun', function(req, res) {
+    client.query('SELECT runid, runname, starttime, endtime, numlaps, totalenergy, totaldistance FROM (SELECT COUNT(*) AS numlaps, SUM(totalenergy) as totalenergy, SUM(totaldistance) as totaldistance, runid FROM lapdata WHERE runid = ($1) GROUP BY runid) A, rundata B WHERE A.runid = B.id ORDER BY runid', [req.query.runid],(err, rows) => {
+        // console.log(rows);
+        console.log(rows.rows);
+        // console.log(rows.rows[0]);
+        if (err) {
+            console.log(err.stack);
+        } else {
+            console.log("no errors in " + rows.rows);
+        }
+        res.send(rows.rows);
+    });
+});
+
 app.get('/getLapTimingsByRun', function(req, res) {
     console.log("in get lap number and the run id is " + req.query.runid);
     client.query('SELECT lapno, starttime, endtime FROM lapdata WHERE runid = ($1)', [req.query.runid], (err, rows) => {
@@ -791,7 +805,7 @@ function pushToDatabase(outputArr) {
                     break;
                 case ("GPS"):
                     insertDataQuery(outputArr[i]['time'], 'gps_lat', outputArr[i]['data']['lat']);
-                    insertDataQuery(outputArr[i]['time'], 'gps_lon', outputArr[i]['data']['long']);
+                    insertDataQuery(outputArr[i]['time'], 'gps_lon', outputArr[i]['data']['lng']);
                     insertDataQuery(outputArr[i]['time'], 'gps_alt', outputArr[i]['data']['alt']);
 
                     break;

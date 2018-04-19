@@ -10,6 +10,28 @@
   <link rel="stylesheet" type="text/css" href="static/history.css" />
 </head>
 <body>
+
+  <div class="container text-center">
+    <div class="row">
+          <div class="col-sm-12">
+            <h1 style="color: #4A4A4A" style="text-align:center"><strong>Run Summary</strong></h1>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "run-name">Run Name: </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "run-id">Run ID </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "start-time">Start Time: </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "end-time">End Time: </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "duration">Duration:  </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "distance">Distance: </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "avg-speed">Average Speed: </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "energy-used">Energy Used: </h5>
+            <h5 style="color: #4A4A4A" style="text-align:center" id = "efficiency">Efficiency: </h5>
+          </div>
+    </div>
+  </div>
+
+  <br>
+
+
+
   <table id="lap-table" class="table table-dark">
     <thead class="thead-dark">
       <tr>
@@ -62,6 +84,41 @@
     });
   </script>
   <script>
+
+  function initRunSummary {
+    var QUERY_URL = + "http://intense-dawn-73114.herokuapp.com/getOneRun?runid=" + $.urlParam('runid');
+    $.get(QUERY_URL, function(data, status){
+        console.log("Data: " + data + "\nStatus: " + status);
+          var v = data[0];
+          v.endtime = new Date(v.endtime);
+          v.starttime = new Date(v.starttime);
+          v.totaltime = new Date(v.endtime - v.starttime);
+          if (v.endtime.getTime() == 0) {
+            v.totaltime = new Date(new Date() - v.starttime);
+          }
+          $("run-name").text = "Run Name: "+ v.runname;
+          $("run-id").text = "Run ID: "+ v.runid;
+          // '<td>' + v.starttime.toLocaleString() + '</td>' +
+          // '<td>' + (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString()) + '</td>' +
+          // '<td>' + millisToString(v.totaltime.getTime()) + '</td>' +
+          // '<td>' + v.numlaps + '</td>' +
+          // '<td>' + roundToXDecimals(v.totaldistance, 2) + ' km</td>' +
+          // '<td>' + roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph</td>' +
+          // '<td>' + roundToXDecimals(v.totalenergy, 2) + ' kWh</td>' +
+          // '<td>' + roundToXDecimals(v.totaldistance / v.totalenergy, 2) + ' km/kWh</td>' +
+      $("#start-time").text = "Start Time: "+ v.starttime.toLocaleString();
+      $("#end-time").text = "End Time: "+ (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
+      $("#duration").text = "Timing: "+ runname;
+      $("#distance").text = "Distance: "+ runname;
+      $("#avg-speed").text = "Average Speed: "+ runname;
+      $("#energy-used").text = "Energy Used: "+ runname;
+      $("#efficiency").text = "Efficiency: "+ runname;
+
+
+           
+    }
+
+    initRunSummary();
     /* Utility functions */
     // TODO FACTOR THIS OUT
     function roundToXDecimals(num, x) {
