@@ -85,7 +85,7 @@
   </script>
   <script>
 
-  function initRunSummary {
+  function initRunSummary() {
     var QUERY_URL = + "http://intense-dawn-73114.herokuapp.com/getOneRun?runid=" + $.urlParam('runid');
     $.get(QUERY_URL, function(data, status){
         console.log("Data: " + data + "\nStatus: " + status);
@@ -98,25 +98,17 @@
           }
           $("run-name").text = "Run Name: "+ v.runname;
           $("run-id").text = "Run ID: "+ v.runid;
-          // '<td>' + v.starttime.toLocaleString() + '</td>' +
-          // '<td>' + (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString()) + '</td>' +
-          // '<td>' + millisToString(v.totaltime.getTime()) + '</td>' +
-          // '<td>' + v.numlaps + '</td>' +
-          // '<td>' + roundToXDecimals(v.totaldistance, 2) + ' km</td>' +
-          // '<td>' + roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph</td>' +
-          // '<td>' + roundToXDecimals(v.totalenergy, 2) + ' kWh</td>' +
-          // '<td>' + roundToXDecimals(v.totaldistance / v.totalenergy, 2) + ' km/kWh</td>' +
-      $("#start-time").text = "Start Time: "+ v.starttime.toLocaleString();
-      $("#end-time").text = "End Time: "+ (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
-      $("#duration").text = "Timing: "+ runname;
-      $("#distance").text = "Distance: "+ runname;
-      $("#avg-speed").text = "Average Speed: "+ runname;
-      $("#energy-used").text = "Energy Used: "+ runname;
-      $("#efficiency").text = "Efficiency: "+ runname;
+          $("#start-time").text = "Start Time: "+ v.starttime.toLocaleString();
+          $("#end-time").text = "End Time: "+ (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
+          $("#duration").text = "Timing: "+ millisToString(v.totaltime.getTime());
+          $("#distance").text = "Distance: "+ roundToXDecimals(v.totaldistance, 2);
+          $("#avg-speed").text = "Average Speed: "+ roundToXDecimals(v.totaldistance / v.totaltime, 2);
+          $("#energy-used").text = "Energy Used: "+ roundToXDecimals(v.totalenergy, 2);
+          $("#efficiency").text = "Efficiency: "+ (v.totaldistance / v.totalenergy, 2);
 
-
+    });
            
-    }
+  }
 
     initRunSummary();
     /* Utility functions */
