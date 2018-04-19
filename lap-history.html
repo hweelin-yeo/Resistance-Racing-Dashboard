@@ -7,34 +7,61 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="static/history.css" />
+  <link rel="stylesheet" type="text/css" href="history.css" />
 </head>
 <body>
 
-  <div class="container text-center">
-    <div class="row">
-          <div class="col-sm-12">
-            <h1 style="color: #4A4A4A" style="text-align:center"><strong>Run Summary</strong></h1>
-            <br>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "run-name">Run Name: </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "run-id">Run ID </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "start-time">Start Time: </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "end-time">End Time: </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "duration">Duration:  </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "distance">Distance: </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "avg-speed">Average Speed: </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "energy-used">Energy Used: </h5>
-            <h5 style="color: #4A4A4A" style="text-align:center" id = "efficiency">Efficiency: </h5>
-          </div>
-    </div>
-  </div>
-
-  <br>
-
-
+  <table id="run-summary-table" class="table table-dark">
+    <thead>
+      <tr>
+        <th colspan="2" class="table-title">Run Summary</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Run name:</th>
+        <td id="run-name">-</td>
+      </tr>
+      <tr>
+        <th>Run ID:</th>
+        <td id="run-id">-</td>
+      </tr>
+      <tr>
+        <th>Start Time:</th>
+        <td id="start-time">-</td>
+      </tr>
+      <tr>
+        <th>End Time:</th>
+        <td id="end-time">-</td>
+      </tr>
+      <tr>
+        <th>Duration:</th>
+        <td id="duration">-</td>
+      </tr>
+      <tr>
+        <th>Distance:</th>
+        <td id="distance">-</td>
+      </tr>
+      <tr>
+        <th>Average Speed:</th>
+        <td id="avg-speed">-</td>
+      </tr>
+      <tr>
+        <th>Energy Used:</th>
+        <td id="energy-used">-</td>
+      </tr>
+      <tr>
+        <th>Efficiency:</th>
+        <td id="efficiency">-</td>
+      </tr>
+    </tbody>
+  </table>
 
   <table id="lap-table" class="table table-dark">
     <thead class="thead-dark">
+      <tr>
+        <th colspan="10" class="table-title">Lap Details</th>
+      </tr>
       <tr>
         <th>Lap</th>
         <th>ID</th>
@@ -98,19 +125,20 @@
           if (v.endtime.getTime() == 0) {
             v.totaltime = new Date(new Date() - v.starttime);
           }
+          if (v.runname.length == 0) v.runname = '?';
           console.log($('#run-name').text);
-          $('#run-name')[0].innerHTML = "Run Name: "+ v.runname;
-          $('#run-id')[0].innerHTML = "Run ID: "+ v.runid;
-          $('#start-time')[0].innerHTML= "Start Time: "+ v.starttime.toLocaleString();
-          $('#end-time')[0].innerHTML = "End Time: "+ (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
-          $('#duration')[0].innerHTML = "Timing: "+ millisToString(v.totaltime.getTime());
-          $('#distance')[0].innerHTML = "Distance: "+ roundToXDecimals(v.totaldistance, 2) + ' km';
-          $('#avg-speed')[0].innerHTML = "Average Speed: "+ roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph';
-          $('#energy-used')[0].innerHTML = "Energy Used: "+ roundToXDecimals(v.totalenergy, 2) + 'kWh';
-          $('#efficiency')[0].innerHTML = "Efficiency: "+ (v.totaldistance / v.totalenergy, 2) + ' kWh';
+          $('#run-name').text(v.runname);
+          $('#run-id').text(v.runid);
+          $('#start-time').text(v.starttime.toLocaleString());
+          $('#end-time').text(v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
+          $('#duration').text(millisToString(v.totaltime.getTime()));
+          $('#distance').text(roundToXDecimals(v.totaldistance, 2) + ' km');
+          $('#avg-speed').text(roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph');
+          $('#energy-used').text(roundToXDecimals(v.totalenergy, 2) + ' kWh');
+          $('#efficiency').text((v.totaldistance / v.totalenergy, 2) + ' km/kWh');
 
     });
-           
+
   }
 
     initRunSummary();

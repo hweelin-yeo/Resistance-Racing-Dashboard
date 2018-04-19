@@ -1,7 +1,29 @@
+body {
+  background: #32383e;
+}
+
+a {
+  color:white;
+}
+a:hover {
+  color:white;
+}
+
 #run-table {
-  width:100%;
 }
 
 #lap-table {
-  width:100%;
+}
+
+#run-summary-table {
+  table-layout: fixed;
+}
+
+#run-summary-table tbody th {
+  text-align: right;
+}
+
+.table-title {
+  font-size:24px;
+  text-align: center;
 }

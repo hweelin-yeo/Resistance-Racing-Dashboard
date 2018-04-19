@@ -7,16 +7,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="static/history.css" />
-  <style>
-  a {
-    color: #ffffff;
-  }
-  </style>
+  <link rel="stylesheet" href="history.css" />
 </head>
 <body>
   <table id="run-table" class="table table-dark">
     <thead>
+      <tr>
+        <th colspan="10" class="table-title">Run History</th>
+      </tr>
       <tr>
         <th>Run Name</th>
         <th>Run ID</th>
@@ -32,16 +30,6 @@
     </thead>
     <tbody>
       <tr>
-        <!--<th scope="row">Saturday morning</th>
-        <td>32</td>
-        <td>4/21, 11:19:02</td>
-        <td>4/21, 11:28:34</td>
-        <td>09:32.719</td>
-        <td>3</td>
-        <td>3.12 km</td>
-        <td>15 kmph</td>
-        <td>0.3 kWh</td>
-        <td>10.4 km/kWh</td>-->
       </tr>
     </tbody>
 
@@ -58,8 +46,7 @@
           if (v.endtime.getTime() == 0) {
             v.totaltime = new Date(new Date() - v.starttime);
           }
-
-
+          if (v.runname.length == 0) v.runname = '?';
           $('#run-table > tbody:last-child').append('<tr>'+
           '<th scope="row"> <a href="laps?runid='+ v.runid + '">' + v.runname + '</th>'+
           '<td>' + v.runid + '</td>' +
