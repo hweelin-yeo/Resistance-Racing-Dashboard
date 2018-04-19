@@ -8,6 +8,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="static/history.css" />
+  <style>
+  a {
+    color: #ffffff;
+  }
+  </style>
 </head>
 <body>
   <table id="run-table" class="table table-dark">
@@ -53,8 +58,10 @@
           if (v.endtime.getTime() == 0) {
             v.totaltime = new Date(new Date() - v.starttime);
           }
+
+
           $('#run-table > tbody:last-child').append('<tr>'+
-          '<th scope="row">' + v.runname + '</th>'+
+          '<th scope="row"> <a href="laps?runid='+ v.runid + '">' + v.runname + '</th>'+
           '<td>' + v.runid + '</td>' +
           '<td>' + v.starttime.toLocaleString() + '</td>' +
           '<td>' + (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString()) + '</td>' +
@@ -67,8 +74,22 @@
           '</tr>');
         });
     });
+
+//   $(document).ready(function() {
+//     $('#run-table tr').click(function() {
+//       console.log("here");
+//         var href = $(this).find("a").attr("href");
+//         if(href) {
+//             // window.location = href;
+//             alert(href);
+//         }
+//     });
+
+// });
   </script>
+
   <script>
+
     /* Utility functions */
     // TODO FACTOR THIS OUT
     function roundToXDecimals(num, x) {
@@ -91,6 +112,7 @@
       }
       return pad("0"+quantity, nums);
     }
+
   </script>
 </body>
 </html>
