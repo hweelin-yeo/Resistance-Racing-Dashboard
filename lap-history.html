@@ -104,10 +104,10 @@
           $('#start-time')[0].innerHTML= "Start Time: "+ v.starttime.toLocaleString();
           $('#end-time')[0].innerHTML = "End Time: "+ (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
           $('#duration')[0].innerHTML = "Timing: "+ millisToString(v.totaltime.getTime());
-          $('#distance')[0].innerHTML = "Distance: "+ roundToXDecimals(v.totaldistance, 2);
-          $('#avg-speed')[0].innerHTML = "Average Speed: "+ roundToXDecimals(v.totaldistance / v.totaltime, 2);
-          $('#energy-used')[0].innerHTML = "Energy Used: "+ roundToXDecimals(v.totalenergy, 2);
-          $('#efficiency')[0].innerHTML = "Efficiency: "+ (v.totaldistance / v.totalenergy, 2);
+          $('#distance')[0].innerHTML = "Distance: "+ roundToXDecimals(v.totaldistance, 2) + ' km';
+          $('#avg-speed')[0].innerHTML = "Average Speed: "+ roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph';
+          $('#energy-used')[0].innerHTML = "Energy Used: "+ roundToXDecimals(v.totalenergy, 2) + 'kWh';
+          $('#efficiency')[0].innerHTML = "Efficiency: "+ (v.totaldistance / v.totalenergy, 2) + ' kWh';
 
     });
            
