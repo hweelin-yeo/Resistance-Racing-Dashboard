@@ -15,6 +15,7 @@
     <div class="row">
           <div class="col-sm-12">
             <h1 style="color: #4A4A4A" style="text-align:center"><strong>Run Summary</strong></h1>
+            <br>
             <h5 style="color: #4A4A4A" style="text-align:center" id = "run-name">Run Name: </h5>
             <h5 style="color: #4A4A4A" style="text-align:center" id = "run-id">Run ID </h5>
             <h5 style="color: #4A4A4A" style="text-align:center" id = "start-time">Start Time: </h5>
@@ -86,25 +87,27 @@
   <script>
 
   function initRunSummary() {
-    var QUERY_URL = + "http://intense-dawn-73114.herokuapp.com/getOneRun?runid=" + $.urlParam('runid');
+    console.log("in init run summary with runid " + runid);
+    var QUERY_URL = "http://intense-dawn-73114.herokuapp.com/getOneRun?runid=" + runid;
     $.get(QUERY_URL, function(data, status){
-        console.log("Data: " + data + "\nStatus: " + status);
           var v = data[0];
+          console.log(v.runname);
           v.endtime = new Date(v.endtime);
           v.starttime = new Date(v.starttime);
           v.totaltime = new Date(v.endtime - v.starttime);
           if (v.endtime.getTime() == 0) {
             v.totaltime = new Date(new Date() - v.starttime);
           }
-          $("run-name").text = "Run Name: "+ v.runname;
-          $("run-id").text = "Run ID: "+ v.runid;
-          $("#start-time").text = "Start Time: "+ v.starttime.toLocaleString();
-          $("#end-time").text = "End Time: "+ (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
-          $("#duration").text = "Timing: "+ millisToString(v.totaltime.getTime());
-          $("#distance").text = "Distance: "+ roundToXDecimals(v.totaldistance, 2);
-          $("#avg-speed").text = "Average Speed: "+ roundToXDecimals(v.totaldistance / v.totaltime, 2);
-          $("#energy-used").text = "Energy Used: "+ roundToXDecimals(v.totalenergy, 2);
-          $("#efficiency").text = "Efficiency: "+ (v.totaldistance / v.totalenergy, 2);
+          console.log($('#run-name').text);
+          $('#run-name')[0].innerHTML = "Run Name: "+ v.runname;
+          $('#run-id')[0].innerHTML = "Run ID: "+ v.runid;
+          $('#start-time')[0].innerHTML= "Start Time: "+ v.starttime.toLocaleString();
+          $('#end-time')[0].innerHTML = "End Time: "+ (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
+          $('#duration')[0].innerHTML = "Timing: "+ millisToString(v.totaltime.getTime());
+          $('#distance')[0].innerHTML = "Distance: "+ roundToXDecimals(v.totaldistance, 2);
+          $('#avg-speed')[0].innerHTML = "Average Speed: "+ roundToXDecimals(v.totaldistance / v.totaltime, 2);
+          $('#energy-used')[0].innerHTML = "Energy Used: "+ roundToXDecimals(v.totalenergy, 2);
+          $('#efficiency')[0].innerHTML = "Efficiency: "+ (v.totaldistance / v.totalenergy, 2);
 
     });
            
