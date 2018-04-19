@@ -790,7 +790,9 @@ function pushToDatabase(outputArr) {
 
                     break;
                 case ("GPS"):
-                    insertDataQuery(outputArr[i]['time'], 'GPS', outputArr[i]['data']);
+                    insertDataQuery(outputArr[i]['time'], 'lat', outputArr[i]['data']['lat']);
+                    insertDataQuery(outputArr[i]['time'], 'long', outputArr[i]['data']['long']);
+                    insertDataQuery(outputArr[i]['time'], 'alt', outputArr[i]['data']['alt']);
 
                     break;
                 case ("MC"):
