@@ -78,6 +78,15 @@
     <tbody>
     </tbody>
   </table>
+
+  <div id="map" style="height:300px"></div>
+
+  <script src="js/end-points.js">
+    </script>
+
+  <script src="lap-client.js">
+    </script>
+
   <script>
     const ENDPOINT = "http://intense-dawn-73114.herokuapp.com/getAllLapsInfoByRun?runid=";
     $.urlParam = function(name){
@@ -96,7 +105,7 @@
           if (v.endtime.getTime() == 0) {
             v.totaltime = new Date(new Date() - v.starttime);
           }
-          $('#lap-table > tbody:last-child').append('<tr>'+
+          $('#lap-table > tbody:last-child').append('<tr onclick = displayMap('+v.id+')'+'>'+
           '<th scope="row">' + v.lapno + '</th>'+
           '<td>' + v.id + '</td>' +
           '<td>' + runid + '</td>' +
@@ -165,5 +174,37 @@
       return pad("0"+quantity, nums);
     }
   </script>
+
+  <script>
+  function initMap() {
+    console.log("in init map");
+    var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+      prevLatLng = initLatLng;
+
+    var mapOptions = {
+        zoom: 17,
+        center: initLatLng,
+        mapTypeId: google.maps.MapTypeId.TERRAIN,
+        disableDoubleClickZoom: true
+    };
+
+    var map = new google.maps.Map(document.getElementById('map'),
+      mapOptions);
+  }
+
+  function displayMap(lapid) {
+    $.get(getLapForLapId, {lapid: lapid}).done(function(data) {
+      var parsed = JSON.parse(data);
+      var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
+      newLap.setData(parsed.data);
+      console.log("set new lap");
+    });
+  }
+
+
+   // <div id="map" style="height:300px"></div>
+  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=initMap">
+    </script>
 </body>
 </html>
