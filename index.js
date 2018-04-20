@@ -207,7 +207,7 @@ app.get('/getLapStartTime', function(req, res) {
 // }
 
 function updateEndTime(runid, lapno, endtime, callback) {
-    client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)', [runid, lapno, endtime], (err, rows) => {
+    client.query('UPDATE lapdata SET endtime = to_timestamp($3) WHERE runid = ($1) AND lapno = ($2)', [runid, lapno, endtime], (err, rows) => {
         if (err) {
             console.log(err.stack);
         } else {
