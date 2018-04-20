@@ -4,19 +4,18 @@ socket.on('connect', function() {
 })
 
 socket.on('Lap Started', function (res) {
-  var lap = res['lapno']; 
+  var lap = res['lapno'];
   var time = res['time'];
   $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   $("#lapButton").text("Next Lap");
-
-  /** TODO: Verify with Karun if we can set lapStart here*/
+  
   $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
-  lapStart = new Date(time);  
+  lapStart = new Date(time);
 });
 
 socket.on('Lap Ended', function (res) {
-  var lap = res['lapno']; 
-  var time = res['totaltime']; 
+  var lap = res['lapno'];
+  var time = res['totaltime'];
   var energy = res['totalenergy'];
   transferPolys();
 
@@ -25,16 +24,17 @@ socket.on('Lap Ended', function (res) {
   //var compText = millisToString(Math.abs(diff));
   //compText = (diff < 0 ? "-" : "+") + compText;
   $("#lapTable tbody tr:first-child td:nth-child(2)").text(millisToString(time));
+  $("#lapTable tbody tr:first-child td:nth-child(3)").text(energy + " kWh");
   lapStart = null;
 });
 
 socket.on('Run Started', function(res) {
   var runname = res['runname'];
-  var time = res['time']; 
+  var time = res['time'];
   /** TODO: Verify with Karun if we can set runStart here*/
   runStart = new Date(time);
   runOngoing();
-  $('#run-name-input').val(runname); 
+  $('#run-name-input').val(runname);
 });
 
 socket.on('Run Ended', function(res) {
@@ -55,10 +55,10 @@ socket.on('New Data_BMS', function(res) {
   var time = res['data']['time'];
   faultTemp(tempFault);
   faultCur(curFault);
-  faultVolt(voltFault); 
-  faultEmerg(emergFault); 
+  faultVolt(voltFault);
+  faultEmerg(emergFault);
 
-}); 
+});
 
 socket.on('New Data_GPS', function(res) {
   // TODO: Implement
@@ -66,9 +66,9 @@ socket.on('New Data_GPS', function(res) {
   var lng = res['data']['lng'];
   var alt = res['data']['lng'];
   var time = res['time'];
-  latestGPSCoordinates = value; 
+  latestGPSCoordinates = value;
   updateMap(lat + "," + lng); // TODO: value currently is just lat,lng, and does not take into account alt
-}); 
+});
 
 socket.on('New Data_MC', function(res) {
   // TODO: Implement
@@ -76,11 +76,11 @@ socket.on('New Data_MC', function(res) {
   var time = res['time'];
   changeSpeedStats(value, time);
   pushSpeedChart(value, time);
-}); 
+});
 
 
 socket.on('Note Posted', function (res) {
-  var note = res['note']; 
+  var note = res['note'];
   var position = res['position'];
   addMarker(position, note);
 });

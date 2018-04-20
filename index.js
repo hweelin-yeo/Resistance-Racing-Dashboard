@@ -135,10 +135,13 @@ function endLapDataQuery(runid, lapno, endtime) {
     updateEndTime(runid, lapno, endtime, function() {
         getStartTime(runid, lapno, function(starttime) {
             getAllDataForLap(starttime, endtime, function(data) {
+                console.log("Ending lap " + lapno + " from run "+ runid);
                 var curLap = new lap.Lap(null, runid, lapno, starttime, endtime, null);
                 curLap.addData(data);
+                console.log(curLap.getEndTime());
                 var totalTime = curLap.getTotalTime();
                 var totalEnergy = curLap.computeEnergyUsed();
+                console.log(totalTime, totalEnergy);
                 io.sockets.emit('Lap Ended', {
                     lapno: lapno,
                     totaltime: totalTime,
@@ -321,7 +324,6 @@ app.post('/startLapData', function(req, res) {
 
 function endLapDataNoID(endtime) {
     client.query('SELECT lapno, runid FROM lapdata WHERE id IN(SELECT max(id) FROM lapdata)', (err, rows) => {
-
         if (err) {
             console.log(err.stack);
         } else {
