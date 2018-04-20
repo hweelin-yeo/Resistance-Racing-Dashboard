@@ -158,7 +158,7 @@ function getStartTime(runid, lapno, callback) {
             console.log(err.stack);
         } else {
             console.log(rows.rows[0]);
-            callback(rows.rows[0]);
+            callback(rows.rows[0].starttime);
         }
     });
 }
@@ -530,7 +530,7 @@ app.get('/getLapForLapId', function(req, res) {
 });
 
 function getAllDataForLap(startTime, endTime, callback) {
-    client.query('SELECT * FROM data WHERE timestamp >= ($1) AND timestamp <= ($2)', [startTime, endTime], (err, rows) => {
+    client.query('SELECT * FROM data WHERE timestamp >= to_timestamp($1) AND timestamp <= to_timestamp($2)', [startTime, endTime], (err, rows) => {
         if (err) {
             console.log(err.stack);
         } else {
