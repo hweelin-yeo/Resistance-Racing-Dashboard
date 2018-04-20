@@ -521,7 +521,7 @@ app.get('/getLapForLapId', function(req, res) {
     }
     console.log("Starttime: "+data.starttime);
     console.log("Final upper limit: "+upperLimit);
-    client.query('SELECT * FROM data WHERE timestamp >= to_timestamp($1) AND timestamp <= to_timestamp($2)', [data.starttime.getTime() / 1000.0, upperLimit.getTime() / 1000.0], (err, rows) => {
+    client.query('SELECT * FROM data WHERE timestamp >= to_timestamp($1) AND timestamp <= to_timestamp($2)', [data.starttime, upperLimit], (err, rows) => {
       if (err) {
         console.log(err.stack);
         return;
