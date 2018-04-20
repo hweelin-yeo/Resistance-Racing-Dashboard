@@ -805,7 +805,7 @@ function pushToDatabase(outputArr) {
 
                     break;
                 case ("MC"):
-                    insertDataQuery(outputArr[i]['time'], 'MC', outputArr[i]['data']);
+                    insertDataQuery(outputArr[i]['time'], 'MC', outputArr[i]['data']['value']);
                     break;
                 default:
                     break; // discard data

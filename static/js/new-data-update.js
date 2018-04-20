@@ -34,12 +34,11 @@ function faultEmerg(bool) {
 
 
 function changeSpeedStats(num, lastUpdated) {
-  $('#speedStats')[0].innerHTML = "" + num;
+  $('#speedStats')[0].innerHTML = Math.round(num*10)/10.0 + " kmph";
   var idealSpeed = mockIdealSpeed(latestGPSCoordinates);
   console.log("Ideal: "+idealSpeed);
   var col = valueToCol (idealSpeed, num);
   drawMap(prevLatLng, col);
-  changeLastUpdatedStats(lastUpdated);
 }
 
 function changeLastUpdatedStats(num) {
