@@ -157,7 +157,7 @@ function getStartTime(runid, lapno, callback) {
         if (err) {
             console.log(err.stack);
         } else {
-            console.log(rows.rows[0]);
+            console.log(rows.rows[0].starttime);
             callback(rows.rows[0].starttime);
         }
     });
