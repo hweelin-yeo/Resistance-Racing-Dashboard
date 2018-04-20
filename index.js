@@ -134,6 +134,7 @@ function startLapDataQuery(runid, lapno, time) {
 function endLapDataQuery(runid, lapno, endtime) {
     updateEndTime(runid, lapno, endtime, function() {
         getStartTime(runid, lapno, function(starttime) {
+            console.log("STARTTIME IS: " + starttime);
             getAllDataForLap(starttime, endtime, function(data) {
                 console.log("Ending lap " + lapno + " from run "+ runid);
                 var curLap = new lap.Lap(null, runid, lapno, starttime, endtime, null);
