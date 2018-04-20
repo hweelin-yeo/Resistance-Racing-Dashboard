@@ -303,6 +303,7 @@ function lapQuery(startTime) {
             }
             // end previous lap (if there's a previous lap)
             if (lapNo) {
+                console.log("END TIME IS: "+startTime);
                 endLapDataQuery(runID, lapNo, startTime);
                 // TODO: calculate cumulative energy
             }
