@@ -206,13 +206,16 @@ initRunSummary();
       $("#lap-table tbody tr").css('color', 'white');
       $("#row-"+lapid).css('color', 'yellow');
       clearPolylines();
+      console.log("lapid is "+lapid);
       $.get(getLapForLapId, {lapid: lapid}).done(function(data) {
         var parsed = JSON.parse(data);
+        console.log(parsed);
         for (var i = 0; i < parsed.data.length; i++) {
           parsed.data[i].timestamp = new Date(parsed.data[i].timestamp);
         }
         var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
         newLap.setData(parsed.data);
+        console.log(newLap.data);
         putDataOntoMap(newLap);
       });
     }
@@ -230,19 +233,21 @@ initRunSummary();
     }
 
     function putDataOntoMap(lapObj) {
+      console.log("lap object contains " + lapObj.data);
       var startTimestamp = new Date(lapObj.start_time) ;
       var endTimestamp = new Date(lapObj.end_time);
       var curTimestamp = startTimestamp;
-      var count = 0;
-      while (curTimestamp < endTimestamp || count < 3) {
-        var speed = lapObj.getVirtualData(curTimestamp, "MC");
+      while (curTimestamp < endTimestamp) {
+        console.log("interpolated time is " + curTimestamp);
+        var speed = lapObj.getVirtualData(curTimestamp, "mc");
+        console.log("interpolated speed is " + speed);
         var interLat = lapObj.getVirtualData(curTimestamp, "gps_lat");
         var interLon = lapObj.getVirtualData(curTimestamp, "gps_lon");
+        console.log("interpolated pos is " + interLat + "," + interLon);
         var col = valueToCol(speed);
         console.log("speed is " + speed + " and lat is "+ interLat + "color is " + col);
         drawMap(new google.maps.LatLng(interLat, interLon), col);
         curTimestamp = new Date(curTimestamp.getTime() + 60000);
-        count++;
       }
 
   }
@@ -287,6 +292,7 @@ initRunSummary();
 
 function valueToCol (value) {
    var col;
+   console.log(value);
    var val = (value/40 > 1) ? (value/40)-1 : value;
    if (value/40 > 1) {
      col = interpolateLinearly(val, Greens);
