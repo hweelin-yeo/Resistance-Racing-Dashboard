@@ -14,7 +14,7 @@ const MockSensor = function(name, frequency, generator) {
 	this.connectSensor = function() {
 		setInterval(function() {
 			const nowDatetime = new Date();
-			const nowEpoch = nowDatetime.getTime()/* - initEpoch */;
+			const nowEpoch = Math.round(nowDatetime.getTime() / 1000)/* - initEpoch */;
 			sensorReadingsQueue.push({name: name, value: generator(nowEpoch), epoch: nowEpoch});
 		}, this.frequency);
 	};
@@ -32,7 +32,7 @@ const FaultSensor = new MockSensor("fault", 5000, function(epoch) {
 });
 const GPSSensor = new MockSensor("gps", 1500, function(epoch) {
 	if (!gpsLoaded) return;
-	var latlon = waypoints[waypointIndex].lat + "," + waypoints[waypointIndex].lon;
+	var latlon = waypoints[waypointIndex].lat + "," + waypoints[waypointIndex].lon + ",0.0";
 	waypointIndex+=1;
 	if (waypointIndex == waypoints.length) waypointIndex = 0;
 	return latlon;
@@ -45,7 +45,13 @@ const CurrentSensor = new MockSensor("current", 1000, function(epoch) {
 	var r = Math.random();
 	return r > 0.8 ? 0.0: 20.0;
 });
-const ConnectedSensors = [GPSSensor, SpeedSensor, VoltageSensor, CurrentSensor];
+const MCSensor = new MockSensor("mc", 500, function(epoch) {
+	return (10 + 10*Math.sin(epoch/4))/(0.3 * Math.PI);
+});
+const BMSSensor = new MockSensor("b", 1500, function(epoch) {
+	return "FzzzzC12345V543219876012345T12345678901234567890";
+});
+const ConnectedSensors = [GPSSensor, MCSensor, BMSSensor];
 ConnectedSensors.forEach(function(sensor) {
 	sensor.connectSensor();
 });
@@ -59,7 +65,7 @@ function constructBatch() {
 	sensorReadingsQueue = [];
 	const batchData = batchStrings.join("_");
 	console.log("Sending batch to Particle Cloud...");
-	var publishPromise = particle.publishEvent({ name: "general", data: batchData, auth: token });
+	var publishPromise = particle.publishEvent({ name: "UART", data: batchData, auth: token });
 	publishPromise.then(
   		function(data) {
     		if (data.body.ok) { console.log("Batch published!") }
@@ -71,7 +77,7 @@ function constructBatch() {
 	);
 }
 
-const batchFrequency = 1500; // frequency (in ms) at which batches are to be published
+const batchFrequency = 1200; // frequency (in ms) at which batches are to be published
 
 /* Particle Setup */
 var Particle = require('particle-api-js');

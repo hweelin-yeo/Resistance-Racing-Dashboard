@@ -7,7 +7,7 @@ function updateStopwatch() {
   var millisText = millisToString(new Date() - runStart);
   if (runStart != null) $("#stopwatch").text(millisText);
   var lapText = millisToString(new Date() - lapStart);
-  if (lapStart != null) $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
+  if (lapStart != null && runStart != null) $("#lapTable tbody tr:first-child td:nth-child(2)").text(lapText);
   setTimeout(function() {
     updateStopwatch();
   }, interval);
@@ -27,7 +27,6 @@ function initLapTable(runID) {
       $("#lapTable tbody").prepend("<tr><td>"+lapNo+"</td><td>"+ millisToString(v.totaltime.getTime()) +"</td></tr>");
     })
   });
-  
 }
 
 function millisToString(m) {

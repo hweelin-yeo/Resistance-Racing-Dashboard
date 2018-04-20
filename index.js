@@ -134,11 +134,15 @@ function startLapDataQuery(runid, lapno, time) {
 function endLapDataQuery(runid, lapno, endtime) {
     updateEndTime(runid, lapno, endtime, function() {
         getStartTime(runid, lapno, function(starttime) {
+            console.log("STARTTIME IS: " + starttime);
             getAllDataForLap(starttime, endtime, function(data) {
+                console.log("Ending lap " + lapno + " from run "+ runid);
                 var curLap = new lap.Lap(null, runid, lapno, starttime, endtime, null);
                 curLap.addData(data);
+                console.log(curLap.getEndTime());
                 var totalTime = curLap.getTotalTime();
                 var totalEnergy = curLap.computeEnergyUsed();
+                console.log(totalTime, totalEnergy);
                 io.sockets.emit('Lap Ended', {
                     lapno: lapno,
                     totaltime: totalTime,
@@ -154,8 +158,9 @@ function getStartTime(runid, lapno, callback) {
         if (err) {
             console.log(err.stack);
         } else {
-            console.log(rows.rows[0]);
-            callback(rows.rows[0]);
+            console.log(rows.rows[0].starttime);
+            var d = new Date(rows.rows[0].starttime);
+            callback(d.getTime()/1000.0);
         }
     });
 }
@@ -298,7 +303,8 @@ function lapQuery(startTime) {
             }
             // end previous lap (if there's a previous lap)
             if (lapNo) {
-                endLapDataQuery(runID, lapNo, startTime);
+                var d = new Date(startTime);
+                endLapDataQuery(runID, lapNo, d.getTime() / 1000.0);
                 // TODO: calculate cumulative energy
             }
             // insert query for next lap
@@ -321,7 +327,6 @@ app.post('/startLapData', function(req, res) {
 
 function endLapDataNoID(endtime) {
     client.query('SELECT lapno, runid FROM lapdata WHERE id IN(SELECT max(id) FROM lapdata)', (err, rows) => {
-
         if (err) {
             console.log(err.stack);
         } else {
@@ -528,7 +533,7 @@ app.get('/getLapForLapId', function(req, res) {
 });
 
 function getAllDataForLap(startTime, endTime, callback) {
-    client.query('SELECT * FROM data WHERE timestamp >= ($1) AND timestamp <= ($2)', [startTime, endTime], (err, rows) => {
+    client.query('SELECT * FROM data WHERE timestamp >= to_timestamp($1) AND timestamp <= to_timestamp($2)', [startTime, endTime], (err, rows) => {
         if (err) {
             console.log(err.stack);
         } else {
@@ -805,7 +810,7 @@ function pushToDatabase(outputArr) {
 
                     break;
                 case ("MC"):
-                    insertDataQuery(outputArr[i]['time'], 'MC', outputArr[i]['data']);
+                    insertDataQuery(outputArr[i]['time'], 'MC', outputArr[i]['data']['value']);
                     break;
                 default:
                     break; // discard data
