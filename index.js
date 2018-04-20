@@ -526,6 +526,7 @@ app.get('/getLapForLapId', function(req, res) {
         console.log(err.stack);
         return;
       }
+      console.log(data.starttime.getTime() / 1000.0);
       lapObject.addData(rows.rows);
       res.send(JSON.stringify(lapObject));
     });
