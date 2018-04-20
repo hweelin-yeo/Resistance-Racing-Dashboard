@@ -15,6 +15,10 @@ a:hover {
 #lap-table {
 }
 
+#lap-table tbody tr {
+  cursor:pointer;
+}
+
 #run-summary-table {
   table-layout: fixed;
 }

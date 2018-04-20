@@ -105,7 +105,7 @@
           if (v.endtime.getTime() == 0) {
             v.totaltime = new Date(new Date() - v.starttime);
           }
-          $('#lap-table > tbody:last-child').append('<tr onclick = displayMap('+v.id+')'+'>'+
+          $('#lap-table > tbody:last-child').append('<tr id="row-'+v.id+'" onclick = displayMap('+v.id+')'+'>'+
           '<th scope="row">' + v.lapno + '</th>'+
           '<td>' + v.id + '</td>' +
           '<td>' + runid + '</td>' +
@@ -193,6 +193,8 @@
   }
 
   function displayMap(lapid) {
+    $("#lap-table tbody tr").css('color', 'white');
+    $("#row-"+lapid).css('color', 'yellow');
     $.get(getLapForLapId, {lapid: lapid}).done(function(data) {
       var parsed = JSON.parse(data);
       var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
