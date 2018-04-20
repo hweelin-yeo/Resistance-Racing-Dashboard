@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="js-colormaps.js">
+  </script>
   <link rel="stylesheet" type="text/css" href="history.css" />
 </head>
 <body>
@@ -15,79 +17,82 @@
     <thead>
       <tr>
         <th colspan="2" class="table-title">Run Summary</td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th>Run name:</th>
-        <td id="run-name">-</td>
-      </tr>
-      <tr>
-        <th>Run ID:</th>
-        <td id="run-id">-</td>
-      </tr>
-      <tr>
-        <th>Start Time:</th>
-        <td id="start-time">-</td>
-      </tr>
-      <tr>
-        <th>End Time:</th>
-        <td id="end-time">-</td>
-      </tr>
-      <tr>
-        <th>Duration:</th>
-        <td id="duration">-</td>
-      </tr>
-      <tr>
-        <th>Distance:</th>
-        <td id="distance">-</td>
-      </tr>
-      <tr>
-        <th>Average Speed:</th>
-        <td id="avg-speed">-</td>
-      </tr>
-      <tr>
-        <th>Energy Used:</th>
-        <td id="energy-used">-</td>
-      </tr>
-      <tr>
-        <th>Efficiency:</th>
-        <td id="efficiency">-</td>
-      </tr>
-    </tbody>
-  </table>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Run name:</th>
+          <td id="run-name">-</td>
+        </tr>
+        <tr>
+          <th>Run ID:</th>
+          <td id="run-id">-</td>
+        </tr>
+        <tr>
+          <th>Start Time:</th>
+          <td id="start-time">-</td>
+        </tr>
+        <tr>
+          <th>End Time:</th>
+          <td id="end-time">-</td>
+        </tr>
+        <tr>
+          <th>Duration:</th>
+          <td id="duration">-</td>
+        </tr>
+        <tr>
+          <th>Distance:</th>
+          <td id="distance">-</td>
+        </tr>
+        <tr>
+          <th>Average Speed:</th>
+          <td id="avg-speed">-</td>
+        </tr>
+        <tr>
+          <th>Energy Used:</th>
+          <td id="energy-used">-</td>
+        </tr>
+        <tr>
+          <th>Efficiency:</th>
+          <td id="efficiency">-</td>
+        </tr>
+      </tbody>
+    </table>
 
-  <table id="lap-table" class="table table-dark">
-    <thead class="thead-dark">
-      <tr>
-        <th colspan="10" class="table-title">Lap Details</th>
-      </tr>
-      <tr>
-        <th>Lap</th>
-        <th>ID</th>
-        <th>Run</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Timing</th>
-        <th>Distance</th>
-        <th>Average speed</th>
-        <th>Energy used</th>
-        <th>Efficiency</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+    <table id="lap-table" class="table table-dark">
+      <thead class="thead-dark">
+        <tr>
+          <th colspan="10" class="table-title">Lap Details</th>
+        </tr>
+        <tr>
+          <th>Lap</th>
+          <th>ID</th>
+          <th>Run</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Timing</th>
+          <th>Distance</th>
+          <th>Average speed</th>
+          <th>Energy used</th>
+          <th>Efficiency</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
 
-  <div id="map" style="height:300px"></div>
+    <div id="map" style="height:300px"></div>
 
-  <script src="js/end-points.js">
+    <script src="js/end-points.js">
     </script>
 
-  <script src="lap-client.js">
+    <script src="lap-client.js">
     </script>
 
-  <script>
+    <script src="js/colors-for-map.js">
+    </script>
+
+    <script>
     const ENDPOINT = "http://intense-dawn-73114.herokuapp.com/getAllLapsInfoByRun?runid=";
     $.urlParam = function(name){
       var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -96,16 +101,16 @@
     var runid = $.urlParam('runid');
     var QUERY_URL = ENDPOINT + runid;
     $.get(QUERY_URL, function(data, status){
-        console.log("Data: " + data + "\nStatus: " + status);
-        data.forEach((v) => {
-          console.log(v);
-          v.endtime = new Date(v.endtime);
-          v.starttime = new Date(v.starttime);
-          v.totaltime = new Date(v.endtime - v.starttime);
-          if (v.endtime.getTime() == 0) {
-            v.totaltime = new Date(new Date() - v.starttime);
-          }
-          $('#lap-table > tbody:last-child').append('<tr id="row-'+v.id+'" onclick = displayMap('+v.id+')'+'>'+
+      console.log("Data: " + data + "\nStatus: " + status);
+      data.forEach((v) => {
+        console.log(v);
+        v.endtime = new Date(v.endtime);
+        v.starttime = new Date(v.starttime);
+        v.totaltime = new Date(v.endtime - v.starttime);
+        if (v.endtime.getTime() == 0) {
+          v.totaltime = new Date(new Date() - v.starttime);
+        }
+        $('#lap-table > tbody:last-child').append('<tr id="row-'+v.id+'" onclick = displayMap('+v.id+')'+'>'+
           '<th scope="row">' + v.lapno + '</th>'+
           '<td>' + v.id + '</td>' +
           '<td>' + runid + '</td>' +
@@ -117,41 +122,40 @@
           '<td>' + roundToXDecimals(v.totalenergy, 2) + ' kWh</td>' +
           '<td>' + roundToXDecimals(v.totaldistance / v.totalenergy, 2) + ' km/kWh</td>' +
           '</tr>');
-        });
-    });
-  </script>
-  <script>
+      });
+});
+</script>
+<script>
 
-  function initRunSummary() {
-    console.log("in init run summary with runid " + runid);
-    var QUERY_URL = "http://intense-dawn-73114.herokuapp.com/getOneRun?runid=" + runid;
-    $.get(QUERY_URL, function(data, status){
-          var v = data[0];
-          console.log(v.runname);
-          v.endtime = new Date(v.endtime);
-          v.starttime = new Date(v.starttime);
-          v.totaltime = new Date(v.endtime - v.starttime);
-          if (v.endtime.getTime() == 0) {
-            v.totaltime = new Date(new Date() - v.starttime);
-          }
-          if (v.runname.length == 0) v.runname = '?';
-          console.log($('#run-name').text);
-          $('#run-name').text(v.runname);
-          $('#run-id').text(v.runid);
-          $('#start-time').text(v.starttime.toLocaleString());
-          $('#end-time').text(v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
-          $('#duration').text(millisToString(v.totaltime.getTime()));
-          $('#distance').text(roundToXDecimals(v.totaldistance, 2) + ' km');
-          $('#avg-speed').text(roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph');
-          $('#energy-used').text(roundToXDecimals(v.totalenergy, 2) + ' kWh');
-          $('#efficiency').text((v.totaldistance / v.totalenergy, 2) + ' km/kWh');
+function initRunSummary() {
+  console.log("in init run summary with runid " + runid);
+  var QUERY_URL = "http://intense-dawn-73114.herokuapp.com/getOneRun?runid=" + runid;
+  $.get(QUERY_URL, function(data, status){
+    var v = data[0];
+    console.log(v.runname);
+    v.endtime = new Date(v.endtime);
+    v.starttime = new Date(v.starttime);
+    v.totaltime = new Date(v.endtime - v.starttime);
+    if (v.endtime.getTime() == 0) {
+      v.totaltime = new Date(new Date() - v.starttime);
+    }
+    if (v.runname.length == 0) v.runname = '?';
+    $('#run-name').text(v.runname);
+    $('#run-id').text(v.runid);
+    $('#start-time').text(v.starttime.toLocaleString());
+    $('#end-time').text(v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
+    $('#duration').text(millisToString(v.totaltime.getTime()));
+    $('#distance').text(roundToXDecimals(v.totaldistance, 2) + ' km');
+    $('#avg-speed').text(roundToXDecimals(v.totaldistance / v.totaltime, 2) + ' kmph');
+    $('#energy-used').text(roundToXDecimals(v.totalenergy, 2) + ' kWh');
+    $('#efficiency').text((v.totaldistance / v.totalenergy, 2) + ' km/kWh');
 
-    });
+  });
 
-  }
+}
 
-    initRunSummary();
-    /* Utility functions */
+initRunSummary();
+/* Utility functions */
     // TODO FACTOR THIS OUT
     function roundToXDecimals(num, x) {
       return Math.round(num * Math.pow(10, x)) / Math.pow(10, x);
@@ -173,40 +177,139 @@
       }
       return pad("0"+quantity, nums);
     }
-  </script>
+    </script>
 
-  <script>
-  function initMap() {
-    console.log("in init map");
-    var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+    <script>
+    var polylines = [];
+    var prevPoly;
+    var prevLatLng;
+    var idealSpeed = 40.0; // testing
+    var map;
+
+    function initMap() {
+      console.log("in init map");
+      var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
       prevLatLng = initLatLng;
 
-    var mapOptions = {
+      var mapOptions = {
         zoom: 17,
         center: initLatLng,
         mapTypeId: google.maps.MapTypeId.TERRAIN,
         disableDoubleClickZoom: true
-    };
+      };
 
-    var map = new google.maps.Map(document.getElementById('map'),
-      mapOptions);
+       map = new google.maps.Map(document.getElementById('map'),
+        mapOptions);
+    }
+
+    function displayMap(lapid) {
+      $("#lap-table tbody tr").css('color', 'white');
+      $("#row-"+lapid).css('color', 'yellow');
+      clearPolylines();
+      $.get(getLapForLapId, {lapid: lapid}).done(function(data) {
+        var parsed = JSON.parse(data);
+        for (var i = 0; i < parsed.data.length; i++) {
+          parsed.data[i].timestamp = new Date(parsed.data[i].timestamp);
+        }
+        var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
+        newLap.setData(parsed.data);
+        putDataOntoMap(newLap);
+      });
+    }
+
+    function clearPolylines() {
+      if (polylines.length == 0) {
+        return;
+      }
+
+      for (var i = 0; i < polylines.length; i++) {
+          polylines[i].remove();
+        }
+
+      polylines.clear();
+    }
+
+    function putDataOntoMap(lapObj) {
+      var startTimestamp = new Date(lapObj.start_time) ;
+      var endTimestamp = new Date(lapObj.end_time);
+      var curTimestamp = startTimestamp;
+      var count = 0;
+      while (curTimestamp < endTimestamp || count < 3) {
+        var speed = lapObj.getVirtualData(curTimestamp, "MC");
+        var interLat = lapObj.getVirtualData(curTimestamp, "gps_lat");
+        var interLon = lapObj.getVirtualData(curTimestamp, "gps_lon");
+        var col = valueToCol(speed);
+        console.log("speed is " + speed + " and lat is "+ interLat + "color is " + col);
+        drawMap(new google.maps.LatLng(interLat, interLon), col);
+        curTimestamp = new Date(curTimestamp.getTime() + 60000);
+        count++;
+      }
+
   }
 
-  function displayMap(lapid) {
-    $("#lap-table tbody tr").css('color', 'white');
-    $("#row-"+lapid).css('color', 'yellow');
-    $.get(getLapForLapId, {lapid: lapid}).done(function(data) {
-      var parsed = JSON.parse(data);
-      var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
-      newLap.setData(parsed.data);
-      console.log("set new lap");
+  var createPoly = function (col) {
+    var poly = new google.maps.Polyline({
+      strokeColor: col,
+      strokeOpacity: 1,
+      strokeWeight: 5,
+      map: map
     });
+
+    return poly;
   }
+
+  var drawMap = function(latLng, col) {
+
+    if (!prevPoly) {
+      console.log("no previous poly");
+      var poly = createPoly(col);
+      var path = poly.getPath();
+      path.push(prevLatLng);
+      path.push(latLng);
+      prevLatLng = latLng;
+      prevPoly = poly;
+      polylines.push(poly);
+    } else {
+      console.log("previous poly");
+      if (prevPoly.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
+        var poly = createPoly(col);
+        var path = poly.getPath();
+        path.push(latLng);
+        prevPoly = poly;
+        polylines.push(poly);
+      } 
+      var pathPrev = prevPoly.getPath();
+      pathPrev.push(latLng);
+      prevLatLng = latLng;
+  }
+}
+
+
+function valueToCol (value) {
+   var col;
+   var val = (value/40 > 1) ? (value/40)-1 : value;
+   if (value/40 > 1) {
+     col = interpolateLinearly(val, Greens);
+   } else {
+     col = interpolateLinearly(val, Greens);
+   }
+   console.log(col);
+   return col;
+}
+
+
+
+
+
+
+
+
+
 
 
    // <div id="map" style="height:300px"></div>
-  </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=initMap">
-    </script>
-</body>
-</html>
+   </script>
+   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdDECh5tFSeaM9QoBxasV9jKglg_cewIo&callback=initMap">
+   </script>
+ </body>
+ </html>
