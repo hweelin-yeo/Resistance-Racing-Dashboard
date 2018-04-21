@@ -102,6 +102,7 @@
     var QUERY_URL = ENDPOINT + runid;
     $.get(QUERY_URL, function(data, status){
       console.log("Data: " + data + "\nStatus: " + status);
+      data.reverse();
       data.forEach((v) => {
         console.log(v);
         v.endtime = new Date(v.endtime);
