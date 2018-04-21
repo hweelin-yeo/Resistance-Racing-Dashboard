@@ -303,12 +303,12 @@ function lapQuery(startTime) {
             }
             // end previous lap (if there's a previous lap)
             if (lapNo) {
-                endLapDataQuery(runID, lapNo, startTime / 1000.0);
+                endLapDataQuery(runID, lapNo, startTime);
                 // TODO: calculate cumulative energy
             }
             // insert query for next lap
             lapNo = (lapNo) ? lapNo + 1 : 1;
-            startLapDataQuery(runID, lapNo, startTime / 1000.0)
+            startLapDataQuery(runID, lapNo, startTime)
         });
 
     });
