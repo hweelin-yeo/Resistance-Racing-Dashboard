@@ -63,7 +63,7 @@ function runButtonClicked() {
           });
 
           $.get(runStartTime).done(function (data) { // TODO: Verify with Karun that we can initialise runStart here
-            runStart = new Date(data.starttime);
+            runStart = new Date(data.starttime / 1000); // TODO: idk why but this works
           });
 
           $.get(runIDEndPoint).done(function(data) {
