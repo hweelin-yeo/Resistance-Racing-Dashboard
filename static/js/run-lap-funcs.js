@@ -1,8 +1,9 @@
 function lapButtonClicked() {
    // TODO: if last lap, end lap request, send data back to Electron
    $("#lapButton").text('Next Lap');
-   var time = (new Date()).toLocaleString('en-US');
-   socket.emit('Next Lap', {time: time}); 
+   var time = new Date();
+   time = new Date(time.getTime() + time.getTimezoneOffset()*60*1000);
+   socket.emit('Next Lap', {time: time.getTime()}); 
   }
 
  var registerRun; // initialised at init, refreshed by websockets
@@ -17,14 +18,14 @@ function runButtonClicked() {
   if (registerRun) {
     runName =  $("#run-name-input").val();
     var time = new Date();
-    time = time.toLocaleString('en-US');
+    time = new Date(time.getTime() + time.getTimezoneOffset()*60*1000);
       // updateStopwatch();
-      socket.emit('Start Run', {runname: runName, time: time});  
+      socket.emit('Start Run', {runname: runName, time: time.getTime()});  
 
     } else {
       var time = new Date();
-      time = time.toLocaleString('en-US');
-      socket.emit('End Run', {time: time}); 
+      time = new Date(time.getTime() + time.getTimezoneOffset()*60*1000);
+      socket.emit('End Run', {time: time.getTime()}); 
     }
 
   }

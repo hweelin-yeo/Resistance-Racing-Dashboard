@@ -118,7 +118,7 @@ function insertDataQuery(time, property, value) {
 
 function startLapDataQuery(runid, lapno, time) {
     client.query('INSERT INTO lapdata (runid, lapno, starttime)' +
-        'VALUES ($1, $2, $3)', [runid, lapno, time], (err, rows) => {
+        'VALUES ($1, $2, to_timestamp($3))', [runid, lapno, time], (err, rows) => {
             if (err) {
                 console.log(err.stack);
             } else {
@@ -230,7 +230,7 @@ function updateEnergy(runid, lapno, energy) {
 function startRunDataQuery(runname, time, callback) {
     console.log("START TIME IS " + time);
     client.query('INSERT INTO rundata (runname, starttime)' +
-        'VALUES ($1, $2)', [runname, time], (err, rows) => {
+        'VALUES ($1, to_timestamp($2))', [runname, time], (err, rows) => {
             if (err) {
                 console.log(err.stack);
             } else {
@@ -247,7 +247,7 @@ function startRunDataQuery(runname, time, callback) {
 /** Second version: has callback parameter*/
 function endRunData(endtime, callback) {
     console.log("in endrundata function");
-    client.query('UPDATE rundata SET endtime = ($1)' +
+    client.query('UPDATE rundata SET endtime = to_timestamp($1)' +
         'WHERE id IN( SELECT max(id) FROM rundata)', [endtime], (err, rows) => {
             if (err) {
                 console.log(err.stack);
@@ -260,7 +260,7 @@ function endRunData(endtime, callback) {
 
 /** Original version: corresponds to end point*/
 function endRunDataQuery(endtime, res) {
-    client.query('UPDATE rundata SET endtime = ($1)' +
+    client.query('UPDATE rundata SET endtime = to_timestamp($1)' +
         'WHERE id IN( SELECT max(id) FROM rundata)', [endtime], (err, rows) => {
             if (err) {
                 console.log(err.stack);
@@ -303,13 +303,12 @@ function lapQuery(startTime) {
             }
             // end previous lap (if there's a previous lap)
             if (lapNo) {
-                var d = new Date(startTime);
-                endLapDataQuery(runID, lapNo, d.getTime() / 1000.0);
+                endLapDataQuery(runID, lapNo, startTime / 1000.0);
                 // TODO: calculate cumulative energy
             }
             // insert query for next lap
             lapNo = (lapNo) ? lapNo + 1 : 1;
-            startLapDataQuery(runID, lapNo, startTime)
+            startLapDataQuery(runID, lapNo, startTime / 1000.0)
         });
 
     });
@@ -338,7 +337,7 @@ function endLapDataNoID(endtime) {
 }
 
 app.post('/endLapDataNoID', function(req, res) {
-    client.query('UPDATE lapdata SET endtime = ($1) WHERE id IN(SELECT max(id) FROM lapdata)', [req.body.endtime], (err, rows) => {
+    client.query('UPDATE lapdata SET endtime = to_timestamp($1) WHERE id IN(SELECT max(id) FROM lapdata)', [req.body.endtime], (err, rows) => {
         if (err) {
             console.log(err.stack);
         } else {
