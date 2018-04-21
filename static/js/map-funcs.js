@@ -118,7 +118,6 @@ console.log("in map-init.js");
         for (i = 0; i < polyLinesForLap.length ; i++) {
           var poly = polyLinesForLap[i];
           var polyNew = createPoly(poly.strokeColor);
-          console.log(poly.getPath());
           polyNew.setPath(poly.getPath());
           polyNew.setMap(mapPrev);
         }
@@ -169,26 +168,21 @@ var idealSpeed = 40.0; // testing
 var prevLatLng;
 
 function valueToCol (ideal, value) {
-  console.log(ideal);
   var col;
   if (value/ideal > 1) {
     col = interpolateLinearly((value/ideal)-1, Greens);
   } else {
     col = interpolateLinearly (1-(value/ideal), Reds);
   }
-  console.log(col);
   return col;
 }
 
 function mockIdealSpeed(gps) {
   if (!gps) return 40;
-  console.log(gps);
   var latLng_arr = gps.split(",");
-  console.log(latLng_arr);
   var lat = parseFloat(latLng_arr[0]);
   var lng = parseFloat(latLng_arr[1]);
   var l2 = Math.sqrt(lat*lat + lng*lng);
-  console.log(l2);
   return 40+20*Math.sin(l2*1000);
 }
 
@@ -219,7 +213,7 @@ controlButton.innerHTML = 'Send it!';
 controlButton.addEventListener ("click", function() {
   if (latestNoteMarker != undefined) {
     latestNoteMarker.setTitle($("#note").val());
-    socket.emit('Post Note', {note: ($("#note").val()), position: position, time: (new Date().toLocaleString('en-US'))}); 
+    socket.emit('Post Note', {note: ($("#note").val()), position: position, time: (new Date().toLocaleString('en-US'))});
     controlInput.value = "";
   }
 })
