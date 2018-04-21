@@ -63,7 +63,7 @@ function runButtonClicked() {
           });
 
           $.get(runStartTime).done(function (data) { // TODO: Verify with Karun that we can initialise runStart here\
-            console.log(runStart);
+            console.log(data.starttime);
             runStart = new Date(data.starttime);
           });
 
