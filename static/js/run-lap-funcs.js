@@ -63,8 +63,8 @@ function runButtonClicked() {
           });
 
           $.get(runStartTime).done(function (data) { // TODO: Verify with Karun that we can initialise runStart here\
-            console.log(data.starttime);
-            runStart = new Date(data.starttime);
+            runStart = new Date(data.starttime); // TODO not sure why this discrepancy exists
+            runStart = new Date(runStart.getTime() / 1000.0);
           });
 
           $.get(runIDEndPoint).done(function(data) {
@@ -81,7 +81,8 @@ function runButtonClicked() {
             });
 
             $.get(lapStartTime, {runid: data.id}).done(function(data) { // TODO: Verify with Karun that we can initialise lapStart here
-              lapStart = new Date(data.starttime);
+              lapStart = new Date(data.starttime); // TODO not sure why this discrepancy exists (see above)
+              lapStart = new Date(lapStart.getTime() / 1000.0);
             });
           });
 
