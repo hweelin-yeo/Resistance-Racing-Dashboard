@@ -28,8 +28,46 @@ Lap.prototype.computeEfficiency = function() {
 }
 
 Lap.prototype.computeDistance = function() {
-  // // TODO:
-  return 0;
+ if (this.isOngoing()) {
+   return null;
+ } else {
+   var sumDistance = 0;
+   const latData = this.getDataByProperty(LAT_PROP);
+   const lonData = this.getDataByProperty(LON_PROP);
+   if (latData.length == 0 || lonData.length == 0) return 0;
+
+   var distance = 0;
+   var prevLat = latData[0].value;
+   var prevLon = latData[0].value;
+   var minLatLonDataLength = Math.min(latData.length, lonData.length); // prevent unexpected index out of bounds at for loop
+
+   for (var i = 0; i < minLatLonDataLength; i++) {
+     const lat = latData[i].value;
+     const lon = lonData[i].value;
+     distance += getDistanceFromLatLonInM(prevLat, prevLon, lat, lon);
+     prevLat = lat;
+     prevLon = lon;
+   }
+   return distance;
+ }
+}
+
+function getDistanceFromLatLonInM(lat1,lon1,lat2,lon2) {
+ var R = 6371; // Radius of the earth in km
+ var dLat = deg2rad(lat2-lat1);  // deg2rad below
+ var dLon = deg2rad(lon2-lon1);
+ var a =
+   Math.sin(dLat/2) * Math.sin(dLat/2) +
+   Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+   Math.sin(dLon/2) * Math.sin(dLon/2)
+   ;
+ var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+ var d = R * c * 1000; // Distance in m
+ return d;
+}
+
+function deg2rad(deg) {
+ return deg * (Math.PI/180)
 }
 
 // Useful functions:
