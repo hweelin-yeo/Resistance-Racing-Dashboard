@@ -8,7 +8,7 @@ socket.on('Lap Started', function (res) {
   var time = res['time'];
   $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   $("#lapButton").text("Next Lap");
-  
+
   $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
   lapStart = new Date(time);
 });
@@ -31,6 +31,7 @@ socket.on('Lap Ended', function (res) {
 socket.on('Run Started', function(res) {
   var runname = res['runname'];
   var time = res['time'];
+  console.log("Run started:" + time);
   /** TODO: Verify with Karun if we can set runStart here*/
   runStart = new Date(time);
   runOngoing();
