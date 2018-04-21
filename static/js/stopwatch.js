@@ -4,10 +4,6 @@
 const interval = 10;
 const idealLapMillis = 60000;
 function updateStopwatch() {
-  console.log("Update stopwatch");
-  console.log(new Date());
-  console.log(runStart);
-  console.log(new Date() - runStart);
   var millisText = millisToString(new Date() - runStart);
   if (runStart != null) $("#stopwatch").text(millisText);
   var lapText = millisToString(new Date() - lapStart);
