@@ -40,7 +40,7 @@ Lap.prototype.computeDistance = function() {
 
     var distance = 0;
     var prevLat = latData[0].value;
-    var prevLon = latData[0].value;
+    var prevLon = lonData[0].value;
     var minLatLonDataLength = Math.min(latData.length, lonData.length); // prevent unexpected index out of bounds at for loop
 
     for (var i = 0; i < minLatLonDataLength; i++) {
