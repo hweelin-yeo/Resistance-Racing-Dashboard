@@ -34,7 +34,7 @@ Lap.prototype.compareTo = function(that, property) {
 
 // Append new data to this lap
 Lap.prototype.addData = function(newData) {
-  this.data.concat(newData);
+  this.data = this.data.concat(newData);
   this.data.sort(function(a, b) {
     a.timestamp - b.timestamp;
   });
