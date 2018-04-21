@@ -3,7 +3,7 @@ function lapButtonClicked() {
    $("#lapButton").text('Next Lap');
    var time = new Date();
    time = new Date(time.getTime() + time.getTimezoneOffset()*60*1000);
-   socket.emit('Next Lap', {time: time.getTime()}); 
+   socket.emit('Next Lap', {time: time.getTime() / 1000.0}); 
   }
 
  var registerRun; // initialised at init, refreshed by websockets
@@ -20,12 +20,12 @@ function runButtonClicked() {
     var time = new Date();
     time = new Date(time.getTime() + time.getTimezoneOffset()*60*1000);
       // updateStopwatch();
-      socket.emit('Start Run', {runname: runName, time: time.getTime()});  
+      socket.emit('Start Run', {runname: runName, time: time.getTime() / 1000.0});  
 
     } else {
       var time = new Date();
       time = new Date(time.getTime() + time.getTimezoneOffset()*60*1000);
-      socket.emit('End Run', {time: time.getTime()}); 
+      socket.emit('End Run', {time: time.getTime() / 1000.0}); 
     }
 
   }
