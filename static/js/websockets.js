@@ -61,7 +61,6 @@ socket.on('New Data_BMS', function(res) {
 });
 
 socket.on('New Data_GPS', function(res) {
-  // TODO: Implement
   var lat = res['data']['lat'];
   var lng = res['data']['lng'];
   var alt = res['data']['lng'];
@@ -71,11 +70,9 @@ socket.on('New Data_GPS', function(res) {
 });
 
 socket.on('New Data_MC', function(res) {
-  // TODO: Implement
   var value = res['data']['value'];
   var time = res['time'];
   changeSpeedStats(value, time);
-  pushSpeedChart(value, time);
 });
 
 
