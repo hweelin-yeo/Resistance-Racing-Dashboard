@@ -25,7 +25,6 @@ socket.on('Lap Ended', function (res) {
   //compText = (diff < 0 ? "-" : "+") + compText;
   $("#lapTable tbody tr:first-child td:nth-child(2)").text(millisToString(time));
   $("#lapTable tbody tr:first-child td:nth-child(3)").text(energy + " kWh");
-  lapStart = null;
 });
 
 socket.on('Run Started', function(res) {
