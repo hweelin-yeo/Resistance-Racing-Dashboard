@@ -14,7 +14,7 @@ console.log("in map-init.js");
     var transferPolys;
 
     function init() {
-      var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+      var initLatLng = new google.maps.LatLng({lat: 38.160682, lng: -122.453061});
       prevLatLng = initLatLng;
 
       var mapOptions = {

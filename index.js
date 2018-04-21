@@ -781,7 +781,7 @@ function parseMC(data) {
     value = Math.PI * ((500/1000)/1000) * value * 60 * (1/6); // kmph
     var time = data.substring(sep + 1, data.length); // (new Date(parseInt(data.substring(sep + 1, data.length)))).toLocaleString();
     return {
-        dataType: 'ms',
+        dataType: 'mc',
         data: {
             value: value
         },

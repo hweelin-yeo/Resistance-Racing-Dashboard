@@ -180,7 +180,7 @@ initRunSummary();
     }
     </script>
 
-    <script>
+<script>
     var polylines = [];
     var prevPoly;
     var prevLatLng;
@@ -189,7 +189,7 @@ initRunSummary();
 
     function initMap() {
       console.log("in init map");
-      var initLatLng = new google.maps.LatLng({lat: 38.16121, lng: -122.45422});
+      var initLatLng = new google.maps.LatLng({lat: 38.160682, lng: -122.453061});
       prevLatLng = initLatLng;
 
       var mapOptions = {
@@ -214,7 +214,6 @@ initRunSummary();
         console.log(parsed);
         var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
         newLap.setData(parsed.data);
-        idealLap = newLap;
         console.log("new lap data is " + Object.values(newLap.data));
         
         
