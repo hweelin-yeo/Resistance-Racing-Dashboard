@@ -8,14 +8,28 @@ const CURRENT_PROP = "current";
 
 // Constructor: lap_id, run_id, lap_no and start_time are required
 // end_time and energy_used can be null for ongoing laps
-function Lap(lap_id, run_id, lap_no, start_time, end_time, energy_used) {
+function Lap(lap_id, run_id, lap_no, start_time, end_time, energy_used, distance) {
   this.lap_id = lap_id;
   this.run_id = run_id;
   this.lap_no = lap_no;
   this.start_time = start_time;
   this.end_time = end_time;
   this.energy_used = energy_used;
+  this.distance = distance;
   this.data = []; // each data object contains a timestamp, property and value
+}
+
+Lap.prototype.computeEfficiency = function() {
+  if (this.distance == null || this.energy_used == null) {
+    return null;
+  } else {
+    return this.distance / this.energy_used;
+  }
+}
+
+Lap.prototype.computeDistance = function() {
+  // // TODO:
+  return 0;
 }
 
 // Useful functions:
@@ -128,6 +142,10 @@ Lap.prototype.setData = function(data) {
   this.data = data;
 }
 
+Lap.prototype.setDistance = function(distance) {
+  this.distance = distance;
+}
+
 // Primary Getters
 Lap.prototype.getLapId = function() {
   return this.lap_id;
@@ -155,6 +173,10 @@ Lap.prototype.getEnergyUsed = function() {
 
 Lap.prototype.getData = function() {
   return this.data;
+}
+
+Lap.prototype.getDistance = function() {
+  return this.distance;
 }
 
 module.exports.Lap = Lap;

@@ -137,12 +137,14 @@ function endLapDataQuery(runid, lapno, endtime) {
             console.log("STARTTIME IS: " + starttime);
             getAllDataForLap(starttime, endtime, function(data) {
                 console.log("Ending lap " + lapno + " from run "+ runid);
-                var curLap = new lap.Lap(null, runid, lapno, starttime, endtime, null);
+                var curLap = new lap.Lap(null, runid, lapno, starttime, endtime, null, null);
                 curLap.addData(data);
                 console.log(curLap.getEndTime());
                 var totalTime = curLap.getTotalTime();
                 var totalEnergy = curLap.computeEnergyUsed();
-                console.log(totalTime, totalEnergy);
+                var totalDistance = curLap.computeDistance();
+                //TODO Persist energy and distance in db!
+                console.log(totalTime, totalEnergy, totalDistance);
                 io.sockets.emit('Lap Ended', {
                     lapno: lapno,
                     totaltime: totalTime,

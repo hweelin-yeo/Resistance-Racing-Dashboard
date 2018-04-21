@@ -212,7 +212,7 @@ initRunSummary();
         console.log(data);
         var parsed = JSON.parse(data);
         console.log(parsed);
-        var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
+        var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used, parsed.distance);
         newLap.setData(parsed.data);
         console.log("new lap data is " + Object.values(newLap.data));
         putDataOntoMap(newLap);
@@ -244,7 +244,7 @@ initRunSummary();
       gpsLngData.sort(function(a, b) {
         return new Date(a.timestamp) - new Date(b.timestamp);
       });
-      prevLatLng = new google.maps.LatLng({lat: parseFloat(gpsLatData[0].value), lng: parseFloat(gpsLngData[0].value)}); 
+      prevLatLng = new google.maps.LatLng({lat: parseFloat(gpsLatData[0].value), lng: parseFloat(gpsLngData[0].value)});
       var startTimestamp = new Date(gpsLatData[0].timestamp);
       var endTimestamp = new Date(gpsLatData[gpsLatData.length-1].timestamp);
       var curTimestamp = startTimestamp;
@@ -295,7 +295,7 @@ initRunSummary();
         path.push(latLng);
         prevPoly = poly;
         polylines.push(poly);
-      } 
+      }
       var pathPrev = prevPoly.getPath();
       pathPrev.push(latLng);
       prevLatLng = latLng;

@@ -13,13 +13,13 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js">
   </script>
-  <script src="realTimeChart.js">
-  </script>
+  <!-- <script src="realTimeChart.js">
+  </script> -->
   <script src="js-colormaps.js">
   </script>
   <script src="hashmap.js">
   </script>
-  <link href="realTimeChart.css" rel="stylesheet">
+  <!-- <link href="realTimeChart.css" rel="stylesheet"> -->
   <style>
    footer {
     background-color: #555;
@@ -195,26 +195,24 @@
           <div class="prevBestLapButton btn btn-primary col-sm-12">
             <h3>Previous Lap</h3>
             <div class="col-sm-6">
-              <h5>Efficiency</h5><span class="eff">83%</span>
+              <h5>Efficiency</h5><span id="prev-eff" class="eff">83%</span>
             </div>
             <div class="col-sm-6">
-              <h5>Timing</h5>06:22.121<br>
-              (+0:30.004)
+              <h5>Timing</h5><span id="prev-timing">-</span>
             </div>
           </div>
           <div class="prevBestLapButton btn btn-info col-sm-12" style="background:#219653;">
             <h3>Best Lap</h3>
             <div class="col-sm-6">
-              <h5>Efficiency</h5><span class="eff">94%</span>
+              <h5>Efficiency</h5><span id="best-eff" class="eff">-</span>
             </div>
             <div class="col-sm-6">
-              <h5>Timing</h5>06:02.121<br>
-              (+0:10.004)
+              <h5>Timing</h5><span id="best-timing">-</span>
             </div>
           </div>
         </div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-sm-12">
           <div class="chartCollapsor">
             Speed <a data-toggle="collapse" href="#speedChart"><span class="caret"></span></a>
@@ -229,7 +227,7 @@
           </div>
           <div class="collapse in chartContent" id="throttleChart"></div>
         </div>
-      </div>
+      </div> -->
     </div>
       <div class="col-sm-3 well">
         <div class="well">
@@ -251,9 +249,6 @@
       </div>
 
     </div>
-    <footer class="container-fluid text-center">
-      <p>Footer Text</p>
-    </footer>
     <script src="/socket.io/socket.io.js">
     </script>
 
