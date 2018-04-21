@@ -37,7 +37,7 @@ Lap.prototype.getTotalTime = function() {
   if (this.isOngoing()) {
     return null;
   } else {
-    return this.end_time - this.start_time;
+    return new Date(this.end_time) - new Date(this.start_time);
   }
 }
 

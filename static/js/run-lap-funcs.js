@@ -19,7 +19,6 @@ function runButtonClicked() {
     var time = new Date();
       // updateStopwatch();
       socket.emit('Start Run', {runname: runName, time: time.getTime() / 1000.0});
-
     } else {
       var time = new Date();
       socket.emit('End Run', {time: time.getTime() / 1000.0});
