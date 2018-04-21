@@ -781,7 +781,7 @@ function parseMC(data) {
     value = Math.PI * ((500/1000)/1000) * value * 60 * (1/6); // kmph
     var time = data.substring(sep + 1, data.length); // (new Date(parseInt(data.substring(sep + 1, data.length)))).toLocaleString();
     return {
-        dataType: 'mc',
+        dataType: 'MC',
         data: {
             value: value
         },
@@ -812,7 +812,7 @@ function pushToDatabase(outputArr) {
 
                     break;
                 case ("MC"):
-                    insertDataQuery(outputArr[i]['time'], 'MC', outputArr[i]['data']['value']);
+                    insertDataQuery(outputArr[i]['time'], 'mc', outputArr[i]['data']['value']);
                     break;
                 default:
                     break; // discard data
