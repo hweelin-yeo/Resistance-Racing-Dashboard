@@ -39,7 +39,7 @@ function runButtonClicked() {
       var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
       newLap.setData(parsed.data);
       idealLap = newLap;
-      console.log(newLap);
+      console.log("new lap data is " + Object.values(newLap.data));
       console.log("submitted best lap");
     });
 

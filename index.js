@@ -525,6 +525,9 @@ app.get('/getLapForLapId', function(req, res) {
         console.log(err.stack);
         return;
       }
+      console.log("timestamp func takes in " + data.starttime.getTime() / 1000.0);
+      console.log("timestamp func takes in " + upperLimit.getTime() / 1000.0);
+      console.log("rows.rows is " + rows.rows);
       lapObject.addData(rows.rows);
       res.send(JSON.stringify(lapObject));
     });
@@ -775,7 +778,7 @@ function parseMC(data) {
     }
     var value = parseFloat(data.substring(0, sep));
     // one revolution (per minute) : Math.PI * 500/1000/1000 km
-    // value = Math.PI * 500/1000/1000 * value * 60; // kmph
+    value = Math.PI * 500/1000/1000 * value * 60 * 1/6; // kmph
     var time = data.substring(sep + 1, data.length); // (new Date(parseInt(data.substring(sep + 1, data.length)))).toLocaleString();
     return {
         dataType: 'MC',

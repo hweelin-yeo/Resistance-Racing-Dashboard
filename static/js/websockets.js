@@ -66,7 +66,7 @@ socket.on('New Data_GPS', function(res) {
   var lng = res['data']['lng'];
   var alt = res['data']['lng'];
   var time = res['time'];
-  latestGPSCoordinates = value;
+  // latestGPSCoordinates = value;
   updateMap(lat + "," + lng); // TODO: value currently is just lat,lng, and does not take into account alt
 });
 
