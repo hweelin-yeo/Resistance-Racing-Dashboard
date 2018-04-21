@@ -26,8 +26,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/live', express.static('live-timing.html'))
-app.use('/websocket-test', express.static('websocket-test.html'))
+app.use('/live', express.static('websocket-test.html'))
 app.use('/user-test', express.static('control-speed.html'))
 app.use('/runs', express.static('run-history.html'))
 app.use('/laps', express.static('lap-history.html'))
@@ -78,16 +77,16 @@ io.on('connection', function(socket) {
 
     socket.on('Post Note', function(data) {
         var note = data['note'];
-        var position = data['position'];
+        var lat = data['lat'];
+        var lon = data['lon'];
         var time = data['time'];
         socket.broadcast.emit('Note Posted', {
             note: note,
-            position: position
+            lat: lat,
+            lon: lon,
+            time: time
         });
-        // insertDataQuery(time, 'note', {
-        //     note: note,
-        //     position: position
-        // });
+        insertNoteQuery(time, note, lat, lon);
 
     });
 
@@ -106,6 +105,19 @@ function insertDataQuery(time, property, value) {
     // to_timestamp(time, 'MM/DD/YYYY, HH12:MI:MS')
     client.query('INSERT INTO data (timestamp, property, value)' +
         'VALUES (to_timestamp($1), $2, $3)', [time, property, value], (err, rows) => { //TODO CAN WE GET
+            if (err) {
+                console.log(err.stack);
+            } else {
+                console.log(rows.rows[0]);
+            }
+            // res.end("sent");
+
+        });
+}
+
+function insertNoteQuery(time, note, lat, lon) {
+    client.query('INSERT INTO notedata (timestamp, note, lat, lon)' +
+        'VALUES (to_timestamp($1), $2, $3)', [time, note, lat, lon], (err, rows) => { //TODO CAN WE GET
             if (err) {
                 console.log(err.stack);
             } else {
@@ -143,8 +155,9 @@ function endLapDataQuery(runid, lapno, endtime) {
                 var totalTime = curLap.getTotalTime();
                 var totalEnergy = curLap.computeEnergyUsed();
                 var totalDistance = curLap.computeDistance();
-                //TODO Persist energy and distance in db!
                 console.log(totalTime, totalEnergy, totalDistance);
+                updateTotalEnergy(runid, lapno, totalEnergy);
+                updateTotalDistance(runid, lapno, totalDistance);
                 io.sockets.emit('Lap Ended', {
                     lapno: lapno,
                     totaltime: totalTime,
@@ -216,6 +229,26 @@ function updateEndTime(runid, lapno, endtime, callback) {
             console.log(rows.rows[0]);
         }
         callback();
+    });
+}
+
+function updateTotalEnergy(runid, lapno, totalenergy) {
+    client.query('UPDATE lapdata SET totalenergy = ($3) WHERE runid = ($1) AND lapno = ($2)', [runid, lapno, totalenergy], (err, rows) => {
+        if (err) {
+            console.log(err.stack);
+        } else {
+            console.log(rows.rows[0]);
+        }
+    });
+}
+
+function updateTotalDistance(runid, lapno, totaldistance) {
+    client.query('UPDATE lapdata SET totaldistance =($3) WHERE runid = ($1) AND lapno = ($2)', [runid, lapno, totaldistance], (err, rows) => {
+        if (err) {
+            console.log(err.stack);
+        } else {
+            console.log(rows.rows[0]);
+        }
     });
 }
 
@@ -552,7 +585,9 @@ app.post('/postNote', function(req, res) {
     // TODO: incomplete
     var time = req.body.time;
     var note = req.body.note;
-    insertDataQuery(time, 'note', note);
+    var lat = req.body.lat;
+    var lon = req.body.lon;
+    insertNoteQuery(time, note, lat, lon);
 });
 
 
@@ -802,9 +837,9 @@ function pushToDatabase(outputArr) {
                     insertDataQuery(outputArr[i]['time'], 'tempFault', outputArr[i]['data']['tempFault']);
                     insertDataQuery(outputArr[i]['time'], 'curFault', outputArr[i]['data']['curFault']);
                     insertDataQuery(outputArr[i]['time'], 'emergFault', outputArr[i]['data']['emergFault']);
-                    insertDataQuery(outputArr[i]['time'], 'current', outputArr[i]['data']['current']);
                     insertDataQuery(outputArr[i]['time'], 'curFault', outputArr[i]['data']['curFault']);
-                    insertDataQuery(outputArr[i]['time'], 'voltAve', outputArr[i]['data']['voltAve']);
+                    insertDataQuery(outputArr[i]['time'], 'current', outputArr[i]['data']['current']);
+                    insertDataQuery(outputArr[i]['time'], 'voltage', outputArr[i]['data']['voltAve']);
 
                     break;
                 case ("GPS"):
