@@ -46,7 +46,7 @@ const CurrentSensor = new MockSensor("current", 1000, function(epoch) {
 	return r > 0.8 ? 0.0: 20.0;
 });
 const MCSensor = new MockSensor("mc", 500, function(epoch) {
-	return (10 + 10*Math.sin(epoch/4))/(0.03 * Math.PI / 6.0);
+	return (15 + 15*Math.sin(epoch/2))/(0.03 * Math.PI / 6.0);
 });
 const BMSSensor = new MockSensor("b", 1500, function(epoch) {
 	return "FzzzzC12345V543219876012345T12345678901234567890";
@@ -101,7 +101,7 @@ var gpxParse = require("gpx-parse");
 var gpsLoaded = false;
 var waypoints;
 var waypointIndex = 0;
-gpxParse.parseGpxFromFile("./static/shell-track.gpx.xml", function(error, data) {
+gpxParse.parseGpxFromFile("./static/shell-track.gpx.txt", function(error, data) {
 	waypoints = data.tracks[0].segments[0];
 	gpsLoaded = true;
 });

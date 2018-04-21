@@ -190,7 +190,7 @@ initRunSummary();
     function initMap() {
       console.log("in init map");
       var initLatLng = new google.maps.LatLng({lat: 38.160682, lng: -122.453061});
-      prevLatLng = initLatLng;
+      prevLatLng = null;
 
       var mapOptions = {
         zoom: 17,
@@ -215,8 +215,6 @@ initRunSummary();
         var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used);
         newLap.setData(parsed.data);
         console.log("new lap data is " + Object.values(newLap.data));
-        
-        
         putDataOntoMap(newLap);
       });
     }
@@ -225,19 +223,32 @@ initRunSummary();
       if (polylines.length == 0) {
         return;
       }
-
-      for (var i = 0; i < polylines.length; i++) {
-          polylines[i].remove();
-        }
-
-      polylines.clear();
+      polylines = [];
+      prevLatLng = null;
     }
 
     function putDataOntoMap(lapObj) {
+      const drawingInterval = 1000; // ms
       console.log("lap object contains " + lapObj.data);
-      var startTimestamp = new Date(lapObj.start_time) ;
-      var endTimestamp = new Date(lapObj.end_time);
+      var gpsLatData = lapObj.getDataByProperty('gps_lat');
+      var gpsLngData = lapObj.getDataByProperty('gps_lon');
+      console.log("lap object contains gps_lat: " + JSON.stringify(gpsLatData));
+      console.log(gpsLatData.length);
+      if (gpsLatData.length == 0) {
+        return; // no data to show on map
+      }
+
+      gpsLatData.sort(function(a, b) {
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+      gpsLngData.sort(function(a, b) {
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+      prevLatLng = new google.maps.LatLng({lat: parseFloat(gpsLatData[0].value), lng: parseFloat(gpsLngData[0].value)}); 
+      var startTimestamp = new Date(gpsLatData[0].timestamp);
+      var endTimestamp = new Date(gpsLatData[gpsLatData.length-1].timestamp);
       var curTimestamp = startTimestamp;
+      console.log(curTimestamp, startTimestamp, endTimestamp);
       while (curTimestamp < endTimestamp) {
         console.log("interpolated time is " + curTimestamp);
         var speed = lapObj.getVirtualData(curTimestamp, "mc");
@@ -248,7 +259,7 @@ initRunSummary();
         var col = valueToCol(speed);
         console.log("speed is " + speed + " and lat is "+ interLat + "color is " + col);
         drawMap(new google.maps.LatLng(interLat, interLon), col);
-        curTimestamp = new Date(curTimestamp.getTime() + 60000);
+        curTimestamp = new Date(curTimestamp.getTime() + drawingInterval);
       }
 
   }
@@ -280,6 +291,7 @@ initRunSummary();
       if (prevPoly.strokeColor != col) {  // A--B    C (B is prev latlng, c is latlng)
         var poly = createPoly(col);
         var path = poly.getPath();
+        path.push(prevLatLng);
         path.push(latLng);
         prevPoly = poly;
         polylines.push(poly);
@@ -293,13 +305,10 @@ initRunSummary();
 
 function valueToCol (value) {
    var col;
+   console.log("VALUE TO COL")
    console.log(value);
-   var val = (value/40 > 1) ? (value/40)-1 : value;
-   if (value/40 > 1) {
-     col = interpolateLinearly(val, Greens);
-   } else {
-     col = interpolateLinearly(val, Greens);
-   }
+   var val = 0.2 + Math.min(0.8, value/60.0);
+   col = interpolateLinearly(val, Blues);
    console.log(col);
    return col;
 }

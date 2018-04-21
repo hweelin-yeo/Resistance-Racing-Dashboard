@@ -36,7 +36,7 @@ Lap.prototype.compareTo = function(that, property) {
 Lap.prototype.addData = function(newData) {
   this.data = this.data.concat(newData);
   this.data.sort(function(a, b) {
-    a.timestamp - b.timestamp;
+    return a.timestamp - b.timestamp;
   });
 }
 
@@ -68,7 +68,7 @@ Lap.prototype.getVirtualData = function(time, property) {
     return null;      // Can't estimate anything about the lap if no data
   }
   var secondIndex = propertyData.findIndex(function(a) {
-    return (a.timestamp > time);
+    return (new Date(a.timestamp) > new Date(time));
   });
   // Three cases:
   // 1. secondIndex = 0 (interpolate from start)
@@ -81,9 +81,9 @@ Lap.prototype.getVirtualData = function(time, property) {
     return propertyData[propertyData.length-1].value;
   } else {
     const v2 = propertyData[secondIndex].value;
-    const t2 = propertyData[secondIndex].timestamp;
+    const t2 = new Date(propertyData[secondIndex].timestamp);
     const v1 = propertyData[secondIndex-1].value;
-    const t1 = propertyData[secondIndex-1].timestamp;
+    const t1 = new Date(propertyData[secondIndex-1].timestamp);
     const ratio = (time - t1)/(t2 - t1);
     return (1 - ratio) * v1 + (ratio) * v2;
   }
