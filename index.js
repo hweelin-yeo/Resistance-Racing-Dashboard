@@ -778,10 +778,10 @@ function parseMC(data) {
     }
     var value = parseFloat(data.substring(0, sep));
     // one revolution (per minute) : Math.PI * 500/1000/1000 km
-    value = Math.PI * 500/1000/1000 * value * 60 * 1/6; // kmph
+    value = Math.PI * ((500/1000)/1000) * value * 60 * (1/6); // kmph
     var time = data.substring(sep + 1, data.length); // (new Date(parseInt(data.substring(sep + 1, data.length)))).toLocaleString();
     return {
-        dataType: 'MC',
+        dataType: 'ms',
         data: {
             value: value
         },

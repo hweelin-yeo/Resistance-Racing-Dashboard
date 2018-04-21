@@ -46,7 +46,7 @@ const CurrentSensor = new MockSensor("current", 1000, function(epoch) {
 	return r > 0.8 ? 0.0: 20.0;
 });
 const MCSensor = new MockSensor("mc", 500, function(epoch) {
-	return (10 + 10*Math.sin(epoch/4))/(0.3 * Math.PI);
+	return (10 + 10*Math.sin(epoch/4))/(0.03 * Math.PI / 6.0);
 });
 const BMSSensor = new MockSensor("b", 1500, function(epoch) {
 	return "FzzzzC12345V543219876012345T12345678901234567890";
