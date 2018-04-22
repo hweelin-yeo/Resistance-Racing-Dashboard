@@ -56,7 +56,7 @@
           '<td>' + millisToString(v.totaltime.getTime()) + '</td>' +
           '<td>' + v.numlaps + '</td>' +
           '<td>' + roundToXDecimals((v.totaldistance / 1000), 2) + ' km</td>' +
-          '<td>' + roundToXDecimals((v.totaldistance / 1000) / v.totaltime, 2) + ' kmph</td>' +
+          '<td>' + roundToXDecimals(3.6 * v.totaldistance / (v.totaltime.getTime() / 1000), 2) + ' kmph</td>' +
           '<td>' + roundToXDecimals((v.totalenergy / 1000), 2) + ' kWh</td>' +
           '<td>' + roundToXDecimals(v.totaldistance / v.totalenergy, 2) + ' km/kWh</td>' +
           '</tr>');

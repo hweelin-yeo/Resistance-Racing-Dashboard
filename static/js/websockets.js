@@ -9,7 +9,7 @@ socket.on('Lap Started', function (res) {
   $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   $("#lapButton").text("Next Lap");
 
-  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td><td></td></tr>");
   lapStart = new Date(time);
 });
 
@@ -17,14 +17,20 @@ socket.on('Lap Ended', function (res) {
   var lap = res['lapno'];
   var time = res['totaltime'];
   var energy = res['totalenergy'];
-  transferPolys();
 
-  /** TODO: Verify Stopwatch stuff*/
-  //var diff = (time - lapStart) - idealLapMillis;
-  //var compText = millisToString(Math.abs(diff));
-  //compText = (diff < 0 ? "-" : "+") + compText;
-  $("#lapTable tbody tr:first-child td:nth-child(2)").text(millisToString(time));
-  $("#lapTable tbody tr:first-child td:nth-child(3)").text((energy / 1000) + " kWh");
+  console.log("LAP ENDED:");
+  console.log(res);
+  console.log(energy / 1000);
+  // This is done because lap ended usually appears after lap started, so we can't
+  // simply select the top row anymore.
+  $("#lapTable tbody tr").each((i, v) => {
+    var cell = $(v).find("td")[0];
+    if ($(cell).text() == lap) {
+      $($(v).find("td")[1]).text(millisToString(time * 1000));
+      $($(v).find("td")[2]).text(roundToXDecimals((energy / 1000), 2) + " kWh");
+    }
+  });
+  transferPolys();
 });
 
 socket.on('Run Started', function(res) {

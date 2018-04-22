@@ -29,6 +29,10 @@ function initLapTable(runID) {
   });
 }
 
+function roundToXDecimals(num, x) {
+  return Math.round(num * Math.pow(10, x)) / Math.pow(10, x);
+}
+
 function millisToString(m) {
   var minutes = Math.floor(m / 60000);
   m = m % 60000;
