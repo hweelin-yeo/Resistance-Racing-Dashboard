@@ -11,6 +11,9 @@ socket.on('Lap Started', function (res) {
 
   $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td><td></td></tr>");
   lapStart = new Date(time);
+  if (runFirstLapStart == null) {
+    runFirstLapStart = lapStart;
+  }
 });
 
 socket.on('Lap Ended', function (res) {
@@ -48,6 +51,7 @@ socket.on('Run Ended', function(res) {
   var time = res['time'];
   runNotOngoing();
   runStart = null;
+  runFirstLapStart = null;
 });
 
 socket.on('New Data_BMS', function(res) {
@@ -91,5 +95,3 @@ socket.on('Note Posted', function (res) {
   position = new google.maps.LatLng({lat: lat, lng: lon});
   addMarker(position, note);
 });
-
-
