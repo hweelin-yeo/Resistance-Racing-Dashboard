@@ -119,7 +119,7 @@
           '<td>' + (v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString()) + '</td>' +
           '<td>' + millisToString(v.totaltime.getTime()) + '</td>' +
           '<td>' + roundToXDecimals((v.totaldistance / 1000), 2) + ' km</td>' +
-          '<td>' + roundToXDecimals((v.totaldistance / 1000) / v.totaltime, 2) + ' kmph</td>' +
+          '<td>' + roundToXDecimals(3.6 * v.totaldistance / (v.totaltime.getTime() / 1000), 2) + ' kmph</td>' +
           '<td>' + roundToXDecimals((v.totalenergy / 1000), 2) + ' kWh</td>' +
           '<td>' + roundToXDecimals(v.totaldistance / v.totalenergy, 2) + ' km/kWh</td>' +
           '</tr>');
@@ -147,7 +147,7 @@ function initRunSummary() {
     $('#end-time').text(v.endtime.getTime() == 0 ? 'Ongoing' : v.endtime.toLocaleString());
     $('#duration').text(millisToString(v.totaltime.getTime()));
     $('#distance').text(roundToXDecimals((v.totaldistance / 1000), 2) + ' km');
-    $('#avg-speed').text(roundToXDecimals((v.totaldistance / 1000) / v.totaltime, 2) + ' kmph');
+    $('#avg-speed').text(roundToXDecimals(3.6 * v.totaldistance / (v.totaltime.getTime() / 1000), 2) + ' kmph');
     $('#energy-used').text(roundToXDecimals((v.totalenergy / 1000), 2) + ' kWh');
     $('#efficiency').text((v.totaldistance / v.totalenergy, 2) + ' km/kWh');
 
