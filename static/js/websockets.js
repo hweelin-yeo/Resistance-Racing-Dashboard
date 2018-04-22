@@ -31,6 +31,7 @@ socket.on('Lap Ended', function (res) {
     }
   });
   transferPolys();
+  clearPolys(polyLinesForLap);
 });
 
 socket.on('Run Started', function(res) {

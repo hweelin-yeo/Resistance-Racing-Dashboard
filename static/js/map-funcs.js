@@ -12,6 +12,7 @@ console.log("in map-init.js");
     var latestNoteMarker;
     var polyLinesForLap = [];
     var transferPolys;
+    var clearPolys;
 
     function init() {
       var initLatLng = new google.maps.LatLng({lat: 38.160682, lng: -122.453061});
@@ -161,6 +162,14 @@ console.log("in map-init.js");
       prevLatLng = latLng;
     }
 
+    function clearPolys(polylineArr) {
+      for (i = 0; i < polylineArr.length ; i++) {
+          var poly = polylineArr[i];
+          poly.setMap(null);
+        }
+    }
+
+
 // var lap = 0;
 var latestGPSTimeStamp;
 var latestGPSCoordinates;
@@ -184,10 +193,6 @@ function mockIdealSpeed(gps) {
   var lng = parseFloat(latLng_arr[1]);
   var l2 = Math.sqrt(lat*lat + lng*lng);
   return 40+20*Math.sin(l2*1000);
-}
-
-function clearPolylines(polylineArr) {
-
 }
 
 

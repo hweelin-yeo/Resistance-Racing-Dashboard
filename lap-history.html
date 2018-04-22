@@ -223,8 +223,16 @@ initRunSummary();
       if (polylines.length == 0) {
         return;
       }
-      polylines = [];
       prevLatLng = null;
+      clearPolys(polylines);
+      polylines = [];
+    }
+
+    function clearPolys(polylineArr) {
+      for (i = 0; i < polylineArr.length ; i++) {
+          var poly = polylineArr[i];
+          poly.setMap(null);
+        }
     }
 
     function putDataOntoMap(lapObj) {
