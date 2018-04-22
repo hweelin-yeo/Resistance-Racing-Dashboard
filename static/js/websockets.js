@@ -17,14 +17,13 @@ socket.on('Lap Ended', function (res) {
   var lap = res['lapno'];
   var time = res['totaltime'];
   var energy = res['totalenergy'];
-  transferPolys();
 
-  /** TODO: Verify Stopwatch stuff*/
-  //var diff = (time - lapStart) - idealLapMillis;
-  //var compText = millisToString(Math.abs(diff));
-  //compText = (diff < 0 ? "-" : "+") + compText;
+  console.log("LAP ENDED:");
+  console.log(res);
+  console.log(energy / 1000);
   $("#lapTable tbody tr:first-child td:nth-child(2)").text(millisToString(time));
   $("#lapTable tbody tr:first-child td:nth-child(3)").text((energy / 1000) + " kWh");
+  transferPolys();
 });
 
 socket.on('Run Started', function(res) {
