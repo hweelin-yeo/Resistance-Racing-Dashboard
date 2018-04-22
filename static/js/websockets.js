@@ -20,10 +20,6 @@ socket.on('Lap Ended', function (res) {
   var lap = res['lapno'];
   var time = res['totaltime'];
   var energy = res['totalenergy'];
-
-  console.log("LAP ENDED:");
-  console.log(res);
-  console.log(energy / 1000);
   // This is done because lap ended usually appears after lap started, so we can't
   // simply select the top row anymore.
   $("#lapTable tbody tr").each((i, v) => {
@@ -33,6 +29,8 @@ socket.on('Lap Ended', function (res) {
       $($(v).find("td")[2]).text(roundToXDecimals((energy / 1000), 2) + " kWh");
     }
   });
+  $("#prev-eff").text(roundToXDecimals((energy / 1000), 2) + " kWh");
+  $("#prev-timing").text(millisToString(time * 1000));
   transferPolys();
   clearPolys(polyLinesForLap);
 });
@@ -41,7 +39,6 @@ socket.on('Run Started', function(res) {
   var runname = res['runname'];
   var time = res['time'];
   console.log("Run started:" + time);
-  /** TODO: Verify with Karun if we can set runStart here*/
   runStart = new Date(time);
   runOngoing();
   $('#run-name-input').val(runname);
