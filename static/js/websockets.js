@@ -23,7 +23,7 @@ socket.on('Lap Ended', function (res) {
   console.log(energy / 1000);
   // This is done because lap ended usually appears after lap started, so we can't
   // simply select the top row anymore.
-  $("#lapTable tbody tr").each((v, i) => {
+  $("#lapTable tbody tr").each((i, v) => {
     var cell = $(v).find("td")[0];
     if ($(cell).text() == lap) {
       $($(v).find("td")[1]).text(millisToString(time));
