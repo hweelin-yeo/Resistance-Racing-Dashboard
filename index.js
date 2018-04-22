@@ -76,6 +76,7 @@ io.on('connection', function(socket) {
 
 
     socket.on('Post Note', function(data) {
+        console.log("at post note");
         var note = data['note'];
         var lat = data['lat'];
         var lon = data['lon'];
