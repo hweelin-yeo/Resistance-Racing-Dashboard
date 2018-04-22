@@ -78,6 +78,11 @@ socket.on('New Data_MC', function(res) {
 
 socket.on('Note Posted', function (res) {
   var note = res['note'];
-  var position = res['position'];
+  var lat = res['lat'];
+  var lon = res['lon'];
+  var time = res['time'];
+  position = new google.maps.LatLng({lat: lat, lng: lon});
   addMarker(position, note);
 });
+
+

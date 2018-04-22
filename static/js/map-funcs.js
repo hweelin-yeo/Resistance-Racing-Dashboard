@@ -186,6 +186,10 @@ function mockIdealSpeed(gps) {
   return 40+20*Math.sin(l2*1000);
 }
 
+function clearPolylines(polylineArr) {
+
+}
+
 
 
 
