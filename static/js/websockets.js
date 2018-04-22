@@ -26,7 +26,7 @@ socket.on('Lap Ended', function (res) {
   $("#lapTable tbody tr").each((i, v) => {
     var cell = $(v).find("td")[0];
     if ($(cell).text() == lap) {
-      $($(v).find("td")[1]).text(millisToString(time));
+      $($(v).find("td")[1]).text(millisToString(time * 1000));
       $($(v).find("td")[2]).text(roundToXDecimals((energy / 1000), 2) + " kWh");
     }
   });
