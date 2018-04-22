@@ -181,18 +181,8 @@ console.log("in map-init.js");
 // var lap = 0;
 var latestGPSTimeStamp;
 var latestGPSCoordinates;
-var idealSpeed = 40.0; // testing
 var prevLatLng;
 
-function valueToCol (ideal, value) {
-  var col;
-  if (value/ideal > 1) {
-    col = interpolateLinearly((value/ideal)-1, Greens);
-  } else {
-    col = interpolateLinearly (1-(value/ideal), Reds);
-  }
-  return col;
-}
 
 function mockIdealSpeed(gps) {
   if (!gps) return 40;
@@ -202,11 +192,6 @@ function mockIdealSpeed(gps) {
   var l2 = Math.sqrt(lat*lat + lng*lng);
   return 40+20*Math.sin(l2*1000);
 }
-
-
-
-
-
 
 /** Note taking Function*/
 
@@ -242,3 +227,13 @@ controlDiv.appendChild(controlInput);
 controlDiv.appendChild(controlButton);
 
 init();
+
+function valueToCol (value) {
+   var col;
+   console.log("VALUE TO COL")
+   console.log(value);
+   var val = 0.2 + Math.min(0.8, value/60.0);
+   col = interpolateLinearly(val, Blues);
+   console.log(col);
+   return col;
+}

@@ -35,9 +35,7 @@ function faultEmerg(bool) {
 
 function changeSpeedStats(num, lastUpdated) {
   $('#speedStats')[0].innerHTML = Math.round(num*10)/10.0 + " kmph";
-  var idealSpeed = mockIdealSpeed(latestGPSCoordinates);
-  console.log("Ideal: "+idealSpeed);
-  var col = valueToCol (idealSpeed, num);
+  var col = valueToCol (num);
   drawMap(prevLatLng, col);
 }
 
