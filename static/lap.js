@@ -110,7 +110,7 @@ Lap.prototype.computeEnergyUsed = function() {
       console.log("COMPUTE ENERGY USED: voltage " + voltage);
       console.log("COMPUTE ENERGY USED: current " + current);
       console.log("COMPUTE ENERGY USED: time " + (new Date(timeOfReading) - new Date(prevTime)));
-      power += (voltage * current * (new Date(timeOfReading) - new Date(prevTime)));
+      power += (voltage * current * (new Date(timeOfReading) - new Date(prevTime)) / 1000.0);
       console.log("COMPUTE ENERGY USED: power " + power);
       prevTime = timeOfReading;
     }

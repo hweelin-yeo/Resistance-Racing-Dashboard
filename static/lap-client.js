@@ -21,6 +21,7 @@ function Lap(lap_id, run_id, lap_no, start_time, end_time, energy_used, distance
   this.data = []; // each data object contains a timestamp, property and value
 }
 
+// Useful functions:
 Lap.prototype.computeEfficiency = function() {
   if (this.distance == null || this.energy_used == null) {
     return null;
@@ -72,7 +73,6 @@ function deg2rad(deg) {
   return deg * (Math.PI/180)
 }
 
-// Useful functions:
 Lap.prototype.getTotalTime = function() {
   if (this.isOngoing()) {
     return null;
@@ -102,11 +102,16 @@ Lap.prototype.computeEnergyUsed = function() {
     const currentData = this.getDataByProperty(CURRENT_PROP);
     var power = 0;
     var prevTime = this.start_time;
+    console.log("COMPUTE ENERGY USED: starttime " + prevTime);
     for (var i = 0; i < voltageData.length; i++) {
       const timeOfReading = voltageData[i].timestamp;
       const voltage = voltageData[i].value;
       const current = this.getVirtualData(timeOfReading, CURRENT_PROP);
-      power += (voltage.value * current.value * (timeOfReading - prevTime));
+      console.log("COMPUTE ENERGY USED: voltage " + voltage);
+      console.log("COMPUTE ENERGY USED: current " + current);
+      console.log("COMPUTE ENERGY USED: time " + (new Date(timeOfReading) - new Date(prevTime)));
+      power += (voltage * current * (new Date(timeOfReading) - new Date(prevTime)) / 1000.0);
+      console.log("COMPUTE ENERGY USED: power " + power);
       prevTime = timeOfReading;
     }
     return power;

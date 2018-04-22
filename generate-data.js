@@ -49,7 +49,7 @@ const MCSensor = new MockSensor("mc", 500, function(epoch) {
 	return (15 + 15*Math.sin(epoch/2))/(0.03 * Math.PI / 6.0);
 });
 const BMSSensor = new MockSensor("b", 1500, function(epoch) {
-	return "FzzzzC12345V543219876012345T12345678901234567890";
+	return "FzzzzC00010V999999999999999T12345678901234567890";
 });
 const ConnectedSensors = [GPSSensor, MCSensor, BMSSensor];
 ConnectedSensors.forEach(function(sensor) {
