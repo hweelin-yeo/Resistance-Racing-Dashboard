@@ -109,5 +109,5 @@ function runButtonClicked() {
     $('#runButton').text('Register Run');
     $("#run-name-input").removeAttr("readonly");
     $("#lapButton").attr("disabled", "disabled");
-    $('#lapNumber')[0].innerHTML = "Lap # " + 0;
+    $('#lapNumber')[0].innerHTML = "Lap # " + 1;
   }
