@@ -149,7 +149,7 @@ function initRunSummary() {
     $('#distance').text(roundToXDecimals((v.totaldistance / 1000), 2) + ' km');
     $('#avg-speed').text(roundToXDecimals(3.6 * v.totaldistance / (v.totaltime.getTime() / 1000), 2) + ' kmph');
     $('#energy-used').text(roundToXDecimals((v.totalenergy / 1000), 2) + ' kWh');
-    $('#efficiency').text((v.totaldistance / v.totalenergy, 2) + ' km/kWh');
+    $('#efficiency').text(roundToXDecimals(v.totaldistance / v.totalenergy, 2) + ' km/kWh');
 
   });
 
