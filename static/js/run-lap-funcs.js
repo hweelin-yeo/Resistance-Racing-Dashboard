@@ -37,11 +37,11 @@ function runButtonClicked() {
       newLap.setData(parsed.data);
       idealLap = newLap;
       console.log("new lap data is " + Object.values(newLap.data));
-      var eff = newLap.computeEfficiency();
+      var eff = newLap.getEnergyUsed();
       if (eff == null) {
         $("#best-eff").text("-");
       } else {
-        $("#best-eff").text(eff+ " km/kWh");
+        $("#best-eff").text(roundToXDecimals(eff / 1000, 2)+ " kWh");
       }
       var time = newLap.getTotalTime();
       if (time == null) {
