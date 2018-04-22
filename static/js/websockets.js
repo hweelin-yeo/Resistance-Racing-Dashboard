@@ -84,6 +84,7 @@ socket.on('New Data_MC', function(res) {
 
 
 socket.on('Note Posted', function (res) {
+  console.log("note posted");
   var note = res['note'];
   var lat = res['lat'];
   var lon = res['lon'];

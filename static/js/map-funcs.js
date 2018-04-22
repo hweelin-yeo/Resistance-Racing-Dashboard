@@ -11,6 +11,7 @@ console.log("in map-init.js");
     var drawMap;
     var latestNoteMarker;
     var polyLinesForLap = [];
+    var polyLinesForOtherMap = [];
     var transferPolys;
     var clearPolys;
 
@@ -116,9 +117,15 @@ console.log("in map-init.js");
       }
 
       transferPolys = function() {
+        if (polyLinesForOtherMap.length != 0) {
+          clearPolys(polyLinesForOtherMap);
+          polyLinesForOtherMap = [];
+        }
+
         for (i = 0; i < polyLinesForLap.length ; i++) {
           var poly = polyLinesForLap[i];
           var polyNew = createPoly(poly.strokeColor);
+          polyLinesForOtherMap.push(polyNew);
           polyNew.setPath(poly.getPath());
           polyNew.setMap(mapPrev);
         }
@@ -135,6 +142,7 @@ console.log("in map-init.js");
         });
         latestNoteMarker = marker;
        }
+
 
       // NOTE MARKING (for presentation purposes)
       mapCur.addListener('dblclick', function(e) {
@@ -222,10 +230,11 @@ controlButton.innerHTML = 'Send it!';
 controlButton.addEventListener ("click", function() {
   if (latestNoteMarker != undefined) {
     latestNoteMarker.setTitle($("#note").val());
-    socket.emit('Post Note', {note: ($("#note").val()), position: position, time: (new Date().toLocaleString('en-US'))});
+    socket.emit('Post Note', {note: ($("#note").val()), lat: latestNoteMarker.getPosition().lat(), lat: latestNoteMarker.getPosition().lng(), time: (new Date().getTime() / 1000.0)});
     controlInput.value = "";
   }
 })
+
 
 
 controlDiv.appendChild(controlLabel);
