@@ -9,7 +9,7 @@ socket.on('Lap Started', function (res) {
   $('#lapNumber')[0].innerHTML = "Lap # " + lap;
   $("#lapButton").text("Next Lap");
 
-  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td></tr>");
+  $("#lapTable tbody").prepend("<tr><td>"+lap+"</td><td>00:00.000</td><td></td></tr>");
   lapStart = new Date(time);
 });
 
@@ -21,8 +21,15 @@ socket.on('Lap Ended', function (res) {
   console.log("LAP ENDED:");
   console.log(res);
   console.log(energy / 1000);
-  $("#lapTable tbody tr:first-child td:nth-child(2)").text(millisToString(time));
-  $("#lapTable tbody tr:first-child td:nth-child(3)").text((energy / 1000) + " kWh");
+  // This is done because lap ended usually appears after lap started, so we can't
+  // simply select the top row anymore.
+  $("#lapTable tbody tr").each((v, i) => {
+    var cell = $(v).find("td")[0];
+    if ($(cell).text() == lap) {
+      $($(v).find("td")[1]).text(millisToString(time));
+      $($(v).find("td")[2]).text(roundToXDecimals((energy / 1000), 2) + " kWh");
+    }
+  });
   transferPolys();
 });
 
