@@ -747,11 +747,9 @@ function parseBMSVolt(volt) {
     var voltMax = parseInt(volt.substring(0, 5));
     var voltMin = parseInt(volt.substring(5, 10));
     var voltAve = parseInt(volt.substring(10, 15));
-    voltMax = voltMax / (65535 / 5);
-    voltMin = voltMin / (65535 / 5);
-    voltAve = voltAve / (65535 / 5);
-
-    // TODO: store into database
+    voltMax = 12 * voltMax / (65535 / 5);
+    voltMin = 12 * voltMin / (65535 / 5);
+    voltAve = 12 * voltAve / (65535 / 5);
 
     return voltAve;
 }
