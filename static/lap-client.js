@@ -101,7 +101,7 @@ Lap.prototype.computeEnergyUsed = function() {
     const voltageData = this.getDataByProperty(VOLTAGE_PROP);
     const currentData = this.getDataByProperty(CURRENT_PROP);
     var power = 0;
-    var prevTime = this.start_time;
+    var prevTime = this.start_time * 1000;
     console.log("COMPUTE ENERGY USED: starttime " + prevTime);
     for (var i = 0; i < voltageData.length; i++) {
       const timeOfReading = voltageData[i].timestamp;
