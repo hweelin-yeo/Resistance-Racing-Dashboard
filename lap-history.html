@@ -80,6 +80,12 @@
       <tbody>
       </tbody>
     </table>
+    <table id="map-select-table" class="table table-dark">
+      <tr>
+        <th id="show-speed" class="selected-cell" onClick="showEfficiencyFunc(false);">Speed Map</th>
+        <th id="show-eff" onClick="showEfficiencyFunc(true);">Efficiency Map</th>
+      </tr>
+    </table>
 
     <div id="map" style="height:300px"></div>
 
@@ -93,6 +99,18 @@
     </script>
 
     <script>
+    var showEfficiency = false;
+    function showEfficiencyFunc(b) {
+      console.log(b);
+      showEfficiency = b;
+      if (b == true) {
+        $("#show-speed").removeClass("selected-cell");
+        $("#show-eff").addClass("selected-cell");
+      } else {
+        $("#show-speed").addClass("selected-cell");
+        $("#show-eff").removeClass("selected-cell");
+      }
+    }
     const ENDPOINT = "http://intense-dawn-73114.herokuapp.com/getAllLapsInfoByRun?runid=";
     $.urlParam = function(name){
       var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -215,7 +233,11 @@ initRunSummary();
         var newLap = new Lap(parsed.lap_id, parsed.run_id, parsed.lap_no, parsed.start_time, parsed.end_time, parsed.energy_used, parsed.distance);
         newLap.setData(parsed.data);
         console.log("new lap data is " + Object.values(newLap.data));
-        putDataOntoMap(newLap);
+        if (showEfficiency == true) {
+          putDataOntoMapEff(newLap);
+        } else {
+          putDataOntoMap(newLap);
+        }
       });
     }
 
@@ -238,8 +260,8 @@ initRunSummary();
     function putDataOntoMap(lapObj) {
       const drawingInterval = 1000; // ms
       console.log("lap object contains " + lapObj.data);
-      var gpsLatData = lapObj.getDataByProperty('gps_lat');
-      var gpsLngData = lapObj.getDataByProperty('gps_lon');
+      var gpsLatData = lapObj.getDataByProperty(LAT_PROP);
+      var gpsLngData = lapObj.getDataByProperty(LON_PROP);
       console.log("lap object contains gps_lat: " + JSON.stringify(gpsLatData));
       console.log(gpsLatData.length);
       if (gpsLatData.length == 0) {
@@ -261,12 +283,55 @@ initRunSummary();
         console.log("interpolated time is " + curTimestamp);
         var speed = lapObj.getVirtualData(curTimestamp, "mc");
         console.log("interpolated speed is " + speed);
-        var interLat = lapObj.getVirtualData(curTimestamp, "gps_lat");
-        var interLon = lapObj.getVirtualData(curTimestamp, "gps_lon");
+        var interLat = lapObj.getVirtualData(curTimestamp, LAT_PROP);
+        var interLon = lapObj.getVirtualData(curTimestamp, LON_PROP);
         console.log("interpolated pos is " + interLat + "," + interLon);
         var col = valueToCol(speed);
         console.log("speed is " + speed + " and lat is "+ interLat + "color is " + col);
         drawMap(new google.maps.LatLng(interLat, interLon), col);
+        curTimestamp = new Date(curTimestamp.getTime() + drawingInterval);
+      }
+
+  }
+
+  function putDataOntoMapEff(lapObj) {
+      const drawingInterval = 1000; // ms
+      console.log("lap object contains " + lapObj.data);
+      var gpsLatData = lapObj.getDataByProperty(LAT_PROP);
+      var gpsLngData = lapObj.getDataByProperty(LON_PROP);
+      console.log("lap object contains gps_lat: " + JSON.stringify(gpsLatData));
+      console.log(gpsLatData.length);
+      if (gpsLatData.length == 0) {
+        return; // no data to show on map
+      }
+
+      gpsLatData.sort(function(a, b) {
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+      gpsLngData.sort(function(a, b) {
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+      prevLatLng = new google.maps.LatLng({lat: parseFloat(gpsLatData[0].value), lng: parseFloat(gpsLngData[0].value)});
+      var startTimestamp = new Date(gpsLatData[0].timestamp);
+      var endTimestamp = new Date(gpsLatData[gpsLatData.length-1].timestamp);
+      var prevTimestamp = startTimestamp;
+      var curTimestamp = new Date(startTimestamp.getTime() + drawingInterval);
+      console.log(curTimestamp, startTimestamp, endTimestamp);
+      while (curTimestamp < endTimestamp) {
+        console.log("interpolated time is " + curTimestamp);
+        var voltage = lapObj.getVirtualData(curTimestamp, VOLTAGE_PROP);
+        var current = lapObj.getVirtualData(curTimestamp, CURRENT_PROP);
+        var energy = voltage * current * ((curTimestamp - prevTimestamp) / 1000);
+        var interLat = lapObj.getVirtualData(curTimestamp, LAT_PROP);
+        var interLon = lapObj.getVirtualData(curTimestamp, LON_PROP);
+        var distanceInM = getDistanceFromLatLonInM(prevLatLng.lat(),prevLatLng.lng(),interLat,interLon);
+        console.log("Distance: " + distanceInM);
+        console.log("Energy: " + energy);
+        var efficiency = energy / distanceInM;
+        console.log("interpolated pos is " + interLat + "," + interLon);
+        var col = valueToColEff(efficiency);
+        drawMap(new google.maps.LatLng(interLat, interLon), col);
+        prevTimestamp = curTimestamp;
         curTimestamp = new Date(curTimestamp.getTime() + drawingInterval);
       }
 
@@ -321,6 +386,16 @@ function valueToCol (value) {
    return col;
 }
 
+
+function valueToColEff (value) {
+   var col;
+   console.log("VALUE TO COL EFF")
+   console.log(value);
+   var val = Math.min(1, value/60.0);
+   col = interpolateLinearly(val, Reds);
+   console.log(col);
+   return col;
+}
 
 
 
