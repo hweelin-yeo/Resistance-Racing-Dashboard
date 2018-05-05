@@ -66,7 +66,9 @@ function runButtonClicked() {
           $.get(runStartTime).done(function (data) { // TODO: Verify with Karun that we can initialise runStart here\
             runStart = new Date(data.starttime); // TODO not sure why this discrepancy exists
             runStart = new Date(runStart.getTime() / 1000.0);
-            runFirstLapStart = runStart; // TODO FIX THIS INITIALIZATION
+            $.get(getFirstLapStartTime).done(function (data) {
+              runFirstLapStart = data.starttime;
+            }); // TODO FIX THIS INITIALIZATION
           });
 
           $.get(runIDEndPoint).done(function(data) {
