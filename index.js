@@ -207,7 +207,7 @@ app.get('/getLapStartTime', function(req, res) {
 
 app.get('/getFirstLapStartTime', function(req, res) {
 
-    client.query('SELECT starttime FROM lapdata WHERE runid IN(SELECT max(id) FROM rundata)', [req.query.runid], (err, rows) => {
+    client.query('SELECT starttime FROM lapdata WHERE runid IN(SELECT max(id) FROM rundata)', (err, rows) => {
         if (err) {
             console.log(err.stack);
         } else {
