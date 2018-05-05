@@ -24,7 +24,7 @@ function initLapTable(runID) {
       v.endtime = new Date(v.endtime);
       v.starttime = new Date(v.starttime);
       v.totaltime = new Date(v.endtime - v.starttime);
-      $("#lapTable tbody").prepend("<tr><td>"+lapNo+"</td><td>"+ millisToString(v.totaltime.getTime()) +"</td></tr>");
+      $("#lapTable tbody").prepend("<tr><td>"+lapNo+"</td><td>"+ millisToString(v.totaltime.getTime()) +"</td><td>" + v.totalenergy + " kWh</td></tr>");
     })
   });
 }
