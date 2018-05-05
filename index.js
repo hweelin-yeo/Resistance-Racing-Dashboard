@@ -205,6 +205,19 @@ app.get('/getLapStartTime', function(req, res) {
     });
 });
 
+app.get('/getFirstLapStartTime', function(req, res) {
+
+    client.query('SELECT starttime FROM lapdata WHERE runid IN(SELECT max(id) FROM rundata)', [req.query.runid], (err, rows) => {
+        if (err) {
+            console.log(err.stack);
+        } else {
+            console.log(rows.rows[0]);
+            res.send(rows.rows[0][0]);
+        }
+
+    });
+});
+
 /** Original version of endLapDataQuery*/
 // function endLapDataQuery(runid, lapno, endtime) {
 //   client.query('UPDATE lapdata SET endtime = ($3) WHERE runid = ($1) AND lapno = ($2)',
