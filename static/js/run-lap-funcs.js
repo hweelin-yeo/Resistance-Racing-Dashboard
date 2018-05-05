@@ -67,7 +67,7 @@ function runButtonClicked() {
             runStart = new Date(data.starttime); // TODO not sure why this discrepancy exists
             runStart = new Date(runStart.getTime() / 1000.0);
             $.get(getFirstLapStartTime).done(function (data) {
-              runFirstLapStart = data.starttime;
+              runFirstLapStart = new Date((new Date(data.starttime)).getTime() / 1000.0);
             }); // TODO FIX THIS INITIALIZATION
           });
 
