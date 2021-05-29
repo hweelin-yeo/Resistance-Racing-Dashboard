@@ -22,7 +22,7 @@
     "pg": "6.4.2",
     "socket.io": "^2.0.4",
     "websocket": "^1.0.25",
-    "ws": "^5.0.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "request": "^2.81.0",
