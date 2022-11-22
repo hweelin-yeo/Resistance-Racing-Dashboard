@@ -20,7 +20,7 @@
     "hashmap": "^2.3.0",
     "particle-api-js": "^7.2.0",
     "pg": "6.4.2",
-    "socket.io": "^2.0.4",
+    "socket.io": "^2.5.0",
     "websocket": "^1.0.25",
     "ws": "^5.0.0"
   },
